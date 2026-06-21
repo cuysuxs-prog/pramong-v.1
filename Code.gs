@@ -58,6 +58,7 @@ function handleGet(action, p) {
     case 'getAnswerStats':    return getAnswerStats(p.gameId, parseInt(p.qNum), p.password);
     case 'getTextAnswers':    return getTextAnswers(p.gameId, parseInt(p.qNum));
     case 'getAquaTypeStats':  return getAquaTypeStats();
+    case 'getGameByPin':      return getGameByPin(p.pin);
     default: return { success: false, error: 'unknown action: ' + action };
   }
 }
@@ -409,6 +410,12 @@ function getMyScore(gameId, playerId) {
 // ============================================================
 // Display: getGameState / getPlayerCount
 // ============================================================
+function getGameByPin(pin) {
+  var sess = getSessionByPIN(pin);
+  if (!sess) return { success: false, error: 'ไม่พบเกมที่มี PIN นี้' };
+  return { success: true, gameId: sess.data[0] };
+}
+
 function getGameState(gameId) {
   var sess = getSessionRow(gameId);
   return { success: true, session: rowToSession(sess.data) };

@@ -836,9 +836,10 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
       <div style="max-width:400px;margin:60px auto 0">
         <div class="px-box">
           <h2 class="mb12">หน้าจอแสดงผล</h2>
+          <p class="text-sm text-gray mb16">ถ้าเปิดจากเครื่องอาจารย์ ให้กด <b class="text-cyan">"เปิดหน้าจอแสดงผล (แท็บใหม่)"</b> ในหน้าอาจารย์แทน</p>
           <div class="form-group">
-            <label class="label">Game ID (รับจากอาจารย์)</label>
-            <input id="d-gameid-input" class="px-input" placeholder="เช่น G_1234567_ABCDEF">
+            <label class="label">Game PIN (6 หลัก)</label>
+            <input id="d-gameid-input" class="px-input" type="number" placeholder="000000" maxlength="6">
           </div>
           <button class="px-btn px-btn-cyan px-btn-full" onclick="App.displayConnect()">เชื่อมต่อ</button>
           <button class="px-btn px-btn-gray px-btn-full mt8" onclick="showScreen('landing')">กลับ</button>
@@ -1572,12 +1573,16 @@ const App = {
     openModal('modal-confirm');
   },
 
-  displayConnect() {
-    const gid = document.getElementById('d-gameid-input').value.trim();
-    if (!gid) { notify('กรุณาใส่ Game ID','error'); return; }
-    S.display.gameId = gid;
-    showDispPanel('lobby');
-    App.displayStartRefresh();
+  async displayConnect() {
+    const pin = document.getElementById('d-gameid-input').value.trim();
+    if (!pin) { notify('กรุณาใส่ PIN','error'); return; }
+    try {
+      const r = await apiGet({ action:'getGameByPin', pin });
+      if (!r.success || !r.gameId) { notify('ไม่พบเกมที่มี PIN นี้','error'); return; }
+      S.display.gameId = r.gameId;
+      showDispPanel('lobby');
+      App.displayStartRefresh();
+    } catch(e) { notify('เชื่อมต่อไม่ได้','error'); }
   },
 
   displayStartRefresh() {
