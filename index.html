@@ -1,0 +1,3150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Pramong Taidin - Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --ocean0:#020a1a;--ocean1:#051530;--ocean2:#0a2050;--ocean3:#1a4a8a;--ocean4:#2a6ab0;
+  --cyan:#00d4ff;--cyan2:#00b8e0;--teal:#00e5c8;
+  --yellow:#ffd700;--orange:#ff8c00;--red:#ff4466;--green:#00e896;
+  --purple:#a855f7;--pink:#f472b6;
+  --pixel-dark:rgba(0,0,0,.4);--white:#f0f8ff;--gray:#94a3b8;
+  --font-thai:'Sarabun',sans-serif;--font-pixel:'Press Start 2P',monospace;
+  --glass-white:rgba(255,255,255,.13);--glass-white-hover:rgba(255,255,255,.20);
+  --glass-dark:rgba(5,20,60,.5);
+  --glass-border:rgba(255,255,255,.28);--glass-border-strong:rgba(255,255,255,.45);
+  --glass-shadow:0 20px 60px rgba(0,0,0,.25);--glass-shadow-hover:0 28px 80px rgba(0,0,0,.35);
+  --glass-highlight:inset 0 1px 0 rgba(255,255,255,.22);--glass-blur:blur(18px);
+  --radius:28px;--radius-card:28px;--radius-btn:16px;--radius-sm:12px;--gap:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden}
+body{
+  font-family:var(--font-thai);color:var(--white);
+  background:url('พื้นหลัง.png') center center / cover fixed;
+  min-height:100vh;position:relative;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(2,13,31,.55) 0%,rgba(5,26,62,.45) 40%,rgba(10,20,50,.5) 100%);
+}
+button{cursor:pointer;font-family:var(--font-thai);border:none;outline:none}
+input,select,textarea{font-family:var(--font-thai);outline:none}
+a{color:var(--cyan);text-decoration:none}
+
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden}
+.bubble{
+  position:absolute;bottom:-20px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.3),rgba(0,200,255,.06));
+  border:1px solid rgba(255,255,255,.22);animation:bubbleUp linear infinite;backdrop-filter:blur(2px);
+}
+@keyframes bubbleUp{
+  0%{transform:translateY(0) translateX(0);opacity:.7}
+  50%{transform:translateY(-50vh) translateX(12px);opacity:.35}
+  100%{transform:translateY(-105vh) translateX(-8px);opacity:0}
+}
+@keyframes bobMascot{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes floatChar{
+  0%,100%{transform:translateY(0) rotate(-1.2deg) scale(1)}
+  40%{transform:translateY(-12px) rotate(1deg) scale(1.02)}
+  70%{transform:translateY(-6px) rotate(-.5deg) scale(1.01)}
+}
+.q-layout{display:flex;gap:18px;align-items:flex-start}
+.q-layout-right{flex:1;min-width:0}
+.q-char-wrap{
+  flex-shrink:0;width:210px;display:flex;align-items:center;justify-content:center;
+  padding-top:8px;
+}
+.q-char-img{
+  width:190px;max-height:280px;object-fit:contain;
+  filter:drop-shadow(0 10px 28px rgba(0,180,255,.35)) drop-shadow(0 2px 8px rgba(0,0,0,.3));
+  animation:floatChar 3.2s ease-in-out infinite;
+}
+@media(max-width:700px){
+  .q-char-wrap{width:76px}
+  .q-char-img{width:68px;max-height:120px}
+  .q-layout{gap:10px}
+}
+
+.screen{display:none;position:relative;z-index:10;min-height:100vh;padding:16px}
+.screen.active{display:block;animation:screenFadeIn .4s ease}
+@keyframes screenFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.px-box{
+  background:var(--glass-white);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow),var(--glass-highlight);
+  border-radius:var(--radius-card);padding:20px;position:relative;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.px-box::before{
+  content:'';position:absolute;top:0;left:16px;right:16px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);pointer-events:none;
+}
+.px-box:hover{transform:translateY(-3px);box-shadow:var(--glass-shadow-hover),var(--glass-highlight);border-color:rgba(255,255,255,.42)}
+.px-box-y{border-color:rgba(255,215,0,.4);background:rgba(255,200,0,.07);box-shadow:var(--glass-shadow),inset 0 1px 0 rgba(255,215,0,.2),0 0 40px rgba(255,200,0,.06)}
+.px-box-g{border-color:rgba(0,229,200,.4);background:rgba(0,200,180,.07);box-shadow:var(--glass-shadow),inset 0 1px 0 rgba(0,229,200,.2),0 0 40px rgba(0,200,180,.06)}
+
+.px-btn{
+  display:inline-block;padding:13px 22px;font-size:1rem;font-weight:700;color:#fff;
+  border:1px solid var(--glass-border);border-radius:var(--radius-btn);
+  background:var(--glass-white);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  box-shadow:0 8px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.25);
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease;
+  user-select:none;text-align:center;
+}
+.px-btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 36px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.35);background:var(--glass-white-hover);border-color:var(--glass-border-strong)}
+.px-btn:active{transform:translateY(1px) scale(0.98);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.px-btn-cyan{background:linear-gradient(135deg,rgba(0,180,220,.6),rgba(0,120,180,.5));border-color:rgba(0,212,255,.5);box-shadow:0 8px 24px rgba(0,180,255,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.px-btn-yellow{background:linear-gradient(135deg,rgba(230,180,0,.65),rgba(180,130,0,.55));border-color:rgba(255,215,0,.5);color:#fff8dc;box-shadow:0 8px 24px rgba(255,200,0,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.px-btn-green{background:linear-gradient(135deg,rgba(0,180,130,.65),rgba(0,130,90,.55));border-color:rgba(0,230,170,.5);box-shadow:0 8px 24px rgba(0,220,160,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.px-btn-red{background:linear-gradient(135deg,rgba(200,40,70,.65),rgba(150,20,50,.55));border-color:rgba(255,80,120,.5);box-shadow:0 8px 24px rgba(255,60,100,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.px-btn-purple{background:linear-gradient(135deg,rgba(130,50,230,.65),rgba(90,20,180,.55));border-color:rgba(180,100,255,.5);box-shadow:0 8px 24px rgba(150,80,255,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.px-btn-gray{background:linear-gradient(135deg,rgba(60,80,110,.5),rgba(40,60,90,.45));border-color:rgba(150,170,200,.3)}
+.px-btn-sm{padding:8px 16px;font-size:.85rem;border-radius:var(--radius-sm)}
+.px-btn-lg{padding:16px 28px;font-size:1.15rem}
+.px-btn-full{width:100%;display:block}
+
+.ans-btn{
+  display:block;width:100%;padding:18px 20px;margin-bottom:10px;
+  font-size:1.05rem;font-weight:700;color:#fff;text-align:left;
+  border:1px solid rgba(255,255,255,.22);border-radius:20px;
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  box-shadow:0 8px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.18);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;cursor:pointer;
+}
+.ans-btn:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 14px 36px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.28);border-color:rgba(255,255,255,.5)}
+.ans-btn:active{transform:scale(.98)}
+.ans-btn.A{background:linear-gradient(135deg,rgba(200,40,60,.68),rgba(150,20,40,.58));border-color:rgba(255,80,100,.45)}
+.ans-btn.B{background:linear-gradient(135deg,rgba(20,160,90,.68),rgba(10,120,60,.58));border-color:rgba(60,220,140,.45)}
+.ans-btn.C{background:linear-gradient(135deg,rgba(30,110,200,.68),rgba(20,80,160,.58));border-color:rgba(80,160,255,.45)}
+.ans-btn.D{background:linear-gradient(135deg,rgba(200,130,20,.68),rgba(160,100,10,.58));border-color:rgba(255,180,60,.45)}
+.ans-btn.TF-T{background:linear-gradient(135deg,rgba(20,160,90,.68),rgba(10,120,60,.58));border-color:rgba(60,220,140,.45)}
+.ans-btn.TF-F{background:linear-gradient(135deg,rgba(200,40,60,.68),rgba(150,20,40,.58));border-color:rgba(255,80,100,.45)}
+.ans-btn.selected{box-shadow:0 0 0 2px rgba(255,255,255,.6),0 14px 36px rgba(0,0,0,.3);transform:scale(1.02);border-color:rgba(255,255,255,.7)}
+.ans-btn:disabled{opacity:.45;cursor:default;transform:none}
+
+.title-pixel{font-family:var(--font-pixel);color:var(--yellow);text-shadow:0 0 24px rgba(255,215,0,.5),2px 2px 0 rgba(0,0,0,.5);letter-spacing:1px}
+.subtitle{font-size:1rem;color:var(--cyan);font-weight:600;letter-spacing:2px;text-transform:uppercase}
+h2{font-size:1.4rem;font-weight:800;color:#fff}
+h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
+.label{font-size:.85rem;color:rgba(255,255,255,.6);font-weight:600;margin-bottom:6px;display:block}
+
+.form-group{margin-bottom:16px}
+.px-input{
+  width:100%;padding:13px 16px;font-size:1rem;color:#fff;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.px-input:focus{border-color:rgba(0,200,255,.6);box-shadow:0 0 0 3px rgba(0,200,255,.15);background:rgba(255,255,255,.12)}
+.px-input::placeholder{color:rgba(255,255,255,.35)}
+.px-select{
+  width:100%;padding:13px 16px;font-size:1rem;color:#fff;
+  background:rgba(5,20,60,.75);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.px-textarea{
+  width:100%;padding:13px 16px;font-size:1rem;color:#fff;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);
+  resize:vertical;min-height:80px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.px-textarea:focus,.px-select:focus{border-color:rgba(0,200,255,.6);box-shadow:0 0 0 3px rgba(0,200,255,.15)}
+.px-textarea::placeholder{color:rgba(255,255,255,.35)}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--gap)}
+.flex{display:flex;align-items:center;gap:var(--gap)}
+.flex-wrap{flex-wrap:wrap}
+.flex-col{display:flex;flex-direction:column;gap:var(--gap)}
+.space-between{justify-content:space-between}
+.center{text-align:center}
+.mt4{margin-top:4px}.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
+.ml8{margin-left:8px}.mr4{margin-right:4px}
+
+#notif{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  z-index:9999;max-width:380px;width:90%;
+  padding:14px 22px;border-radius:20px;font-size:1rem;font-weight:700;text-align:center;
+  border:1px solid;display:none;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 16px 48px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.2);
+  animation:notifIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes notifIn{from{opacity:0;transform:translateX(-50%) translateY(-20px) scale(.9)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+#notif.success{background:rgba(0,100,70,.55);border-color:rgba(0,220,140,.5);color:#7fffcc}
+#notif.error{background:rgba(120,15,35,.55);border-color:rgba(255,80,120,.5);color:#ffb3c1}
+#notif.info{background:rgba(8,40,110,.55);border-color:rgba(0,180,255,.5);color:#80e0ff}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,5,20,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:500;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0}to{opacity:1}}
+.modal-box{max-width:600px;width:100%;max-height:90vh;overflow-y:auto;animation:modalSlide .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalSlide{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.timer-wrap{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;height:14px;overflow:hidden;margin:10px 0}
+.timer-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .5s linear;border-radius:12px;box-shadow:0 0 12px rgba(0,220,200,.5)}
+.timer-bar.warning{background:linear-gradient(90deg,var(--orange),var(--yellow));box-shadow:0 0 12px rgba(255,180,0,.5)}
+.timer-bar.danger{background:linear-gradient(90deg,var(--red),var(--orange));box-shadow:0 0 12px rgba(255,60,80,.5)}
+.timer-num{font-family:var(--font-pixel);font-size:.9rem;color:var(--yellow);text-align:center;margin-top:4px}
+
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:16px;margin-bottom:8px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .2s,box-shadow .2s}
+.lb-row:hover{transform:translateX(4px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.lb-rank{font-family:var(--font-pixel);font-size:.9rem;color:var(--gray);width:36px;text-align:center}
+.lb-rank.r1{color:var(--yellow)}.lb-rank.r2{color:#c0c0c0}.lb-rank.r3{color:#cd7f32}
+.lb-nick{flex:1;font-weight:700;font-size:1.05rem}
+.lb-score{font-family:var(--font-pixel);color:var(--yellow);font-size:.85rem}
+
+.stat-row{margin-bottom:10px}
+.stat-label{font-size:.9rem;font-weight:700;margin-bottom:6px;display:flex;justify-content:space-between}
+.stat-bar-wrap{background:rgba(255,255,255,.08);border-radius:8px;height:18px;overflow:hidden}
+.stat-bar{height:100%;border-radius:8px;transition:width .6s ease;min-width:2px}
+
+.pin-display{font-family:var(--font-pixel);font-size:2.6rem;color:var(--yellow);text-align:center;letter-spacing:8px;padding:16px;background:rgba(255,200,0,.07);border:1px solid rgba(255,215,0,.4);border-radius:20px;text-shadow:0 0 24px rgba(255,200,0,.6)}
+
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700;border:1px solid;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.badge-playing{color:var(--green);border-color:rgba(0,230,150,.4);background:rgba(0,200,120,.1)}
+.badge-waiting{color:var(--yellow);border-color:rgba(255,215,0,.4);background:rgba(255,200,0,.09)}
+.badge-ended{color:var(--gray);border-color:rgba(150,160,180,.3);background:rgba(100,120,150,.09)}
+.badge-closed{color:var(--red);border-color:rgba(255,80,120,.4);background:rgba(200,40,80,.09)}
+.badge-showing{color:var(--cyan);border-color:rgba(0,200,255,.4);background:rgba(0,180,255,.09)}
+
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;padding:20px 0}
+.podium-slot{text-align:center;flex:1;max-width:120px}
+.podium-bar{display:flex;align-items:flex-end;justify-content:center;border-radius:16px 16px 0 0;border:1px solid;backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+.podium-bar.p1{height:100px;background:rgba(180,130,0,.5);border-color:rgba(255,215,0,.6);margin:0 10px}
+.podium-bar.p2{height:70px;background:rgba(100,100,120,.5);border-color:rgba(200,200,200,.4)}
+.podium-bar.p3{height:50px;background:rgba(120,60,20,.5);border-color:rgba(205,127,50,.5)}
+.podium-num{font-family:var(--font-pixel);font-size:1.2rem;padding:8px}
+.podium-nick{font-size:.9rem;font-weight:700;margin-top:6px;word-break:break-word}
+.podium-score{font-size:.8rem;color:var(--yellow)}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:16px}
+.tab-btn{padding:10px 18px;font-size:.9rem;font-weight:700;color:rgba(255,255,255,.5);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;border-radius:12px 12px 0 0}
+.tab-btn:hover{color:rgba(255,255,255,.8)}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:tabFadeIn .3s ease}
+@keyframes tabFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.q-card{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.22);border-radius:var(--radius-card);padding:24px;margin-bottom:16px;box-shadow:0 20px 60px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.2);position:relative;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.q-card:hover{transform:translateY(-3px);box-shadow:0 28px 72px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.25);border-color:rgba(255,255,255,.35)}
+.q-card::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);pointer-events:none}
+.q-type-badge{display:inline-block;padding:4px 14px;font-size:.72rem;font-weight:700;background:rgba(160,80,255,.3);border:1px solid rgba(180,100,255,.5);border-radius:20px;margin-bottom:12px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.q-text{font-size:1.3rem;font-weight:700;line-height:1.55;margin-bottom:12px}
+.q-img{max-width:100%;border:1px solid rgba(0,200,255,.4);border-radius:16px;display:block;margin:0 auto 12px}
+
+.result-overlay{display:none;position:fixed;inset:0;z-index:800;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,5,20,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.result-overlay.show{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.result-icon{font-size:4rem;font-weight:900;margin-bottom:16px;animation:iconPop .4s cubic-bezier(.17,.67,.35,1.4)}
+@keyframes iconPop{from{transform:scale(0)}to{transform:scale(1)}}
+.result-text{font-family:var(--font-pixel);font-size:1.4rem;text-align:center;margin-bottom:8px}
+.result-score{font-size:1.4rem;color:var(--yellow);font-weight:700;animation:scorePop .5s .2s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes scorePop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+
+.spinner{width:32px;height:32px;border:2px solid rgba(0,200,255,.2);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:480px){
+  .grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}
+  .title-pixel{font-size:1.3rem!important}.pin-display{font-size:1.8rem;letter-spacing:5px}
+  .px-box{border-radius:20px;padding:16px}.q-card{border-radius:20px}.px-btn{border-radius:14px}
+}
+@media(min-width:900px){
+  #screen-display .q-text{font-size:1.8rem}
+  #screen-display .ans-btn{font-size:1.25rem;padding:22px 22px}
+  #screen-display .pin-display{font-size:3.5rem}
+}
+.brainstorm-grid{display:flex;flex-wrap:wrap;gap:10px;padding:8px 0}
+.brainstorm-card{background:rgba(255,255,255,.1);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.22);border-radius:18px;padding:12px 16px;animation:cardPop .35s cubic-bezier(.34,1.56,.64,1);max-width:280px}
+@keyframes cardPop{from{opacity:0;transform:scale(.8) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.brainstorm-nick{font-size:.7rem;color:var(--cyan);font-weight:700;margin-bottom:4px;letter-spacing:.5px}
+.brainstorm-text{font-size:.95rem;font-weight:600;line-height:1.45;color:#fff}
+.wordcloud-wrap{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:center;padding:16px 8px;min-height:120px}
+.wc-word{font-weight:800;transition:transform .25s ease,opacity .25s ease;cursor:default;animation:cardPop .4s cubic-bezier(.34,1.56,.64,1);line-height:1.2;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+.wc-word:hover{transform:scale(1.12)}
+.live-answers-box{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:14px 16px;margin-top:14px}
+
+/* Kahoot-style student answer buttons */
+.kahoot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0}
+.kahoot-grid.tf{grid-template-columns:1fr 1fr}
+.kahoot-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:calc((100dvh - 220px) / 2);min-height:calc((100vh - 220px) / 2);
+  border-radius:22px;border:none;cursor:pointer;color:#fff;
+  font-family:var(--font-pixel);font-size:2rem;font-weight:900;
+  box-shadow:0 7px 0 rgba(0,0,0,.35),0 12px 32px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;
+  transition:transform .1s ease,box-shadow .1s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.kahoot-btn::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:45%;
+  background:rgba(255,255,255,.18);pointer-events:none;
+  border-radius:22px 22px 50% 50% / 22px 22px 30px 30px;
+}
+.kahoot-btn:active:not(:disabled){transform:translateY(5px);box-shadow:0 2px 0 rgba(0,0,0,.35),0 4px 12px rgba(0,0,0,.25)}
+.kahoot-btn:disabled{opacity:.45;cursor:default;transform:none}
+.kahoot-btn.selected{box-shadow:0 0 0 4px #fff,0 7px 0 rgba(0,0,0,.35);transform:scale(1.03)}
+.kahoot-btn-label{font-family:var(--font-thai);font-size:1rem;font-weight:700;margin-top:6px;opacity:.9}
+.kahoot-btn.A{background:linear-gradient(175deg,#e0324a,#a01028)}
+.kahoot-btn.B{background:linear-gradient(175deg,#16b468,#0a7840)}
+.kahoot-btn.C{background:linear-gradient(175deg,#1e82dc,#1058aa)}
+.kahoot-btn.D{background:linear-gradient(175deg,#dc9614,#a06808)}
+.kahoot-btn.TF-T{background:linear-gradient(175deg,#16b468,#0a7840)}
+.kahoot-btn.TF-F{background:linear-gradient(175deg,#e0324a,#a01028);font-size:1.6rem}
+.kahoot-hint{text-align:center;font-size:.82rem;color:rgba(255,255,255,.5);padding:6px 0 10px;letter-spacing:.5px}
+.live-answers-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:rgba(5,15,50,.5)}
+::-webkit-scrollbar-thumb{background:rgba(0,180,255,.4);border-radius:3px}
+
+/* ===== AQUA TYPE TEST ===== */
+.at-header{display:flex;align-items:center;gap:10px;padding:12px 16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(0,0,0,.32);border-bottom:1px solid rgba(255,255,255,.1)}
+.at-title{font-family:var(--font-pixel);font-size:.85rem;color:var(--cyan);flex:1;text-align:center}
+.at-body{max-width:520px;margin:0 auto;padding:16px}
+.at-progress-wrap{height:7px;background:rgba(255,255,255,.1);border-radius:4px;margin:8px 0 4px}
+.at-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--cyan),var(--teal));transition:width .4s ease}
+.at-step-label{font-size:.75rem;color:var(--gray);text-align:right}
+.at-q-num{font-family:var(--font-pixel);font-size:.72rem;color:var(--cyan);margin-bottom:10px}
+.at-q-text{font-size:1rem;line-height:1.65;font-weight:600;color:#fff;margin-bottom:16px}
+.at-opt-btn{width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px;margin-bottom:8px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;color:#fff;text-align:left;cursor:pointer;transition:all .18s;font-family:var(--font-thai);font-size:.9rem;line-height:1.45}
+.at-opt-btn:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.28)}
+.at-opt-btn.at-selected{background:rgba(0,180,255,.18);border-color:rgba(0,210,255,.6);color:var(--cyan)}
+.at-opt-letter{font-family:var(--font-pixel);font-size:.68rem;width:30px;height:30px;min-width:30px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,.1)}
+.at-opt-btn.at-selected .at-opt-letter{background:rgba(0,180,255,.3);color:var(--cyan)}
+.at-nav{display:flex;gap:10px;margin-top:16px}
+.at-result-hero{text-align:center;padding:24px 0 16px}
+.at-result-type-name{font-size:1.35rem;font-weight:700;margin:10px 0 4px}
+.at-result-sub{font-size:.85rem;color:var(--gray);margin-bottom:16px}
+.at-score-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.at-score-label{font-size:.78rem;width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.at-score-bar-bg{flex:1;height:14px;background:rgba(255,255,255,.08);border-radius:7px;overflow:hidden}
+.at-score-bar-fill{height:100%;border-radius:7px;transition:width .9s .2s ease}
+.at-score-num{font-size:.72rem;color:var(--gray);width:30px;text-align:right}
+.at-info-block{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px;margin-bottom:10px}
+.at-info-title{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:6px}
+.at-info-content{font-size:.88rem;line-height:1.65;color:rgba(255,255,255,.85)}
+.at-second-badge{display:inline-block;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);font-size:.75rem;color:var(--gray);margin-bottom:12px}
+.at-tagline{font-size:.95rem;line-height:1.6;color:rgba(255,255,255,.9);margin-bottom:8px;padding:10px 14px;background:rgba(255,255,255,.07);border-radius:12px}
+.at-tease{font-size:.8rem;line-height:1.5;color:rgba(255,255,255,.5);font-style:italic;padding:0 4px}
+/* Display mode stats */
+.at-stat-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.at-stat-name{font-size:.82rem;font-weight:700;width:160px;flex-shrink:0}
+.at-stat-bar-bg{flex:1;height:18px;background:rgba(255,255,255,.08);border-radius:9px;overflow:hidden}
+.at-stat-bar-fill{height:100%;border-radius:9px;transition:width 1s ease}
+.at-stat-count{font-size:.8rem;color:var(--gray);width:40px;text-align:right}
+
+/* ===== DEMO MODE ===== */
+.demo-header{
+  display:flex;align-items:center;flex-wrap:wrap;gap:10px;
+  padding:12px 16px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,255,255,.1);
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.demo-title{font-family:var(--font-pixel);font-size:.8rem;color:var(--yellow);white-space:nowrap}
+.demo-type-tabs{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.demo-type-btn{
+  padding:6px 12px;font-size:.78rem;font-weight:700;border-radius:12px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);
+  cursor:pointer;transition:all .18s;font-family:var(--font-thai);
+}
+.demo-type-btn:hover{background:rgba(255,255,255,.14);color:#fff}
+.demo-type-btn.active{background:rgba(0,180,255,.25);border-color:rgba(0,200,255,.6);color:var(--cyan)}
+.demo-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.demo-container{
+  display:grid;grid-template-columns:1fr 340px;gap:16px;
+  padding:16px;max-width:1200px;margin:0 auto;min-height:calc(100vh - 60px);
+  align-items:start;
+}
+.demo-panel-label{
+  font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,255,255,.4);margin-bottom:8px;text-align:center;
+}
+.demo-display-area{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;padding:20px;min-height:420px;
+}
+.demo-phone-wrap{display:flex;flex-direction:column;align-items:center}
+.demo-phone{
+  width:280px;background:rgba(8,18,50,.9);
+  border:2px solid rgba(255,255,255,.18);border-radius:38px;
+  padding:30px 14px 18px;position:relative;
+  box-shadow:0 24px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12);
+  min-height:520px;display:flex;flex-direction:column;
+}
+.demo-phone::before{
+  content:'';width:72px;height:5px;background:rgba(255,255,255,.2);border-radius:4px;
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+}
+.demo-phone-inner{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.demo-idle-msg{text-align:center;padding:40px 16px;color:rgba(255,255,255,.3);font-size:.9rem;line-height:1.8}
+.demo-stat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.demo-stat-bar-bg{flex:1;height:16px;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden}
+.demo-stat-bar-fill{height:100%;border-radius:8px;transition:width .6s ease}
+.demo-stat-label{font-size:.8rem;width:80px;font-weight:700}
+.demo-stat-count{font-size:.75rem;color:var(--gray);width:40px;text-align:right}
+.demo-answer-result{
+  padding:14px;border-radius:16px;margin-top:12px;text-align:center;
+  border:1px solid;backdrop-filter:blur(10px);
+}
+.demo-answer-result.correct{background:rgba(0,150,80,.3);border-color:rgba(0,220,130,.5)}
+.demo-answer-result.wrong{background:rgba(150,20,40,.3);border-color:rgba(255,70,100,.5)}
+.demo-phone-answered{
+  text-align:center;padding:24px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.demo-answered-icon{font-size:2.5rem;font-weight:900;line-height:1}
+@media(max-width:900px){
+  .demo-container{grid-template-columns:1fr;grid-template-rows:auto auto}
+  .demo-phone{width:100%;border-radius:24px;min-height:320px}
+  .demo-phone::before{display:none}
+  .demo-phone-wrap{align-items:stretch}
+}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,180,255,.65)}
+.sound-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
+  font-size:.82rem;font-weight:700;border-radius:14px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.22);color:#fff;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:background .2s,border-color .2s,transform .15s;user-select:none;
+  background:rgba(255,255,255,.1);
+}
+.sound-btn:hover{background:rgba(255,255,255,.18);transform:translateY(-1px)}
+.sound-btn.on{background:rgba(0,180,120,.3);border-color:rgba(0,230,160,.5);color:#7fffcc}
+.sound-btn.off{background:rgba(80,0,0,.3);border-color:rgba(255,80,80,.4);color:#ffb3b3}
+.sound-icon{font-size:1rem;line-height:1}
+.volume-wrap{display:flex;align-items:center;gap:8px;margin-top:6px}
+.volume-slider{-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--cyan) var(--val,60%),rgba(255,255,255,.15) var(--val,60%));width:100px}
+.volume-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--cyan);cursor:pointer;box-shadow:0 2px 8px rgba(0,200,255,.4)}
+.sound-panel{background:rgba(5,15,50,.6);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:12px 16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+#disp-sound-bar{position:fixed;top:12px;right:14px;z-index:200;display:flex;align-items:center;gap:8px}
+.divider{border:none;border-top:1px solid rgba(255,255,255,.1);margin:16px 0}
+.text-sm{font-size:.85rem}.text-xs{font-size:.75rem}
+.text-cyan{color:var(--cyan)}.text-yellow{color:var(--yellow)}.text-red{color:var(--red)}.text-green{color:var(--green)}.text-gray{color:var(--gray)}
+.bold{font-weight:700}.pixel-font{font-family:var(--font-pixel)}.hidden{display:none!important}
+.q-number-badge{font-family:var(--font-pixel);font-size:.7rem;color:var(--cyan);background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.4);padding:5px 12px;border-radius:20px;display:inline-block;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<div id="bg-canvas"></div>
+<div id="notif"></div>
+
+<div id="result-overlay" class="result-overlay">
+  <div id="result-icon" class="result-icon" style="color:var(--green)">OK</div>
+  <div id="result-text" class="result-text">ตอบถูก!</div>
+  <div id="result-score" class="result-score"></div>
+</div>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center">
+  <div style="max-width:500px;width:100%;padding:16px;text-align:center;margin-top:8vh">
+<div class="title-pixel" style="font-size:2.8rem;margin-bottom:8px;letter-spacing:0.25em;word-spacing:0.5em;line-height:2">PRAMONG TAIDIN</div>
+    <div class="subtitle mb12">Fishery Quiz Game</div>
+    <p class="text-sm text-gray mb12">เกมตอบคำถามสำหรับนักศึกษาประมงและเพาะเลี้ยงสัตว์น้ำ</p>
+    <div class="flex-col" style="gap:12px;margin-top:24px">
+      <button class="px-btn px-btn-cyan px-btn-lg px-btn-full" onclick="App.initStudent()">นักศึกษาเข้าร่วมเกม</button>
+      <button class="px-btn px-btn-yellow px-btn-lg px-btn-full" onclick="App.initTeacher()">อาจารย์เข้าสู่ระบบ</button>
+      <button class="px-btn px-btn-purple px-btn-lg px-btn-full" onclick="App.initDisplay()">หน้าจอแสดงผล (โปรเจกเตอร์)</button>
+      <button class="px-btn px-btn-full" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);font-size:.95rem" onclick="initDemo()">ทดลองเล่น (Demo)</button>
+      <button class="px-btn px-btn-full" style="background:rgba(0,220,180,.08);border-color:rgba(0,220,180,.35);color:var(--teal);font-size:.95rem" onclick="initAquaType()">Aqua Type Test — ค้นหาสายประมงของฉัน</button>
+    </div>
+    <p class="text-xs text-gray mt24">Pramong Taidin v1.0 | คณะเทคโนโลยีการประมงและทรัพยากรทางน้ำ มหาวิทยาลัยแม่โจ้</p>
+  </div>
+  </div>
+</div>
+
+<!-- AQUA TYPE TEST -->
+<div id="screen-aquatype" class="screen">
+  <div class="at-header">
+    <button class="px-btn px-btn-gray px-btn-sm" onclick="exitAquaType()">&#8592; กลับ</button>
+    <span class="at-title">AQUA TYPE TEST</span>
+    <span id="at-step-label" class="at-step-label"></span>
+  </div>
+
+  <div class="at-body">
+
+    <!-- Profile -->
+    <div id="at-panel-profile">
+      <div class="px-box mt16">
+        <div class="bold mb4" style="font-size:1.05rem">ค้นหาสายประมงของคุณ</div>
+        <div class="text-sm text-gray mb16">ตอบคำถาม 12 ข้อ เพื่อค้นพบว่าคุณเหมาะกับสายประมงใด</div>
+        <div class="form-group">
+          <label class="label">ชื่อ-นามสกุล *</label>
+          <input id="at-fullname" class="px-input" placeholder="ชื่อ-นามสกุล" maxlength="60">
+        </div>
+        <div class="form-group">
+          <label class="label">ชื่อเล่น *</label>
+          <input id="at-nickname" class="px-input" placeholder="ชื่อเล่น" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label class="label">รหัสนักศึกษา *</label>
+          <input id="at-studentid" class="px-input" placeholder="เช่น 6600123456" maxlength="20">
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="label">หลักสูตร</label>
+            <select id="at-program" class="px-select">
+              <option>หลักสูตร 2 ปี</option>
+              <option>หลักสูตร 4 ปี</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="label">ชั้นปี</label>
+            <select id="at-year" class="px-select">
+              <option>ปี 1</option><option>ปี 2</option><option>ปี 3</option><option>ปี 4</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="label">จังหวัดบ้านเกิด</label>
+          <input id="at-province" class="px-input" placeholder="เช่น กรุงเทพมหานคร" maxlength="40">
+        </div>
+        <button class="px-btn px-btn-cyan px-btn-full mt4" onclick="atStartQuiz()">เริ่มทำแบบทดสอบ</button>
+      </div>
+    </div>
+
+    <!-- Quiz -->
+    <div id="at-panel-quiz" class="hidden">
+      <div class="at-progress-wrap"><div id="at-progress-fill" class="at-progress-fill" style="width:0%"></div></div>
+      <div id="at-q-num" class="at-q-num"></div>
+      <div class="at-q-text" id="at-q-text"></div>
+      <div id="at-opts"></div>
+      <div class="at-nav">
+        <button class="px-btn px-btn-gray" id="at-btn-prev" onclick="atPrev()" style="flex:1">ก่อนหน้า</button>
+        <button class="px-btn px-btn-cyan" id="at-btn-next" onclick="atNext()" style="flex:2">ถัดไป</button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="at-panel-result" class="hidden">
+      <div id="at-result-content"></div>
+      <button class="px-btn px-btn-full mt12" style="background:rgba(0,220,180,.1);border-color:rgba(0,220,180,.4);color:var(--teal)" onclick="atRetake()">ทำใหม่อีกครั้ง</button>
+      <button class="px-btn px-btn-gray px-btn-full mt8" onclick="exitAquaType()">กลับหน้าหลัก</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- DEMO MODE -->
+<div id="screen-demo" class="screen">
+
+  <div class="demo-header">
+    <button class="px-btn px-btn-gray px-btn-sm" onclick="exitDemo()">&#8592; กลับ</button>
+    <div class="demo-title">DEMO MODE</div>
+    <div class="demo-type-tabs" id="demo-type-tabs">
+      <button class="demo-type-btn active" onclick="demoSelectType(0)">Multiple Choice</button>
+      <button class="demo-type-btn" onclick="demoSelectType(1)">True / False</button>
+      <button class="demo-type-btn" onclick="demoSelectType(2)">Poll</button>
+      <button class="demo-type-btn" onclick="demoSelectType(3)">Brainstorm</button>
+      <button class="demo-type-btn" onclick="demoSelectType(4)">Word Cloud</button>
+    </div>
+    <div class="demo-controls">
+      <button class="px-btn px-btn-green px-btn-sm" id="demo-btn-start" onclick="demoStart()">เริ่มนับเวลา</button>
+      <button class="px-btn px-btn-yellow px-btn-sm" id="demo-btn-answer" onclick="demoShowAnswer()" style="display:none">แสดงเฉลย</button>
+      <button class="px-btn px-btn-gray px-btn-sm" onclick="demoReset()">รีเซ็ต</button>
+    </div>
+  </div>
+
+  <div class="demo-container">
+
+    <!-- LEFT: Display/Projector -->
+    <div>
+      <div class="demo-panel-label">จอโปรเจกเตอร์ (Display)</div>
+      <div class="demo-display-area" id="demo-display">
+        <div class="demo-idle-msg">เลือกประเภทคำถาม แล้วกด "เริ่มนับเวลา"</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Student Phone -->
+    <div class="demo-phone-wrap">
+      <div class="demo-panel-label">มือถือนักศึกษา</div>
+      <div class="demo-phone">
+        <div class="demo-phone-inner" id="demo-student">
+          <div class="demo-idle-msg">รอเริ่มเกม...</div>
+        </div>
+      </div>
+      <p class="text-xs text-gray mt8" style="text-align:center;max-width:280px">นักศึกษาไม่เห็นคำถาม ต้องดูจากหน้าจออาจารย์</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- TEACHER LOGIN -->
+<div id="screen-teacher-login" class="screen">
+  <div style="max-width:400px;margin:80px auto 0;padding:16px">
+    <div class="px-box" style="text-align:center">
+      <h2 class="mb12">เข้าสู่ระบบอาจารย์</h2>
+      <p class="text-sm text-gray mb16">กรุณาใส่รหัสผ่านเพื่อเข้าใช้ Teacher Mode</p>
+      <div class="form-group">
+        <input id="t-login-pw" type="password" class="px-input" placeholder="รหัสผ่าน" maxlength="20"
+          onkeydown="if(event.key==='Enter')App.doTeacherLogin()">
+      </div>
+      <button class="px-btn px-btn-yellow px-btn-full" onclick="App.doTeacherLogin()">เข้าสู่ระบบ</button>
+      <button class="px-btn px-btn-gray px-btn-full mt12" onclick="showScreen('landing')">กลับ</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEACHER MODE -->
+<div id="screen-teacher" class="screen">
+  <div style="max-width:900px;margin:0 auto;padding:16px">
+
+    <div class="flex space-between mb12" style="flex-wrap:wrap;gap:8px">
+      <div>
+        <span class="title-pixel" style="font-size:.85rem">PRAMONG TAIDIN</span>
+        <span class="badge badge-playing ml8" id="t-status-badge">รอเริ่มเกม</span>
+      </div>
+      <div class="flex" style="gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="sound-btn off" id="t-sound-btn" onclick="toggleSound('teacher')">
+          <span class="sound-icon" id="t-sound-icon">&#128263;</span>
+          <span id="t-sound-label">ปิดเสียง</span>
+        </button>
+        <input type="range" class="volume-slider" id="t-vol-slider" min="0" max="100" value="60"
+          oninput="setVolume(this.value/100)" title="ระดับเสียง">
+        <span class="text-sm text-gray">อาจารย์: <b class="text-cyan">Host</b></span>
+        <button class="px-btn px-btn-gray px-btn-sm" onclick="App.teacherLogout()">ออกจากระบบ</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('game')">ควบคุมเกม</button>
+      <button class="tab-btn" onclick="switchTab('questions')">ชุดคำถาม</button>
+      <button class="tab-btn" onclick="switchTab('results')">ผลลัพธ์</button>
+    </div>
+
+    <div id="tab-game" class="tab-content active">
+      <div id="t-no-game">
+        <div class="px-box mb12">
+          <h3 class="mb12">เริ่มเกมใหม่</h3>
+          <div class="form-group">
+            <label class="label">เลือกชุดคำถาม</label>
+            <select id="t-set-select" class="px-select">
+              <option value="">-- กรุณาเลือกชุดคำถาม --</option>
+            </select>
+          </div>
+          <button class="px-btn px-btn-green px-btn-full" onclick="App.createGame()">สร้างเกมและรับผู้เล่น</button>
+          <button class="px-btn px-btn-cyan px-btn-full mt8" onclick="App.loadQuestionSetsForSelect()">โหลดชุดคำถาม</button>
+        </div>
+        <div class="px-box px-box-y">
+          <p class="text-sm text-gray"><b>วิธีใช้:</b> เลือกชุดคำถาม &rarr; สร้างเกม &rarr; แชร์ QR / PIN ให้นักศึกษา &rarr; กด "ข้อถัดไป"</p>
+        </div>
+      </div>
+
+      <div id="t-game-panel" class="hidden">
+        <div class="grid-2 mb12">
+          <div class="px-box px-box-y">
+            <div class="label">Game PIN</div>
+            <div id="t-pin-display" class="pin-display">------</div>
+            <div class="text-xs text-gray center mt8">แชร์ PIN นี้ให้นักศึกษา</div>
+          </div>
+          <div class="px-box" style="text-align:center">
+            <div class="label center">QR Code</div>
+            <div id="t-qr" style="display:inline-block;background:#fff;padding:6px;border-radius:4px"></div>
+          </div>
+        </div>
+
+        <div class="px-box mb12">
+          <div class="flex space-between mb8">
+            <div><span class="text-cyan bold">ผู้เล่น: </span><span id="t-player-count" class="pixel-font text-yellow">0</span> คน</div>
+            <button class="px-btn px-btn-gray px-btn-sm" onclick="App.refreshPlayerCount()">รีเฟรช</button>
+          </div>
+          <div id="t-player-list" class="text-sm text-gray">ยังไม่มีผู้เล่น...</div>
+        </div>
+
+        <div class="px-box px-box-g mb12" id="t-current-q-info">
+          <div class="flex space-between mb8">
+            <div><span class="text-sm text-gray">คำถามข้อที่ </span><span id="t-q-num" class="pixel-font text-cyan">0</span><span class="text-sm text-gray"> / </span><span id="t-q-total" class="pixel-font text-cyan">0</span></div>
+            <div><span class="text-sm text-gray">ตอบแล้ว: </span><span id="t-answered-count" class="pixel-font text-green">0</span></div>
+          </div>
+          <div id="t-q-text" class="text-sm" style="font-weight:600;line-height:1.5">รอเริ่มเกม...</div>
+          <div id="t-q-type-label" class="text-xs text-gray mt8"></div>
+        </div>
+
+        <div class="px-box mb12">
+          <h3 class="mb12">ควบคุมเกม</h3>
+          <div class="grid-2" style="gap:8px">
+            <button id="btn-next-q" class="px-btn px-btn-green px-btn-full" onclick="App.nextQuestion()">&#9654; ข้อถัดไป</button>
+            <button id="btn-prev-q" class="px-btn px-btn-gray px-btn-full" onclick="App.prevQuestion()">&#9664; ข้อก่อนหน้า</button>
+            <button id="btn-show-ans" class="px-btn px-btn-yellow px-btn-full" onclick="App.showAnswer()">แสดงเฉลย</button>
+            <button id="btn-show-lb" class="px-btn px-btn-purple px-btn-full" onclick="App.showLeaderboard()">Leaderboard</button>
+            <button id="btn-close-ans" class="px-btn px-btn-red px-btn-full" onclick="App.closeAnswers()">ปิดรับคำตอบ</button>
+            <button id="btn-open-ans" class="px-btn px-btn-cyan px-btn-full" onclick="App.openAnswers()">เปิดรับคำตอบ</button>
+          </div>
+          <hr class="divider">
+          <div class="grid-2" style="gap:8px">
+            <button class="px-btn px-btn-gray px-btn-full" onclick="App.exportCSV()">Export CSV</button>
+            <button class="px-btn px-btn-red px-btn-full" onclick="App.confirmEndGame()">จบเกม</button>
+          </div>
+          <button class="px-btn px-btn-gray px-btn-full mt8" onclick="App.confirmReset()">รีเซ็ต (ล้างผู้เล่น)</button>
+        </div>
+
+        <div class="px-box" id="t-answer-stats">
+          <h3 class="mb12">สถิติคำตอบข้อปัจจุบัน</h3>
+          <div id="t-stats-content"><p class="text-sm text-gray">ยังไม่มีข้อมูล</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-questions" class="tab-content">
+      <div class="flex space-between mb12" style="flex-wrap:wrap;gap:8px">
+        <h2>จัดการชุดคำถาม</h2>
+        <button class="px-btn px-btn-green" onclick="App.openNewSetModal()">สร้างชุดคำถามใหม่</button>
+      </div>
+      <div id="q-sets-list"><p class="text-sm text-gray">กำลังโหลด...</p></div>
+    </div>
+
+    <div id="tab-results" class="tab-content">
+      <h2 class="mb12">ผลลัพธ์เกม</h2>
+      <div id="t-results-panel"><div id="t-lb-display"></div></div>
+      <button class="px-btn px-btn-cyan mt12" onclick="App.loadTeacherLeaderboard()">โหลด Leaderboard</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- DISPLAY (Projector) -->
+<div id="screen-display" class="screen">
+  <div id="disp-sound-bar">
+    <span class="text-xs text-gray" id="disp-sound-hint">กดเปิดเสียงก่อนเริ่ม</span>
+    <button class="sound-btn off" id="disp-sound-btn" onclick="toggleSound('display')">
+      <span class="sound-icon" id="disp-sound-icon">&#128263;</span>
+      <span id="disp-sound-label">ปิดเสียง</span>
+    </button>
+    <input type="range" class="volume-slider" id="disp-vol-slider" min="0" max="100" value="60"
+      oninput="setVolume(this.value/100)" title="ระดับเสียง">
+  </div>
+  <div style="max-width:1100px;margin:0 auto;padding:16px">
+
+    <div id="disp-lobby">
+      <div style="text-align:center;padding:20px 0">
+        <div class="title-pixel" style="font-size:1.5rem;margin-bottom:4px">PRAMONG TAIDIN</div>
+        <div class="subtitle mb16">Fishery Quiz Game</div>
+      </div>
+      <div class="grid-2" style="max-width:700px;margin:0 auto;gap:20px">
+        <div style="text-align:center">
+          <div class="px-box px-box-y" style="margin-bottom:12px">
+            <div class="label center">Game PIN</div>
+            <div id="d-pin" class="pin-display">------</div>
+          </div>
+          <div class="px-box px-box-g">
+            <div class="label center">ผู้เล่นเข้าร่วมแล้ว</div>
+            <div id="d-player-count" class="pixel-font text-yellow" style="font-size:2.5rem;text-align:center">0</div>
+            <div id="d-player-list" class="text-sm text-gray mt8" style="text-align:center;line-height:1.8">รอผู้เล่น...</div>
+          </div>
+        </div>
+        <div style="text-align:center">
+          <div class="px-box" style="display:inline-block;margin-bottom:12px">
+            <div class="label center mb8">สแกนเพื่อเข้าร่วม</div>
+            <div id="d-qr" style="background:#fff;padding:8px;border-radius:4px;display:inline-block"></div>
+          </div>
+          <div id="disp-set-name" class="px-box text-sm">ชุดคำถาม: <span id="d-set-name" class="text-cyan bold">-</span></div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <div class="text-sm text-gray">รอเริ่มเกมจากอาจารย์...</div>
+        <div class="spinner mt12"></div>
+      </div>
+      <div style="text-align:center;margin-top:16px">
+        <button class="px-btn px-btn-sm" style="background:rgba(0,220,180,.1);border-color:rgba(0,220,180,.4);color:var(--teal)" onclick="dispShowAquaTypeStats()">สรุป Aqua Type ทั้งห้อง</button>
+      </div>
+    </div>
+
+    <div id="disp-aquatype" class="hidden">
+      <div style="max-width:700px;margin:0 auto;padding:20px 0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div class="title-pixel" style="font-size:1rem;color:var(--teal)">AQUA TYPE — ผลสรุปทั้งห้อง</div>
+          <button class="px-btn px-btn-gray px-btn-sm" onclick="showDispPanel('lobby')">กลับ</button>
+        </div>
+        <div id="disp-at-total" class="text-sm text-gray mb16"></div>
+        <div id="disp-at-bars"></div>
+      </div>
+    </div>
+
+    <div id="disp-question" class="hidden">
+      <div class="flex space-between mb12">
+        <div>
+          <span class="q-number-badge" id="d-q-num-badge">ข้อ 1 / 10</span>
+          <span id="d-q-type-badge" class="q-type-badge ml8">Multiple Choice</span>
+        </div>
+        <div class="flex" style="gap:12px">
+          <span class="text-sm text-gray">ผู้เล่น: <b id="d-q-players" class="text-yellow">0</b></span>
+          <span class="text-sm text-gray">ตอบแล้ว: <b id="d-q-answered" class="text-green">0</b></span>
+        </div>
+      </div>
+      <div class="q-layout">
+        <div class="q-char-wrap">
+          <img id="d-q-char" class="q-char-img" src="1.png" alt="">
+        </div>
+        <div class="q-layout-right">
+          <div class="q-card mb12">
+            <div id="d-q-text" class="q-text">คำถาม...</div>
+            <img id="d-q-img" class="q-img hidden" src="" alt="รูปประกอบ">
+          </div>
+          <div id="d-timer-wrap">
+            <div class="timer-wrap"><div id="d-timer-bar" class="timer-bar" style="width:100%"></div></div>
+            <div id="d-timer-num" class="timer-num">00</div>
+          </div>
+          <div id="d-options" class="grid-2 mt12"></div>
+          <div id="d-live-answers" class="live-answers-box hidden">
+            <div class="live-answers-header">
+              <span id="d-live-title" class="bold text-cyan" style="font-size:.95rem">คำตอบสด</span>
+              <span id="d-live-count" class="text-xs text-gray"></span>
+            </div>
+            <div id="d-live-content"><p class="text-sm text-gray center">รอคำตอบ...</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="disp-answer" class="hidden">
+      <h2 class="text-cyan mb8">เฉลยคำถาม</h2>
+      <div class="q-card mb12"><div id="d-ans-question" class="q-text"></div></div>
+      <div class="px-box px-box-g mb12">
+        <div class="label">คำตอบที่ถูกต้อง</div>
+        <div id="d-correct-ans" class="bold" style="font-size:1.3rem;color:var(--green)"></div>
+        <div id="d-explanation" class="text-sm text-gray mt8"></div>
+      </div>
+      <div class="px-box mb12">
+        <div class="label">สถิติคำตอบ</div>
+        <div id="d-answer-stats"></div>
+      </div>
+    </div>
+
+    <div id="disp-leaderboard" class="hidden">
+      <div style="text-align:center;margin-bottom:16px">
+        <div class="title-pixel" style="font-size:1rem">LEADERBOARD</div>
+      </div>
+      <div id="d-lb-rows" style="max-width:600px;margin:0 auto"></div>
+    </div>
+
+    <div id="disp-ended" class="hidden" style="text-align:center">
+      <div class="title-pixel" style="font-size:1.2rem;margin-bottom:16px">จบเกมแล้ว!</div>
+      <div id="d-podium" class="podium"></div>
+      <div id="d-final-lb" style="max-width:500px;margin:0 auto;margin-top:16px"></div>
+    </div>
+
+    <div id="disp-setup">
+      <div style="max-width:400px;margin:60px auto 0">
+        <div class="px-box">
+          <h2 class="mb12">หน้าจอแสดงผล</h2>
+          <div class="form-group">
+            <label class="label">Game ID (รับจากอาจารย์)</label>
+            <input id="d-gameid-input" class="px-input" placeholder="เช่น G_1234567_ABCDEF">
+          </div>
+          <button class="px-btn px-btn-cyan px-btn-full" onclick="App.displayConnect()">เชื่อมต่อ</button>
+          <button class="px-btn px-btn-gray px-btn-full mt8" onclick="showScreen('landing')">กลับ</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STUDENT MODE -->
+<div id="screen-student" class="screen">
+  <div style="max-width:480px;margin:0 auto;padding:16px">
+
+    <div id="stu-pin">
+      <div style="text-align:center;margin-bottom:20px">
+        <div class="title-pixel" style="font-size:1rem;margin-bottom:4px">PRAMONG TAIDIN</div>
+        <div class="subtitle">เข้าร่วมเกม</div>
+      </div>
+      <div class="px-box">
+        <div class="form-group">
+          <label class="label">Game PIN (6 หลัก)</label>
+          <input id="s-pin-input" class="px-input" type="number" placeholder="000000" maxlength="6"
+            style="font-size:1.5rem;letter-spacing:6px;text-align:center"
+            onkeydown="if(event.key==='Enter')App.submitPIN()">
+        </div>
+        <button class="px-btn px-btn-cyan px-btn-full" onclick="App.submitPIN()">ถัดไป</button>
+        <button class="px-btn px-btn-gray px-btn-full mt8" onclick="showScreen('landing')">กลับ</button>
+      </div>
+    </div>
+
+    <div id="stu-register" class="hidden">
+      <div style="text-align:center;margin-bottom:16px">
+        <div class="title-pixel" style="font-size:.9rem">กรอกข้อมูลผู้เล่น</div>
+      </div>
+      <div class="px-box">
+        <div class="form-group">
+          <label class="label">ชื่อ-นามสกุล *</label>
+          <input id="s-fullname" class="px-input" placeholder="กรอกชื่อ-นามสกุล" maxlength="60">
+        </div>
+        <div class="form-group">
+          <label class="label">ชื่อเล่น * (แสดงบน Leaderboard)</label>
+          <input id="s-nickname" class="px-input" placeholder="ชื่อเล่น" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label class="label">รหัสนักศึกษา *</label>
+          <input id="s-studentid" class="px-input" placeholder="เช่น 6600123456" maxlength="20">
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="label">หลักสูตร</label>
+            <select id="s-program" class="px-select">
+              <option value="หลักสูตร 2 ปี">หลักสูตร 2 ปี</option>
+              <option value="หลักสูตร 4 ปี">หลักสูตร 4 ปี</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="label">ชั้นปี</label>
+            <select id="s-year" class="px-select">
+              <option>ปี 1</option><option>ปี 2</option><option>ปี 3</option><option>ปี 4</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="label">จังหวัดที่มา</label>
+          <input id="s-province" class="px-input" placeholder="เช่น กรุงเทพมหานคร" maxlength="40">
+        </div>
+        <div class="form-group">
+          <label class="label">ความคาดหวัง / เหตุผลที่สนใจเรียนประมง</label>
+          <textarea id="s-expect" class="px-textarea" placeholder="เล่าให้ฟังสักนิด..." maxlength="200"></textarea>
+        </div>
+        <button class="px-btn px-btn-green px-btn-full" onclick="App.joinGame()">เข้าร่วมเกม!</button>
+        <button class="px-btn px-btn-gray px-btn-full mt8" onclick="showStuPanel('pin')">กลับ</button>
+        <div id="s-join-offline" class="hidden mt8">
+          <div class="px-box px-box-y">
+            <p class="text-sm text-yellow">มีข้อมูลค้างส่ง <button class="px-btn px-btn-yellow px-btn-sm" onclick="App.retryPending()">ส่งใหม่</button></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="stu-waiting" class="hidden" style="text-align:center;padding:20px 0">
+      <div class="px-box mb12">
+        <div class="title-pixel" style="font-size:.9rem;margin-bottom:8px">สวัสดี!</div>
+        <div id="s-welcome-nick" class="text-cyan bold" style="font-size:1.3rem;margin-bottom:4px"></div>
+        <div class="text-sm text-gray">เข้าร่วมเกมสำเร็จ</div>
+      </div>
+      <div class="px-box px-box-y">
+        <div class="spinner mb12"></div>
+        <div class="bold">รออาจารย์เริ่มคำถาม...</div>
+        <div id="s-waiting-status" class="text-sm text-gray mt8">ระบบจะอัพเดทอัตโนมัติ</div>
+      </div>
+      <div class="text-xs text-gray mt16">PIN: <span id="s-my-pin" class="text-cyan pixel-font">------</span></div>
+      <button class="px-btn px-btn-full mt12" style="background:rgba(0,220,180,.08);border-color:rgba(0,220,180,.35);color:var(--teal);font-size:.88rem" onclick="initAquaType()">Aqua Type Test — ค้นหาสายประมงของฉัน</button>
+    </div>
+
+    <div id="stu-question" class="hidden" style="padding:8px 12px">
+      <div class="flex space-between" style="margin-bottom:6px">
+        <div class="q-number-badge" id="s-q-num-badge">ข้อ 1 / 10</div>
+        <button class="sound-btn off" id="s-sound-btn" style="font-size:.72rem;padding:4px 10px" onclick="toggleSound('student')">
+          <span class="sound-icon" id="s-sound-icon">&#128263;</span>
+          <span id="s-sound-label">เสียง</span>
+        </button>
+      </div>
+      <div id="s-timer-wrap" style="margin-bottom:4px">
+        <div class="timer-wrap" style="height:10px"><div id="s-timer-bar" class="timer-bar" style="width:100%"></div></div>
+        <div id="s-timer-num" class="timer-num" style="font-size:.75rem;margin-top:2px">00</div>
+      </div>
+      <div class="kahoot-hint">ดูคำถามจากหน้าจออาจารย์ แล้วเลือกคำตอบ</div>
+      <div id="s-options"></div>
+      <div id="s-text-input-wrap" class="hidden" style="margin-top:8px">
+        <p class="text-sm text-gray mb8" id="s-text-hint">พิมพ์คำตอบของคุณด้านล่าง</p>
+        <textarea id="s-text-answer" class="px-textarea" placeholder="คำตอบของคุณ..." maxlength="200" style="font-size:1.1rem;min-height:100px"></textarea>
+        <button class="px-btn px-btn-cyan px-btn-full mt8" style="font-size:1.1rem;padding:16px" onclick="App.submitTextAnswer()">ส่งคำตอบ</button>
+      </div>
+    </div>
+
+    <div id="stu-submitted" class="hidden" style="text-align:center;padding:20px 0">
+      <div class="px-box px-box-g mb12">
+        <div class="title-pixel" style="font-size:.85rem;color:var(--green);margin-bottom:8px">ส่งคำตอบแล้ว!</div>
+        <div id="s-submitted-msg" class="text-sm text-gray">รออาจารย์เฉลย...</div>
+      </div>
+      <div class="px-box mb12">
+        <div class="text-sm text-gray">คะแนนสะสมของคุณ</div>
+        <div id="s-my-score-display" class="pixel-font text-yellow" style="font-size:1.8rem;margin:8px 0">0</div>
+        <div id="s-my-rank-display" class="text-sm text-gray"></div>
+      </div>
+      <div class="spinner mt16"></div>
+      <div class="text-xs text-gray mt8">รอคำถามข้อต่อไป...</div>
+    </div>
+
+    <div id="stu-ended" class="hidden" style="text-align:center;padding:20px 0">
+      <div class="title-pixel" style="font-size:.9rem;margin-bottom:16px">จบเกมแล้ว!</div>
+      <div class="px-box px-box-y mb12">
+        <div class="text-gray text-sm mb8">คะแนนรวมของคุณ</div>
+        <div id="s-final-score" class="pixel-font text-yellow" style="font-size:2rem"></div>
+        <div id="s-final-rank" class="text-sm text-gray mt4"></div>
+      </div>
+      <div class="px-box mb12"><div id="s-final-lb" class="text-sm"></div></div>
+      <button class="px-btn px-btn-cyan px-btn-full" onclick="showScreen('landing')">กลับหน้าหลัก</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: QUESTION SET -->
+<div id="modal-qset" class="modal-overlay">
+  <div class="px-box modal-box" style="max-width:700px">
+    <div class="flex space-between mb12">
+      <h2 id="modal-qset-title">สร้างชุดคำถามใหม่</h2>
+      <button class="px-btn px-btn-gray px-btn-sm" onclick="closeModal('modal-qset')">&#x2715;</button>
+    </div>
+    <div class="form-group">
+      <label class="label">ชื่อชุดคำถาม *</label>
+      <input id="qs-name" class="px-input" placeholder="เช่น ความรู้ประมงเบื้องต้น" maxlength="80">
+    </div>
+    <hr class="divider">
+    <div id="qs-questions-list"></div>
+    <button class="px-btn px-btn-cyan mt12" onclick="App.addQuestionRow()">+ เพิ่มคำถาม</button>
+    <hr class="divider">
+    <div class="flex" style="gap:8px">
+      <button class="px-btn px-btn-green" onclick="App.saveQuestionSet()">บันทึก</button>
+      <button class="px-btn px-btn-gray" onclick="closeModal('modal-qset')">ยกเลิก</button>
+    </div>
+    <input type="hidden" id="qs-editing-id">
+  </div>
+</div>
+
+<!-- MODAL: CONFIRM -->
+<div id="modal-confirm" class="modal-overlay">
+  <div class="px-box modal-box" style="max-width:380px;text-align:center">
+    <div style="font-size:2rem;font-weight:900;margin-bottom:8px;color:var(--yellow)" id="confirm-icon">!</div>
+    <h3 id="confirm-title" class="mb8">ยืนยัน?</h3>
+    <p id="confirm-msg" class="text-sm text-gray mb16">คุณแน่ใจหรือไม่?</p>
+    <div class="flex" style="gap:8px;justify-content:center">
+      <button id="confirm-ok-btn" class="px-btn px-btn-red" onclick="App.confirmOk()">ยืนยัน</button>
+      <button class="px-btn px-btn-gray" onclick="closeModal('modal-confirm')">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoAT94657oaZ1VAaBsbVJeoQO2l4IqQqDK3xlkAeyc1jtH3h99bjsI_RM0N590tuAgOw/exec';
+const TEACHER_PW_LOCAL = '1234';
+const REFRESH_INTERVAL = 4000;
+
+const S = {
+  mode: 'landing',
+  teacher: { password:'', gameId:null, pin:null, questionSetId:null, questionSetName:null, totalQ:0, currentQ:0, status:'waiting' },
+  display: { gameId:null, timerInterval:null, refreshInterval:null, lastStatus:null, lastQNum:0 },
+  student: { gameId:null, playerId:null, nickname:null, pin:null, currentQ:0, hasAnswered:false, answerStartTime:0, refreshInterval:null, lastStatus:null, lastQNum:0 },
+  confirmCallback: null,
+  questionRows: [],
+  editingSetId: null
+};
+
+async function apiGet(params) {
+  const url = new URL(APPS_SCRIPT_URL);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.append(k, String(v)));
+  const res = await fetch(url.toString(), { redirect:'follow' });
+  return res.json();
+}
+async function apiPost(data) {
+  const res = await fetch(APPS_SCRIPT_URL, { method:'POST', redirect:'follow', body:JSON.stringify(data) });
+  return res.json();
+}
+
+let notifTimer = null;
+function notify(msg, type='info', duration=3000) {
+  const el = document.getElementById('notif');
+  el.textContent = msg; el.className = type; el.style.display = 'block';
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => { el.style.display = 'none'; }, duration);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) el.classList.add('active');
+  S.mode = id;
+}
+
+function showStuPanel(id) {
+  ['pin','register','waiting','question','submitted','ended'].forEach(p => {
+    document.getElementById('stu-' + p).classList.add('hidden');
+  });
+  document.getElementById('stu-' + id).classList.remove('hidden');
+}
+
+function showDispPanel(id) {
+  ['lobby','question','answer','leaderboard','ended','setup'].forEach(p => {
+    const el = document.getElementById('disp-' + p);
+    if (el) el.classList.add('hidden');
+  });
+  const el = document.getElementById('disp-' + id);
+  if (el) el.classList.remove('hidden');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    const tabs = ['game','questions','results'];
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'questions') App.loadQuestionSets();
+  if (tab === 'results') App.loadTeacherLeaderboard();
+}
+
+function initBg() {
+  const bg = document.getElementById('bg-canvas');
+  for (let i = 0; i < 20; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 5 + Math.random() * 15;
+    b.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s`;
+    bg.appendChild(b);
+  }
+}
+
+function makeQR(elementId, url) {
+  const el = document.getElementById(elementId);
+  el.innerHTML = '';
+  if (typeof QRCode !== 'undefined') {
+    new QRCode(el, { text:url, width:140, height:140, colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.M });
+  } else {
+    el.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(url)}" alt="QR">`;
+  }
+}
+
+function getStudentURL(pin) {
+  return `${window.location.href.split('?')[0]}?mode=student&pin=${pin}`;
+}
+
+let timerInterval = null;
+
+// Visual-only timer — ไม่มีเสียง เพราะเสียงมาจาก Teacher Mode เท่านั้น
+function startTimer(seconds, barId, numId, onEnd) {
+  clearInterval(timerInterval);
+  let remaining = seconds;
+  const bar = document.getElementById(barId);
+  const num = document.getElementById(numId);
+  function update() {
+    if (!bar || !num) return;
+    const pct = (remaining / seconds) * 100;
+    bar.style.width = pct + '%';
+    bar.className = 'timer-bar' + (pct < 25 ? ' danger' : pct < 50 ? ' warning' : '');
+    num.textContent = remaining;
+    if (remaining <= 0) { clearInterval(timerInterval); if (onEnd) onEnd(); return; }
+    remaining--;
+  }
+  update();
+  timerInterval = setInterval(update, 1000);
+}
+function stopTimer() { clearInterval(timerInterval); }
+
+// Audio-only timer — รันใน Teacher Mode เล่นเสียงอย่างเดียว ไม่ทำ UI
+let audioTimerInterval = null;
+let audioTickSubInterval = null;
+function startAudioTimer(seconds) {
+  clearInterval(audioTimerInterval);
+  clearInterval(audioTickSubInterval);
+  let remaining = seconds;
+  function tick() {
+    if (remaining <= 0) {
+      clearInterval(audioTimerInterval);
+      clearInterval(audioTickSubInterval);
+      playTimeUpSound();
+      return;
+    }
+    playTickSound(remaining);
+    clearInterval(audioTickSubInterval);
+    if (remaining <= 5) {
+      audioTickSubInterval = setInterval(() => playTickSound(remaining, true), 250);
+    } else if (remaining <= 10) {
+      audioTickSubInterval = setInterval(() => playTickSound(remaining, true), 500);
+    }
+    remaining--;
+  }
+  tick();
+  audioTimerInterval = setInterval(tick, 1000);
+}
+function stopAudioTimer() {
+  clearInterval(audioTimerInterval);
+  clearInterval(audioTickSubInterval);
+}
+
+const TYPE_LABELS = {
+  multiple_choice:'Multiple Choice', true_false:'True / False',
+  poll:'Poll', brainstorm:'Brainstorm', word_cloud:'Word Cloud'
+};
+
+function statusBadgeClass(status) {
+  const m = { playing:'badge-playing', waiting:'badge-waiting', ended:'badge-ended', closed:'badge-closed', showing_answer:'badge-showing', leaderboard:'badge-showing' };
+  return m[status] || 'badge-waiting';
+}
+function statusLabel(status) {
+  const m = { playing:'กำลังเล่น', waiting:'รอเริ่ม', ended:'จบแล้ว', closed:'ปิดรับคำตอบ', showing_answer:'แสดงเฉลย', leaderboard:'Leaderboard' };
+  return m[status] || status;
+}
+
+const App = {
+  // nav wrappers — called from onclick attributes
+  showScreen(id) { showScreen(id); },
+  closeModal(id) { closeModal(id); },
+  openModal(id) { openModal(id); },
+  switchTab(tab) { switchTab(tab); },
+  showStuPanel(id) { showStuPanel(id); },
+  showDispPanel(id) { showDispPanel(id); },
+
+  initTeacher() { showScreen('teacher-login'); },
+  initDisplay() {
+    const p = new URLSearchParams(window.location.search);
+    const gid = p.get('gameId');
+    showScreen('display');
+    if (gid) { S.display.gameId = gid; App.displayStartRefresh(); showDispPanel('lobby'); }
+    else showDispPanel('setup');
+  },
+  initStudent() {
+    const p = new URLSearchParams(window.location.search);
+    const pin = p.get('pin');
+    showScreen('student');
+    if (pin) { document.getElementById('s-pin-input').value = pin; App.submitPIN(); }
+    else showStuPanel('pin');
+  },
+
+  doTeacherLogin() {
+    const pw = document.getElementById('t-login-pw').value.trim();
+    if (!pw) { notify('กรุณาใส่รหัสผ่าน', 'error'); return; }
+    S.teacher.password = pw;
+    showScreen('teacher');
+    App.loadQuestionSets();
+    App.loadQuestionSetsForSelect();
+    document.getElementById('t-login-pw').value = '';
+  },
+  teacherLogout() {
+    clearInterval(S.display.refreshInterval);
+    S.teacher = { password:'', gameId:null, pin:null, questionSetId:null, questionSetName:null, totalQ:0, currentQ:0, status:'waiting' };
+    showScreen('teacher-login');
+  },
+
+  async loadQuestionSetsForSelect() {
+    try {
+      const r = await apiGet({ action:'getQuestionSets', password:S.teacher.password });
+      if (!r.success) { notify('โหลดชุดคำถามไม่ได้: ' + r.error, 'error'); return; }
+      const sel = document.getElementById('t-set-select');
+      sel.innerHTML = '<option value="">-- เลือกชุดคำถาม --</option>';
+      r.sets.forEach(s => { sel.innerHTML += `<option value="${s.id}">${s.name} (${s.count} ข้อ)</option>`; });
+    } catch(e) { notify('เชื่อมต่อ API ไม่ได้', 'error'); }
+  },
+
+  async loadQuestionSets() {
+    const container = document.getElementById('q-sets-list');
+    container.innerHTML = '<div class="spinner mt16"></div>';
+    try {
+      const r = await apiGet({ action:'getQuestionSets', password:S.teacher.password });
+      if (!r.success) { container.innerHTML = `<p class="text-red">${r.error}</p>`; return; }
+      if (!r.sets.length) {
+        container.innerHTML = '<div class="px-box"><p class="text-gray">ยังไม่มีชุดคำถาม — กด "สร้างชุดคำถามใหม่" เพื่อเริ่ม</p></div>';
+        return;
+      }
+      container.innerHTML = r.sets.map(s => `
+        <div class="px-box mb8">
+          <div class="flex space-between" style="flex-wrap:wrap;gap:8px">
+            <div><span class="bold">${s.name}</span><span class="text-sm text-gray ml8">${s.count} ข้อ</span></div>
+            <div class="flex" style="gap:6px;flex-wrap:wrap">
+              <button class="px-btn px-btn-cyan px-btn-sm" onclick="App.editSet('${s.id}')">แก้ไข</button>
+              <button class="px-btn px-btn-yellow px-btn-sm" onclick="App.copySet('${s.id}','${s.name}')">คัดลอก</button>
+              <button class="px-btn px-btn-red px-btn-sm" onclick="App.deleteSet('${s.id}','${s.name}')">ลบ</button>
+            </div>
+          </div>
+          <div class="text-xs text-gray mt4">ID: ${s.id}</div>
+        </div>`).join('');
+    } catch(e) { container.innerHTML = '<p class="text-red">เชื่อมต่อ API ไม่ได้</p>'; }
+  },
+
+  async createGame() {
+    const setId = document.getElementById('t-set-select').value;
+    if (!setId) { notify('กรุณาเลือกชุดคำถาม', 'error'); return; }
+    notify('กำลังสร้างเกม...', 'info');
+    try {
+      const r = await apiPost({ action:'createGame', password:S.teacher.password, setId });
+      if (!r.success) { notify('สร้างเกมไม่ได้: ' + r.error, 'error'); return; }
+      S.teacher.gameId = r.gameId; S.teacher.pin = r.pin;
+      S.teacher.totalQ = r.totalQuestions; S.teacher.questionSetName = r.questionSetName;
+      S.teacher.status = 'waiting';
+      App.showGamePanel();
+      notify('สร้างเกมสำเร็จ! PIN: ' + r.pin, 'success', 5000);
+    } catch(e) { notify('เชื่อมต่อ API ไม่ได้', 'error'); }
+  },
+
+  showGamePanel() {
+    document.getElementById('t-no-game').classList.add('hidden');
+    document.getElementById('t-game-panel').classList.remove('hidden');
+    document.getElementById('t-pin-display').textContent = S.teacher.pin;
+    document.getElementById('t-q-total').textContent = S.teacher.totalQ;
+    document.getElementById('t-q-num').textContent = '0';
+    makeQR('t-qr', getStudentURL(S.teacher.pin));
+    App.startTeacherRefresh();
+  },
+
+  async refreshPlayerCount() {
+    if (!S.teacher.gameId) return;
+    try {
+      const r = await apiGet({ action:'getPlayerCount', gameId:S.teacher.gameId });
+      if (r.success) {
+        document.getElementById('t-player-count').textContent = r.count;
+        document.getElementById('t-player-list').textContent = r.players.join(' • ') || 'ยังไม่มีผู้เล่น';
+      }
+    } catch(e) {}
+  },
+
+  startTeacherRefresh() {
+    clearInterval(S.display.refreshInterval);
+    S.display.refreshInterval = setInterval(App.refreshPlayerCount, REFRESH_INTERVAL);
+    App.refreshPlayerCount();
+  },
+
+  async nextQuestion() {
+    if (!S.teacher.gameId) return;
+    try {
+      const r = await apiPost({ action:'nextQuestion', password:S.teacher.password, gameId:S.teacher.gameId });
+      if (!r.success) { notify(r.error, 'error'); return; }
+      S.teacher.currentQ = r.currentQuestion; S.teacher.status = 'playing';
+      document.getElementById('t-q-num').textContent = r.currentQuestion;
+      App.refreshTeacherQuestion();
+      notify('ข้อที่ ' + r.currentQuestion, 'success');
+    } catch(e) { notify('Error', 'error'); }
+  },
+
+  async prevQuestion() {
+    if (!S.teacher.gameId) return;
+    try {
+      const r = await apiPost({ action:'prevQuestion', password:S.teacher.password, gameId:S.teacher.gameId });
+      if (!r.success) { notify(r.error, 'error'); return; }
+      S.teacher.currentQ = r.currentQuestion;
+      document.getElementById('t-q-num').textContent = r.currentQuestion;
+      App.refreshTeacherQuestion();
+    } catch(e) { notify('Error', 'error'); }
+  },
+
+  async showAnswer() {
+    const r = await apiPost({ action:'showAnswer', password:S.teacher.password, gameId:S.teacher.gameId });
+    if (r.success) { stopAudioTimer(); notify('แสดงเฉลยแล้ว', 'success'); App.loadAnswerStats(); }
+  },
+  async showLeaderboard() {
+    const r = await apiPost({ action:'showLeaderboard', password:S.teacher.password, gameId:S.teacher.gameId });
+    if (r.success) {
+      notify('แสดง Leaderboard แล้ว', 'success');
+      stopAudioTimer();
+      playLeaderboardSound();
+    }
+  },
+  async closeAnswers() {
+    const r = await apiPost({ action:'closeAnswers', password:S.teacher.password, gameId:S.teacher.gameId });
+    if (r.success) { S.teacher.status = 'closed'; notify('ปิดรับคำตอบแล้ว', 'info'); }
+  },
+  async openAnswers() {
+    const r = await apiPost({ action:'openAnswers', password:S.teacher.password, gameId:S.teacher.gameId });
+    if (r.success) { S.teacher.status = 'playing'; notify('เปิดรับคำตอบแล้ว', 'success'); }
+  },
+
+  confirmEndGame() {
+    S.confirmCallback = App.endGame;
+    document.getElementById('confirm-title').textContent = 'จบเกม?';
+    document.getElementById('confirm-msg').textContent = 'การจบเกมจะปิดรับคำตอบทั้งหมด';
+    document.getElementById('confirm-icon').textContent = 'X';
+    openModal('modal-confirm');
+  },
+  async endGame() {
+    closeModal('modal-confirm');
+    const r = await apiPost({ action:'endGame', password:S.teacher.password, gameId:S.teacher.gameId });
+    if (r.success) {
+      notify('จบเกมแล้ว', 'info');
+      clearInterval(S.display.refreshInterval);
+      document.getElementById('t-no-game').classList.remove('hidden');
+      document.getElementById('t-game-panel').classList.add('hidden');
+      S.teacher.gameId = null;
+    }
+  },
+
+  confirmReset() {
+    S.confirmCallback = App.resetGame;
+    document.getElementById('confirm-title').textContent = 'รีเซ็ตเกม?';
+    document.getElementById('confirm-msg').textContent = 'จะลบข้อมูลผู้เล่นและคำตอบทั้งหมดในรอบนี้';
+    document.getElementById('confirm-icon').textContent = '!';
+    openModal('modal-confirm');
+  },
+  async resetGame() {
+    closeModal('modal-confirm');
+    const r = await apiPost({ action:'resetGame', password:S.teacher.password, gameId:S.teacher.gameId });
+    if (r.success) {
+      notify('รีเซ็ตเกมสำเร็จ', 'success');
+      document.getElementById('t-player-count').textContent = '0';
+      document.getElementById('t-player-list').textContent = 'ยังไม่มีผู้เล่น';
+      document.getElementById('t-q-num').textContent = '0';
+    }
+  },
+
+  confirmOk() { if (S.confirmCallback) S.confirmCallback(); },
+
+  async refreshTeacherQuestion() {
+    if (!S.teacher.gameId || !S.teacher.currentQ) return;
+    try {
+      const r = await apiGet({ action:'getCurrentQuestion', gameId:S.teacher.gameId });
+      if (r.success && r.question) {
+        document.getElementById('t-q-text').textContent = r.question.question;
+        document.getElementById('t-q-type-label').textContent = TYPE_LABELS[r.question.type] || r.question.type;
+        App.loadAnswerStats();
+        // เสียงมาจากอาจารย์เท่านั้น
+        playStartSound();
+        startAudioTimer(r.question.timeLimit || 30);
+      }
+    } catch(e) {}
+  },
+
+  async loadAnswerStats() {
+    if (!S.teacher.gameId || !S.teacher.currentQ) return;
+    try {
+      const r = await apiGet({ action:'getAnswerStats', gameId:S.teacher.gameId, qNum:S.teacher.currentQ, password:S.teacher.password });
+      if (!r.success) return;
+      const stats = r.stats;
+      document.getElementById('t-answered-count').textContent = stats.total;
+      const content = document.getElementById('t-stats-content');
+      if (stats.text && stats.text.length) {
+        content.innerHTML = `<div class="text-sm">${stats.text.map(t=>`<span class="badge badge-playing mr4">${t}</span>`).join('')}</div>`;
+      } else {
+        const opts = [['A',stats.A,'rgba(200,40,60,.8)'],['B',stats.B,'rgba(20,160,90,.8)'],['C',stats.C,'rgba(30,110,200,.8)'],['D',stats.D,'rgba(200,130,20,.8)']];
+        content.innerHTML = opts.filter(o=>o[1]>0||stats.total>0).map(([l,n,c]) => `
+          <div class="stat-row">
+            <div class="stat-label"><span>${l}: ${n} คน</span><span>${stats.total?Math.round(n/stats.total*100):0}%</span></div>
+            <div class="stat-bar-wrap"><div class="stat-bar" style="width:${stats.total?n/stats.total*100:0}%;background:${c}"></div></div>
+          </div>`).join('');
+      }
+    } catch(e) {}
+  },
+
+  async exportCSV() {
+    if (!S.teacher.gameId) { notify('ยังไม่มีเกม', 'error'); return; }
+    try {
+      const r = await apiGet({ action:'getGameResults', gameId:S.teacher.gameId, password:S.teacher.password });
+      if (!r.success) { notify(r.error, 'error'); return; }
+      const rows = [['Nickname','StudentID','Q#','Question','Answer','CorrectAnswer','IsCorrect','ResponseTime(ms)','Score']];
+      r.results.forEach(row => { rows.push([row.nickname,row.studentId,row.questionNumber,`"${row.question}"`,row.answer,row.correctAnswer,row.isCorrect,row.responseTime,row.score]); });
+      const csv = rows.map(r=>r.join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURIComponent(csv);
+      a.download = 'pramong_taidin_results.csv';
+      a.click();
+      notify('Export CSV สำเร็จ', 'success');
+    } catch(e) { notify('Export ไม่ได้', 'error'); }
+  },
+
+  async loadTeacherLeaderboard() {
+    if (!S.teacher.gameId) { document.getElementById('t-lb-display').innerHTML = '<p class="text-gray text-sm">ยังไม่มีเกม</p>'; return; }
+    const r = await apiGet({ action:'getLeaderboard', gameId:S.teacher.gameId, limit:20 });
+    if (!r.success) return;
+    renderLeaderboard('t-lb-display', r.leaderboard, r.totalPlayers);
+  },
+
+  openNewSetModal() {
+    S.editingSetId = null; S.questionRows = [];
+    document.getElementById('qs-name').value = '';
+    document.getElementById('qs-editing-id').value = '';
+    document.getElementById('modal-qset-title').textContent = 'สร้างชุดคำถามใหม่';
+    document.getElementById('qs-questions-list').innerHTML = '';
+    App.addQuestionRow();
+    openModal('modal-qset');
+  },
+
+  async editSet(setId) {
+    notify('กำลังโหลด...', 'info');
+    const r = await apiGet({ action:'getQuestionSet', setId, password:S.teacher.password });
+    if (!r.success) { notify(r.error, 'error'); return; }
+    S.editingSetId = setId; S.questionRows = r.questions;
+    document.getElementById('qs-name').value = r.questions[0]?.setName || '';
+    document.getElementById('qs-editing-id').value = setId;
+    document.getElementById('modal-qset-title').textContent = 'แก้ไขชุดคำถาม';
+    App.renderQuestionRows();
+    openModal('modal-qset');
+  },
+
+  addQuestionRow(q=null) {
+    S.questionRows.push(q || { type:'multiple_choice', question:'', imageUrl:'', optionA:'', optionB:'', optionC:'', optionD:'', correctAnswer:'A', explanation:'', timeLimit:30, points:1000 });
+    App.renderQuestionRows();
+  },
+
+  renderQuestionRows() {
+    const container = document.getElementById('qs-questions-list');
+    container.innerHTML = S.questionRows.map((q,i) => `
+      <div class="px-box mb12" id="qrow-${i}" style="border-color:var(--ocean3)">
+        <div class="flex space-between mb8">
+          <b class="text-cyan">ข้อที่ ${i+1}</b>
+          <button class="px-btn px-btn-red px-btn-sm" onclick="App.removeQuestionRow(${i})">ลบ</button>
+        </div>
+        <div class="grid-2 mb8">
+          <div class="form-group">
+            <label class="label">ประเภทคำถาม</label>
+            <select class="px-select" id="q-type-${i}" onchange="App.updateQRow(${i},'type',this.value);App.renderQuestionRows()">
+              ${Object.entries(TYPE_LABELS).map(([v,l])=>`<option value="${v}" ${q.type===v?'selected':''}>${l}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="label">เวลา (วินาที) / คะแนน</label>
+            <div class="flex" style="gap:6px">
+              <input class="px-input" type="number" value="${q.timeLimit||30}" min="10" max="180" onchange="App.updateQRow(${i},'timeLimit',+this.value)" style="width:80px">
+              <input class="px-input" type="number" value="${q.points||1000}" min="0" max="9999" onchange="App.updateQRow(${i},'points',+this.value)" style="width:90px">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="label">คำถาม *</label>
+          <textarea class="px-textarea" rows="2" onchange="App.updateQRow(${i},'question',this.value)">${q.question||''}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="label">URL รูปภาพ (ถ้ามี)</label>
+          <input class="px-input" value="${q.imageUrl||''}" placeholder="https://..." onchange="App.updateQRow(${i},'imageUrl',this.value)">
+        </div>
+        ${['multiple_choice','poll'].includes(q.type) ? `
+        <div class="grid-2">
+          ${['A','B','C','D'].map(opt=>`
+          <div class="form-group">
+            <label class="label">ตัวเลือก ${opt}</label>
+            <input class="px-input" value="${q['option'+opt]||''}" onchange="App.updateQRow(${i},'option${opt}',this.value)">
+          </div>`).join('')}
+        </div>` : ''}
+        ${q.type==='true_false' ? `
+        <div class="grid-2">
+          <div class="form-group"><label class="label">ตัวเลือก A</label><input class="px-input" value="ถูก" readonly></div>
+          <div class="form-group"><label class="label">ตัวเลือก B</label><input class="px-input" value="ผิด" readonly></div>
+        </div>` : ''}
+        ${['multiple_choice','true_false'].includes(q.type) ? `
+        <div class="form-group">
+          <label class="label">คำตอบที่ถูกต้อง</label>
+          <select class="px-select" onchange="App.updateQRow(${i},'correctAnswer',this.value)">
+            ${q.type==='true_false' ?
+              ['A','B'].map(v=>`<option value="${v}" ${q.correctAnswer===v?'selected':''}>${v==='A'?'A - ถูก':'B - ผิด'}</option>`).join('') :
+              ['A','B','C','D'].map(v=>`<option value="${v}" ${q.correctAnswer===v?'selected':''}>${v}</option>`).join('')}
+          </select>
+        </div>` : ''}
+        <div class="form-group">
+          <label class="label">คำอธิบายเฉลย</label>
+          <input class="px-input" value="${q.explanation||''}" placeholder="อธิบายเพิ่มเติม..." onchange="App.updateQRow(${i},'explanation',this.value)">
+        </div>
+      </div>`).join('');
+  },
+
+  updateQRow(i, field, value) { S.questionRows[i][field] = value; },
+
+  removeQuestionRow(i) { S.questionRows.splice(i,1); App.renderQuestionRows(); },
+
+  async saveQuestionSet() {
+    const name = document.getElementById('qs-name').value.trim();
+    if (!name) { notify('กรุณาใส่ชื่อชุดคำถาม', 'error'); return; }
+    if (!S.questionRows.length) { notify('กรุณาเพิ่มคำถามอย่างน้อย 1 ข้อ', 'error'); return; }
+    for (let i=0;i<S.questionRows.length;i++) {
+      if (!S.questionRows[i].question.trim()) { notify(`ข้อ ${i+1} ยังไม่มีคำถาม`,'error'); return; }
+    }
+    notify('กำลังบันทึก...','info');
+    const payload = { password:S.teacher.password, setName:name, questions:S.questionRows };
+    let r;
+    if (S.editingSetId) { payload.action='updateQuestionSet'; payload.setId=S.editingSetId; r=await apiPost(payload); }
+    else { payload.action='saveQuestionSet'; r=await apiPost(payload); }
+    if (r.success) { notify('บันทึกสำเร็จ','success'); closeModal('modal-qset'); App.loadQuestionSets(); App.loadQuestionSetsForSelect(); }
+    else notify('บันทึกไม่ได้: ' + r.error, 'error');
+  },
+
+  async copySet(setId, setName) {
+    const r = await apiPost({ action:'copyQuestionSet', password:S.teacher.password, setId, setName, newName:setName+' (สำเนา)' });
+    if (r.success) { notify('คัดลอกสำเร็จ','success'); App.loadQuestionSets(); App.loadQuestionSetsForSelect(); }
+    else notify(r.error,'error');
+  },
+
+  deleteSet(setId, setName) {
+    S.confirmCallback = async () => {
+      closeModal('modal-confirm');
+      const r = await apiPost({ action:'deleteQuestionSet', password:S.teacher.password, setId });
+      if (r.success) { notify('ลบสำเร็จ','success'); App.loadQuestionSets(); App.loadQuestionSetsForSelect(); }
+      else notify(r.error,'error');
+    };
+    document.getElementById('confirm-title').textContent = 'ลบชุดคำถาม?';
+    document.getElementById('confirm-msg').textContent = `"${setName}" จะถูกลบถาวร`;
+    document.getElementById('confirm-icon').textContent = 'X';
+    openModal('modal-confirm');
+  },
+
+  displayConnect() {
+    const gid = document.getElementById('d-gameid-input').value.trim();
+    if (!gid) { notify('กรุณาใส่ Game ID','error'); return; }
+    S.display.gameId = gid;
+    showDispPanel('lobby');
+    App.displayStartRefresh();
+  },
+
+  displayStartRefresh() {
+    clearInterval(S.display.refreshInterval);
+    App.displayRefresh();
+    S.display.refreshInterval = setInterval(App.displayRefresh, REFRESH_INTERVAL);
+  },
+
+  async displayRefresh() {
+    if (!S.display.gameId) return;
+    try {
+      const [stateR, countR] = await Promise.all([
+        apiGet({ action:'getGameState', gameId:S.display.gameId }),
+        apiGet({ action:'getPlayerCount', gameId:S.display.gameId })
+      ]);
+      if (!stateR.success) return;
+      const sess = stateR.session;
+      const status = sess.status;
+      const qNum = sess.currentQuestionNumber;
+
+      if (countR.success) {
+        document.getElementById('d-player-count').textContent = countR.count;
+        document.getElementById('d-player-list').textContent = countR.players.slice(0,30).join('  |  ') || 'รอผู้เล่น...';
+      }
+
+      if (status === 'waiting') {
+        document.getElementById('d-pin').textContent = sess.pin;
+        document.getElementById('d-set-name').textContent = sess.questionSetName || '-';
+        if (!document.getElementById('d-qr').children.length) makeQR('d-qr', getStudentURL(sess.pin));
+        if (S.display.lastStatus !== 'waiting') showDispPanel('lobby');
+      } else if (status === 'playing') {
+        if (S.display.lastQNum !== qNum || S.display.lastStatus !== 'playing') {
+          const qR = await apiGet({ action:'getCurrentQuestion', gameId:S.display.gameId });
+          if (qR.success && qR.question) {
+            App.displayShowQuestion(qR.question, sess);
+            stopTimer();
+            startTimer(qR.question.timeLimit, 'd-timer-bar', 'd-timer-num', ()=>{});
+          }
+        }
+        document.getElementById('d-q-players').textContent = sess.totalPlayers;
+      } else if (status === 'showing_answer') {
+        if (S.display.lastStatus !== 'showing_answer' || S.display.lastQNum !== qNum) {
+          const qR = await apiGet({ action:'getCurrentQuestion', gameId:S.display.gameId });
+          if (qR.success && qR.question) App.displayShowAnswer(qR.question, sess);
+        }
+      } else if (status === 'leaderboard') {
+        if (S.display.lastStatus !== 'leaderboard') {
+          const lbR = await apiGet({ action:'getLeaderboard', gameId:S.display.gameId, limit:10 });
+          if (lbR.success) {
+            showDispPanel('leaderboard');
+            renderLeaderboard('d-lb-rows', lbR.leaderboard, lbR.totalPlayers);
+          }
+        }
+      } else if (status === 'ended') {
+        if (S.display.lastStatus !== 'ended') {
+          const lbR = await apiGet({ action:'getLeaderboard', gameId:S.display.gameId, limit:10 });
+          if (lbR.success) {
+            showDispPanel('ended');
+            App.displayShowPodium(lbR.leaderboard);
+            renderLeaderboard('d-final-lb', lbR.leaderboard.slice(3), lbR.totalPlayers);
+          }
+        }
+      }
+      S.display.lastStatus = status;
+      S.display.lastQNum = qNum;
+    } catch(e) { console.error(e); }
+  },
+
+  displayShowQuestion(q, sess) {
+    showDispPanel('question');
+    // สุ่มภาพ 1-14 ทุกครั้งที่ขึ้นคำถามใหม่
+    const charImg = document.getElementById('d-q-char');
+    if (charImg) {
+      const n = Math.floor(Math.random() * 14) + 1;
+      charImg.src = n + '.png';
+      // reset animation
+      charImg.style.animation = 'none';
+      charImg.offsetHeight; // reflow
+      charImg.style.animation = '';
+    }
+    document.getElementById('d-q-num-badge').textContent = `ข้อที่ ${q.number} / ${sess.totalQuestions}`;
+    document.getElementById('d-q-type-badge').textContent = TYPE_LABELS[q.type] || q.type;
+    document.getElementById('d-q-text').textContent = q.question;
+    const img = document.getElementById('d-q-img');
+    if (q.imageUrl) { img.src = q.imageUrl; img.classList.remove('hidden'); } else img.classList.add('hidden');
+    document.getElementById('d-q-players').textContent = sess.totalPlayers;
+    document.getElementById('d-q-answered').textContent = '0';
+    const optContainer = document.getElementById('d-options');
+    if (q.type === 'multiple_choice') {
+      optContainer.innerHTML = ['A','B','C','D'].map(l => `
+        <div class="ans-btn ${l}" style="cursor:default">
+          <span class="pixel-font" style="font-size:.75rem">${l}</span>  ${q['option'+l]}
+        </div>`).join('');
+    } else if (q.type === 'true_false') {
+      optContainer.innerHTML = `<div class="ans-btn TF-T" style="cursor:default">ถูก</div><div class="ans-btn TF-F" style="cursor:default">ผิด</div>`;
+    } else {
+      optContainer.innerHTML = `<div class="px-box center"><span class="text-gray">${TYPE_LABELS[q.type]||q.type} — นักศึกษาพิมพ์คำตอบ</span></div>`;
+    }
+    if (['brainstorm','word_cloud'].includes(q.type)) {
+      startLiveAnswers(S.display.gameId, q.number, q.type);
+    } else {
+      stopLiveAnswers();
+    }
+  },
+
+  async displayShowAnswer(q, sess) {
+    stopLiveAnswers();
+    showDispPanel('answer');
+    document.getElementById('d-ans-question').textContent = q.question;
+    const optLabels = { A:q.optionA, B:q.optionB, C:q.optionC, D:q.optionD };
+    const ansLabel = q.type==='true_false' ? (q.correctAnswer==='A'?'ถูก':'ผิด') : `${q.correctAnswer}: ${optLabels[q.correctAnswer]||q.correctAnswer}`;
+    document.getElementById('d-correct-ans').textContent = ansLabel;
+    document.getElementById('d-explanation').textContent = q.explanation || '';
+    document.getElementById('d-answer-stats').innerHTML = '<p class="text-sm text-gray">สถิติจะแสดงใน Teacher Mode</p>';
+  },
+
+  displayShowPodium(lb) {
+    const podium = document.getElementById('d-podium');
+    const top3 = lb.slice(0,3);
+    const order = [1,0,2];
+    podium.innerHTML = order.map(i => {
+      if (!top3[i]) return '<div></div>';
+      const p = top3[i];
+      return `<div class="podium-slot">
+        <div class="podium-bar p${i+1}"><div class="podium-num">${i+1}</div></div>
+        <div class="podium-nick">${p.nickname}</div>
+        <div class="podium-score">${p.totalScore} คะแนน</div>
+      </div>`;
+    }).join('');
+  },
+
+  async submitPIN() {
+    const pin = document.getElementById('s-pin-input').value.trim();
+    if (pin.length !== 6) { notify('PIN ต้องเป็น 6 หลัก','error'); return; }
+    S.student.pin = pin;
+    showStuPanel('register');
+    if (localStorage.getItem('pendingAnswer')) document.getElementById('s-join-offline').classList.remove('hidden');
+  },
+
+  async joinGame() {
+    const fullName  = document.getElementById('s-fullname').value.trim();
+    const nickname  = document.getElementById('s-nickname').value.trim();
+    const studentId = document.getElementById('s-studentid').value.trim();
+    const program   = document.getElementById('s-program').value;
+    const year      = document.getElementById('s-year').value;
+    const province  = document.getElementById('s-province').value.trim();
+    const expectation = document.getElementById('s-expect').value.trim();
+    if (!fullName||!nickname||!studentId) { notify('กรุณากรอกข้อมูลที่จำเป็น (*)','error'); return; }
+    notify('กำลังเข้าร่วมเกม...','info');
+    try {
+      const r = await apiPost({ action:'joinGame', pin:S.student.pin, player:{fullName,nickname,studentId,program,year,province,expectation} });
+      if (!r.success) { notify(r.error,'error'); return; }
+      S.student.gameId = r.gameId; S.student.playerId = r.playerId; S.student.nickname = r.nickname||nickname;
+      document.getElementById('s-welcome-nick').textContent = S.student.nickname;
+      document.getElementById('s-my-pin').textContent = S.student.pin;
+      showStuPanel('waiting');
+      notify(r.message||'เข้าร่วมสำเร็จ!','success');
+      App.studentStartRefresh();
+    } catch(e) { notify('เชื่อมต่อไม่ได้ กรุณาลองใหม่','error'); }
+  },
+
+  studentStartRefresh() {
+    clearInterval(S.student.refreshInterval);
+    App.studentRefresh();
+    S.student.refreshInterval = setInterval(App.studentRefresh, REFRESH_INTERVAL);
+  },
+
+  async studentRefresh() {
+    if (!S.student.gameId) return;
+    try {
+      const r = await apiGet({ action:'getCurrentQuestion', gameId:S.student.gameId });
+      if (!r.success) return;
+      const sess = r.session;
+      const status = sess.status;
+      const qNum = sess.currentQuestionNumber;
+      if (status === 'ended') { clearInterval(S.student.refreshInterval); App.studentShowEnded(); return; }
+      if (status === 'waiting') { showStuPanel('waiting'); document.getElementById('s-waiting-status').textContent = 'รออาจารย์เริ่มคำถาม...'; return; }
+      if (status === 'playing') {
+        if (qNum !== S.student.lastQNum) { S.student.hasAnswered=false; S.student.lastQNum=qNum; S.student.answerStartTime=Date.now(); }
+        if (!S.student.hasAnswered && r.question) App.studentShowQuestion(r.question, sess);
+      }
+      if ((status==='showing_answer'||status==='leaderboard') && S.student.hasAnswered) {
+        showStuPanel('submitted');
+        const scoreR = await apiGet({ action:'getMyScore', gameId:S.student.gameId, playerId:S.student.playerId });
+        if (scoreR.success) {
+          document.getElementById('s-my-score-display').textContent = scoreR.score;
+          document.getElementById('s-my-rank-display').textContent = `อันดับที่ ${scoreR.rank} / ${scoreR.totalPlayers} คน`;
+        }
+      }
+      if (status==='closed' && !S.student.hasAnswered) {
+        showStuPanel('submitted');
+        document.getElementById('s-submitted-msg').textContent = 'หมดเวลาตอบคำถาม';
+      }
+      S.student.lastStatus = status;
+    } catch(e) { console.error(e); }
+  },
+
+  studentShowQuestion(q, sess) {
+    showStuPanel('question');
+    document.getElementById('s-q-num-badge').textContent = `ข้อที่ ${q.number} / ${sess.totalQuestions}`;
+    stopTimer();
+    startTimer(q.timeLimit,'s-timer-bar','s-timer-num',()=>{ notify('หมดเวลา!','error'); });
+    const opts = document.getElementById('s-options');
+    const textWrap = document.getElementById('s-text-input-wrap');
+    const dis = S.student.hasAnswered ? 'disabled' : '';
+    opts.innerHTML = ''; textWrap.classList.add('hidden');
+
+    if (q.type === 'multiple_choice' || q.type === 'poll') {
+      const letters = ['A','B','C','D'].filter(l => q.type === 'poll' ? q['option'+l] : q['option'+l]);
+      opts.innerHTML = `<div class="kahoot-grid">${letters.map(l => `
+        <button class="kahoot-btn ${l}" onclick="App.submitAnswer('${l}',${q.number})" ${dis}>
+          ${l}
+        </button>`).join('')}</div>`;
+
+    } else if (q.type === 'true_false') {
+      opts.innerHTML = `<div class="kahoot-grid tf">
+        <button class="kahoot-btn TF-T" onclick="App.submitAnswer('A',${q.number})" ${dis}>
+          &#10003;<div class="kahoot-btn-label">ถูก</div>
+        </button>
+        <button class="kahoot-btn TF-F" onclick="App.submitAnswer('B',${q.number})" ${dis}>
+          &#10007;<div class="kahoot-btn-label">ผิด</div>
+        </button>
+      </div>`;
+
+    } else {
+      // brainstorm / word_cloud
+      textWrap.classList.remove('hidden');
+      document.getElementById('s-text-answer').value = '';
+      textWrap.dataset.qnum = q.number;
+    }
+  },
+
+  async submitAnswer(answer, questionNumber) {
+    if (S.student.hasAnswered) return;
+    S.student.hasAnswered = true;
+    const responseTime = Date.now() - S.student.answerStartTime;
+    document.querySelectorAll('#s-options .kahoot-btn').forEach(b => {
+      b.disabled = true;
+      if (b.onclick && b.onclick.toString().includes(`'${answer}'`)) b.classList.add('selected');
+    });
+    try {
+      const r = await apiPost({ action:'submitAnswer', gameId:S.student.gameId, playerId:S.student.playerId, questionNumber, answer, responseTime });
+      localStorage.removeItem('pendingAnswer');
+      if (r.alreadyAnswered) { showStuPanel('submitted'); document.getElementById('s-submitted-msg').textContent='ส่งคำตอบแล้ว (ซ้ำ)'; return; }
+      if (r.success) {
+        App.showResultOverlay(r.isCorrect, r.score);
+        document.getElementById('s-submitted-msg').textContent = r.message||'ส่งคำตอบแล้ว!';
+        document.getElementById('s-my-score-display').textContent = r.score||0;
+      }
+    } catch(e) {
+      localStorage.setItem('pendingAnswer', JSON.stringify({ gameId:S.student.gameId, playerId:S.student.playerId, questionNumber, answer, responseTime }));
+      notify('ส่งคำตอบไม่ได้ บันทึกไว้แล้ว กด "ส่งใหม่"','error',5000);
+    }
+  },
+
+  async submitTextAnswer() {
+    const text = document.getElementById('s-text-answer').value.trim();
+    if (!text) { notify('กรุณาพิมพ์คำตอบ','error'); return; }
+    const qnum = parseInt(document.getElementById('s-text-input-wrap').dataset.qnum);
+    await App.submitAnswer(text, qnum);
+  },
+
+  showResultOverlay(isCorrect, score) {
+    if (isCorrect) playCorrectSound(); else playWrongSound();
+    const overlay = document.getElementById('result-overlay');
+    const icon = document.getElementById('result-icon');
+    icon.textContent = isCorrect ? 'OK' : 'MISS';
+    icon.style.color = isCorrect ? 'var(--green)' : 'var(--red)';
+    document.getElementById('result-text').textContent = isCorrect ? 'ตอบถูก!' : 'ตอบผิด!';
+    document.getElementById('result-score').textContent = isCorrect ? `+${score} คะแนน` : '';
+    overlay.classList.add('show');
+    setTimeout(() => { overlay.classList.remove('show'); showStuPanel('submitted'); }, 2000);
+  },
+
+  async retryPending() {
+    const data = localStorage.getItem('pendingAnswer');
+    if (!data) return;
+    try {
+      const r = await apiPost({ action:'submitAnswer', ...JSON.parse(data) });
+      if (r.success||r.alreadyAnswered) {
+        localStorage.removeItem('pendingAnswer');
+        document.getElementById('s-join-offline').classList.add('hidden');
+        notify('ส่งข้อมูลค้างสำเร็จ','success');
+      }
+    } catch(e) { notify('ยังส่งไม่ได้','error'); }
+  },
+
+  async studentShowEnded() {
+    showStuPanel('ended');
+    const r = await apiGet({ action:'getMyScore', gameId:S.student.gameId, playerId:S.student.playerId });
+    if (r.success) {
+      document.getElementById('s-final-score').textContent = r.score + ' คะแนน';
+      document.getElementById('s-final-rank').textContent = `อันดับที่ ${r.rank} / ${r.totalPlayers} คน`;
+    }
+    const lbR = await apiGet({ action:'getLeaderboard', gameId:S.student.gameId, limit:5 });
+    if (lbR.success) renderLeaderboard('s-final-lb', lbR.leaderboard, lbR.totalPlayers);
+  }
+};
+
+// ============================================================
+// Live Answers — Brainstorm & Word Cloud
+// ============================================================
+let liveAnswersInterval = null;
+const liveState = { gameId:null, qNum:null, qType:null };
+
+function startLiveAnswers(gameId, qNum, qType) {
+  stopLiveAnswers();
+  liveState.gameId = gameId; liveState.qNum = qNum; liveState.qType = qType;
+  document.getElementById('d-live-answers').classList.remove('hidden');
+  document.getElementById('d-live-title').textContent = qType === 'word_cloud' ? 'Word Cloud สด' : 'Brainstorm สด';
+  document.getElementById('d-live-content').innerHTML = '<p class="text-sm text-gray center">รอคำตอบ...</p>';
+  fetchLiveAnswers();
+  liveAnswersInterval = setInterval(fetchLiveAnswers, 3500);
+}
+
+function stopLiveAnswers() {
+  clearInterval(liveAnswersInterval);
+  liveAnswersInterval = null;
+  liveState.gameId = null;
+  const box = document.getElementById('d-live-answers');
+  if (box) box.classList.add('hidden');
+}
+
+async function fetchLiveAnswers() {
+  if (!liveState.gameId) return;
+  try {
+    const r = await apiGet({ action:'getTextAnswers', gameId:liveState.gameId, qNum:liveState.qNum });
+    if (!r.success || !r.answers) return;
+    const count = r.answers.length;
+    document.getElementById('d-live-count').textContent = count + ' คำตอบ';
+    if (!count) return;
+    if (liveState.qType === 'word_cloud') renderWordCloud(r.answers);
+    else renderBrainstormCards(r.answers);
+  } catch(e) {}
+}
+
+function renderBrainstormCards(answers) {
+  const el = document.getElementById('d-live-content');
+  el.innerHTML = `<div class="brainstorm-grid">${
+    answers.map(a => `<div class="brainstorm-card">
+      <div class="brainstorm-nick">${escHtml(a.nickname)}</div>
+      <div class="brainstorm-text">${escHtml(a.answer)}</div>
+    </div>`).join('')
+  }</div>`;
+}
+
+let _wcCanvas = null;
+function _wcMeasure(text, fontSize) {
+  if (!_wcCanvas) _wcCanvas = document.createElement('canvas');
+  const ctx = _wcCanvas.getContext('2d');
+  ctx.font = '800 ' + fontSize + 'px Sarabun,sans-serif';
+  return Math.ceil(ctx.measureText(text).width);
+}
+
+function renderWordCloud(answers) {
+  const freq = {};
+  answers.forEach(a => {
+    a.answer.trim().split(/[\s,、，。.!！]+/).forEach(w => {
+      w = w.trim();
+      if (w.length < 1) return;
+      const key = w.toLowerCase();
+      if (!freq[key]) freq[key] = { display: w, count: 0 };
+      freq[key].count++;
+    });
+  });
+
+  const entries = Object.values(freq).sort((a, b) => b.count - a.count).slice(0, 60);
+  const el = document.getElementById('d-live-content');
+  if (!entries.length) { el.innerHTML = '<p class="text-sm text-gray center">รอคำตอบ...</p>'; return; }
+
+  const max = entries[0].count;
+  const palette = ['var(--cyan)','var(--yellow)','var(--green)','var(--teal)','var(--purple)','var(--pink)','#fff','rgba(255,180,100,1)'];
+
+  // Container dimensions — measure parent width after it's visible
+  const CW = Math.max(el.offsetWidth || 0, el.parentElement ? el.parentElement.offsetWidth - 32 : 0, 300);
+  const CH = Math.max(260, Math.min(520, entries.length * 20 + 80));
+  const cx = CW / 2, cy = CH / 2;
+
+  // Grid-based collision detection (4px cells)
+  const CELL = 4, PAD = 7;
+  const GW = Math.ceil(CW / CELL), GH = Math.ceil(CH / CELL);
+  const grid = new Uint8Array(GW * GH);
+
+  function canPlace(px, py, w, h) {
+    const x1 = Math.max(0, (px - PAD) >> 2);
+    const y1 = Math.max(0, (py - PAD) >> 2);
+    const x2 = Math.min(GW - 1, (px + w + PAD) >> 2);
+    const y2 = Math.min(GH - 1, (py + h + PAD) >> 2);
+    for (var gy = y1; gy <= y2; gy++)
+      for (var gx = x1; gx <= x2; gx++)
+        if (grid[gy * GW + gx]) return false;
+    return true;
+  }
+  function markGrid(px, py, w, h) {
+    const x1 = Math.max(0, (px - PAD) >> 2);
+    const y1 = Math.max(0, (py - PAD) >> 2);
+    const x2 = Math.min(GW - 1, (px + w + PAD) >> 2);
+    const y2 = Math.min(GH - 1, (py + h + PAD) >> 2);
+    for (var gy = y1; gy <= y2; gy++)
+      for (var gx = x1; gx <= x2; gx++)
+        grid[gy * GW + gx] = 1;
+  }
+
+  const items = [];
+  const maxR = Math.sqrt(cx * cx + cy * cy) + 10;
+
+  entries.forEach(function(e, i) {
+    const fontSize = Math.round(14 + (e.count / max) * 46);
+    const w = _wcMeasure(e.display, fontSize) + 10;
+    const h = Math.ceil(fontSize * 1.4);
+    const color = palette[i % palette.length];
+    const opacity = 0.55 + (e.count / max) * 0.45;
+
+    var px = 0, py = 0, found = false;
+    // Archimedean spiral outward from center; flatten vertically (×0.6)
+    for (var r = 0; r < maxR && !found; r += 3) {
+      var steps = Math.max(1, Math.round(2 * Math.PI * Math.max(r, 1) / 10));
+      for (var s = 0; s < steps && !found; s++) {
+        var angle = (s / steps) * 2 * Math.PI;
+        var tx = Math.round(cx - w / 2 + r * Math.cos(angle));
+        var ty = Math.round(cy - h / 2 + r * Math.sin(angle) * 0.35);
+        if (tx < 0 || ty < 0 || tx + w > CW || ty + h > CH) continue;
+        if (canPlace(tx, ty, w, h)) { px = tx; py = ty; found = true; }
+      }
+    }
+    if (!found) return;
+
+    markGrid(px, py, w, h);
+    const badge = e.count > 1 ? '<sup style="font-size:.5em;opacity:.55;margin-left:1px">' + e.count + '</sup>' : '';
+    items.push('<span class="wc-word" style="position:absolute;left:' + px + 'px;top:' + py + 'px;font-size:' + fontSize + 'px;color:' + color + ';opacity:' + opacity + ';white-space:nowrap;line-height:1">' + escHtml(e.display) + badge + '</span>');
+  });
+
+  el.innerHTML = '<div style="position:relative;width:' + CW + 'px;height:' + CH + 'px;margin:0 auto">' + items.join('') + '</div>';
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderLeaderboard(containerId, lb, total) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!lb||!lb.length) { el.innerHTML='<p class="text-sm text-gray">ยังไม่มีข้อมูล</p>'; return; }
+  el.innerHTML = lb.map(p => `
+    <div class="lb-row">
+      <div class="lb-rank ${['r1','r2','r3'][p.rank-1]||''}">#${p.rank}</div>
+      <div class="lb-nick">${p.nickname}</div>
+      <div class="lb-score">${p.totalScore}</div>
+    </div>`).join('');
+  if (total) el.innerHTML += `<p class="text-xs text-gray mt8 center">จาก ${total} คน</p>`;
+}
+
+// ============================================================
+// AQUA TYPE TEST
+// ============================================================
+// A=CULT  B=TECH  C=PROD  D=BIOS  E=BIZZ
+const AT_KEYS  = ['CULT','TECH','PROD','BIOS','BIZZ'];
+const AT_NAMES = {
+  CULT: 'นักจัดการฟาร์มสัตว์น้ำ',
+  TECH: 'นักพัฒนาประมงอัจฉริยะ',
+  PROD: 'นักสร้างมูลค่าจากสัตว์น้ำ',
+  BIOS: 'นักสำรวจโลกสัตว์น้ำ',
+  BIZZ: 'นักประกอบการประมงรุ่นใหม่',
+};
+const AT_GROUPS = {
+  CULT: 'กลุ่มเพาะเลี้ยงสัตว์น้ำ',
+  TECH: 'กลุ่มเทคโนโลยีประมง',
+  PROD: 'กลุ่มผลิตภัณฑ์ประมง',
+  BIOS: 'กลุ่มชีววิทยาประมง',
+  BIZZ: 'กลุ่มธุรกิจประมง',
+};
+const AT_COLORS = {
+  CULT:'var(--green)', TECH:'var(--cyan)', PROD:'var(--pink)',
+  BIOS:'var(--teal)',  BIZZ:'var(--yellow)',
+};
+// ตัวเลือก A-E ของทุกข้อ: A=CULT  B=TECH  C=PROD  D=BIOS  E=BIZZ
+const AT_QUESTIONS = [
+  { q:'ถ้าได้เข้าคณะประมงวันแรก คุณอยากลองทำอะไรมากที่สุด?',
+    opts:['เดินดูบ่อปลา ให้อาหาร และสังเกตพฤติกรรมสัตว์น้ำ','ทดลองดูระบบเซนเซอร์หรือเครื่องวัดคุณภาพน้ำ','ลองทำเมนูหรือผลิตภัณฑ์จากปลา','สำรวจชนิดปลา แพลงก์ตอน หรือสิ่งมีชีวิตในน้ำ','คิดว่าถ้าทำฟาร์มหรือสินค้า จะขายอย่างไรให้คนสนใจ'] },
+  { q:'ถ้าปลากินอาหารน้อยลง คุณอยากตรวจสอบเรื่องใดก่อน?',
+    opts:['สภาพบ่อ น้ำ อากาศ และพฤติกรรมปลา','ค่าจากเครื่องมือ เช่น DO, pH, อุณหภูมิ หรือระบบแจ้งเตือน','คุณภาพวัตถุดิบหรือความสดของปลาที่จะนำไปแปรรูป','ลักษณะอาการปลา สิ่งมีชีวิตในน้ำ หรือความผิดปกติทางชีวภาพ','ต้นทุน ความเสียหาย และผลกระทบต่อการขายหรือรายได้'] },
+  { q:'กิจกรรมแบบไหนที่คุณคิดว่าน่าสนุกที่สุด?',
+    opts:['ทดลองเลี้ยงปลาในบ่อจริง','สร้าง Dashboard แสดงค่าคุณภาพน้ำ','ทำลูกชิ้นปลา ปลาแดดเดียว หรือผลิตภัณฑ์ใหม่','ส่องกล้องดูแพลงก์ตอนหรือจำแนกชนิดปลา','คิดแผนธุรกิจฟาร์มหรือสินค้าแปรรูป'] },
+  { q:'ถ้ามีงบ 10,000 บาท เพื่อพัฒนางานประมง คุณจะเลือกใช้งบกับอะไร?',
+    opts:['ปรับปรุงบ่อ อุปกรณ์ฟาร์ม หรือระบบน้ำ','ซื้อ Sensor หรืออุปกรณ์วัดคุณภาพน้ำ','ซื้ออุปกรณ์แปรรูปหรือบรรจุภัณฑ์','ซื้ออุปกรณ์สำรวจสัตว์น้ำหรือกล้องจุลทรรศน์','ทำการตลาด ออกแบบแบรนด์ หรือทดลองขายสินค้า'] },
+  { q:'เวลาทำงานกลุ่ม คุณมักอยากรับบทบาทไหน?',
+    opts:['คนลงมือทำ ช่วยจัดการงานจริงให้เสร็จ','คนดูแลระบบ ไฟล์ข้อมูล เทคโนโลยี หรือเครื่องมือ','คนออกแบบสินค้า รูปแบบผลงาน หรือการนำเสนอ','คนหาข้อมูลเชิงลึก สังเกต และอธิบายรายละเอียดของสิ่งมีชีวิต','คนวางแผน คิดต้นทุน คิดการขาย และแบ่งหน้าที่ทีม'] },
+  { q:'ถ้าเลือกเรียนหัวข้อหนึ่งก่อน คุณอยากเรียนเรื่องใด?',
+    opts:['หลักการเพาะเลี้ยงสัตว์น้ำ','Smart Aquaculture และระบบ IoT','เทคโนโลยีการแปรรูปผลิตภัณฑ์ประมง','ชีววิทยาของปลาและนิเวศวิทยาทางน้ำ','การประกอบการฟาร์มและการตลาดสินค้าประมง'] },
+  { q:'เวลาคุณเห็นปลาในบ่อ สิ่งแรกที่คุณสงสัยคืออะไร?',
+    opts:['จะเลี้ยงอย่างไรให้ปลาโตดี แข็งแรง และรอดสูง','ถ้าวัดค่าคุณภาพน้ำอัตโนมัติ จะช่วยจัดการบ่อได้อย่างไร','ปลาชนิดนี้เอาไปทำผลิตภัณฑ์อะไรให้น่ากินหรือน่าซื้อได้บ้าง','ปลาชนิดนี้คืออะไร มีพฤติกรรมและระบบนิเวศแบบไหน','ถ้าเลี้ยงแล้วขาย จะตั้งราคาและหาลูกค้าอย่างไร'] },
+  { q:'ถ้าน้ำในบ่อเริ่มเสีย คุณคิดว่าควรทำอะไรก่อน?',
+    opts:['เพิ่มอากาศ หยุดให้อาหารบางส่วน และสังเกตอาการปลา','ตรวจค่าคุณภาพน้ำด้วยเครื่องมือและดูแนวโน้มข้อมูล','ประเมินว่าปัญหานี้กระทบคุณภาพวัตถุดิบที่จะนำไปแปรรูปหรือไม่','ดูสิ่งมีชีวิตในน้ำ แพลงก์ตอน หรือสัญญาณทางชีวภาพ','ประเมินผลกระทบต่อต้นทุนและความเสียหายทางธุรกิจ'] },
+  { q:'คุณชอบงานลักษณะใดมากที่สุด?',
+    opts:['งานที่ได้ลงมือทำจริงในฟาร์ม','งานที่ได้ใช้เทคโนโลยีและข้อมูล','งานที่ได้สร้างผลิตภัณฑ์ใหม่','งานที่ได้เรียนรู้สิ่งมีชีวิตและธรรมชาติ','งานที่ได้วางแผนธุรกิจและสร้างรายได้'] },
+  { q:'ถ้าทำโปรเจกต์ 1 เรื่อง คุณอยากเลือกหัวข้อใด?',
+    opts:['การจัดการบ่อเลี้ยงปลาให้มีประสิทธิภาพ','ระบบแจ้งเตือนคุณภาพน้ำผ่านมือถือ','การพัฒนาผลิตภัณฑ์จากปลาให้ขายได้จริง','การสำรวจความหลากหลายของสัตว์น้ำในแหล่งน้ำ','แผนธุรกิจฟาร์มสัตว์น้ำหรือผลิตภัณฑ์ประมง'] },
+  { q:'ถ้าให้เลือกอุปกรณ์ 1 อย่าง คุณอยากเลือกอะไร?',
+    opts:['สวิง ถัง อุปกรณ์ให้อาหาร หรือเครื่องมือฟาร์ม','DO Sensor, pH Sensor หรือบอร์ดควบคุม','เครื่องซีล เครื่องบด เครื่องผสม หรืออุปกรณ์แปรรูป','กล้องจุลทรรศน์หรือคู่มือจำแนกชนิดสัตว์น้ำ','สมุดคำนวณต้นทุน แผนธุรกิจ หรือเครื่องมือทำการตลาด'] },
+  { q:'คุณอยากให้เพื่อนจำคุณในฐานะคนแบบไหน?',
+    opts:['คนลุยงานจริง ดูแลสัตว์น้ำได้ดี','คนทันสมัย ใช้เทคโนโลยีแก้ปัญหาได้','คนสร้างสรรค์ ทำของธรรมดาให้น่าสนใจ','คนรู้ลึกเรื่องสัตว์น้ำและธรรมชาติ','คนคิดเป็นระบบ วางแผนเก่ง และมองเห็นโอกาสทางธุรกิจ'] },
+  { q:'ถ้าได้ฝึกงาน คุณอยากไปสถานที่แบบไหน?',
+    opts:['ฟาร์มปลา ฟาร์มกุ้ง หรือศูนย์เพาะเลี้ยงสัตว์น้ำ','ฟาร์มอัจฉริยะ บริษัทเทคโนโลยีเกษตร หรือทีมพัฒนาระบบเซนเซอร์','โรงงานแปรรูปอาหารทะเลหรือห้องพัฒนาผลิตภัณฑ์','หน่วยงานสำรวจทรัพยากรน้ำ แหล่งน้ำธรรมชาติ หรือพิพิธภัณฑ์สัตว์น้ำ','บริษัทธุรกิจประมง ผู้ประกอบการ หรือหน่วยงานส่งเสริมธุรกิจ'] },
+  { q:'เวลาคุณคิดถึงคำว่า "นวัตกรรมประมง" คุณนึกถึงอะไร?',
+    opts:['ระบบเลี้ยงที่ทำให้ปลาโตดีและลดความเสี่ยงในฟาร์ม','ระบบ AI, Sensor, IoT และ Dashboard','ผลิตภัณฑ์ใหม่จากสัตว์น้ำที่มีมูลค่าสูงขึ้น','ความรู้ใหม่เกี่ยวกับปลา สิ่งมีชีวิตน้ำ และระบบนิเวศ','รูปแบบธุรกิจใหม่ที่ทำให้ประมงสร้างรายได้ยั่งยืน'] },
+  { q:'ถ้าต้องแก้ปัญหาต้นทุนการเลี้ยงสัตว์น้ำสูงขึ้น คุณอยากเริ่มจากมุมใด?',
+    opts:['ปรับวิธีเลี้ยง ลดการสูญเสีย และจัดการฟาร์มให้ดีขึ้น','ใช้ข้อมูลช่วยตัดสินใจ เช่น เปิดเครื่องให้อากาศเท่าที่จำเป็น','แปรรูปผลผลิตเพื่อเพิ่มมูลค่าและลดของเหลือทิ้ง','เข้าใจระบบนิเวศและสุขภาพสัตว์น้ำเพื่อลดความเสี่ยง','วิเคราะห์ต้นทุน ราคา ตลาด และช่องทางขาย'] },
+  { q:'ถ้ามีเวลาว่างในห้องปฏิบัติการ คุณอยากทำอะไร?',
+    opts:['เตรียมอุปกรณ์ฟาร์ม ทดลองเลี้ยง หรือวัดการเติบโต','ทดลองเชื่อมข้อมูลจากเครื่องมือวัดเข้าคอมพิวเตอร์','ทดลองทำสูตรผลิตภัณฑ์หรือทดสอบรสชาติ','ดูตัวอย่างปลา แพลงก์ตอน หรือสิ่งมีชีวิตด้วยกล้อง','คำนวณต้นทุน กำไร และวางแผนการขาย'] },
+  { q:'คุณรู้สึกว่าตัวเองเรียนรู้ได้ดีที่สุดเมื่อใด?',
+    opts:['ได้ลงมือทำในสถานการณ์จริง','ได้ลองใช้เครื่องมือ ระบบ หรือข้อมูลจริง','ได้สร้างชิ้นงานหรือผลิตภัณฑ์ออกมาให้เห็นจริง','ได้สังเกต ทดลอง และทำความเข้าใจสิ่งมีชีวิต','ได้วางแผน แก้โจทย์ และเห็นผลลัพธ์เป็นรายได้หรือความสำเร็จ'] },
+  { q:'ถ้าจะจัดนิทรรศการประมง คุณอยากรับผิดชอบส่วนใด?',
+    opts:['บ่อสาธิตการเลี้ยงสัตว์น้ำ','ระบบแสดงค่าคุณภาพน้ำแบบสด','โซนชิมผลิตภัณฑ์หรือสินค้าแปรรูป','โซนความรู้เรื่องชนิดปลาและระบบนิเวศ','โซนขายสินค้า วางแผนราคา และนำเสนอลูกค้า'] },
+  { q:'คุณอยากพัฒนาทักษะใดมากที่สุดในช่วงเรียน?',
+    opts:['ทักษะการจัดการฟาร์มและการดูแลสัตว์น้ำ','ทักษะด้านเทคโนโลยี ข้อมูล และระบบอัจฉริยะ','ทักษะการแปรรูป ออกแบบผลิตภัณฑ์ และความปลอดภัยอาหาร','ทักษะการสำรวจ จำแนกชนิด และเข้าใจระบบนิเวศ','ทักษะการเป็นผู้ประกอบการ การขาย และการวางแผนธุรกิจ'] },
+  { q:'หลังเรียนจบ คุณอยากเห็นตัวเองทำงานแบบใดมากที่สุด?',
+    opts:['เจ้าของฟาร์ม ผู้จัดการฟาร์ม หรือเจ้าหน้าที่ส่งเสริมการเลี้ยงสัตว์น้ำ','นักพัฒนาระบบฟาร์มอัจฉริยะ เจ้าหน้าที่ IoT หรือผู้ดูแล Dashboard ประมง','นักพัฒนาผลิตภัณฑ์ประมง เจ้าหน้าที่แปรรูป หรือเจ้าของแบรนด์อาหารประมง','นักวิชาการด้านสัตว์น้ำ นักมีนวิทยา หรือเจ้าหน้าที่ทรัพยากรสัตว์น้ำ','ผู้ประกอบการธุรกิจประมง นักการตลาด หรือผู้วางแผนธุรกิจฟาร์ม'] },
+];
+
+const AT_PROFILES = {
+  CULT: {
+    persona: 'คุณเป็นคนที่เรียนรู้ได้ดีจากการลงมือทำจริง ชอบเห็นสภาพบ่อ เห็นพฤติกรรมปลา และชอบแก้ปัญหาหน้างาน คุณอาจสนุกกับการให้อาหารปลา ตรวจดูน้ำ สังเกตอาการสัตว์น้ำ และคิดว่าจะจัดการฟาร์มอย่างไรให้สัตว์น้ำโตดี แข็งแรง และลดความสูญเสีย',
+    strengths: 'คุณมีแนวโน้มเป็นคนอดทน รับผิดชอบ และมองเห็นปัญหาจากสถานการณ์จริงได้ดี จุดแข็งของคุณคือการเข้าใจหน้างานและพร้อมลงมือแก้ไข คุณเหมาะกับงานที่ต้องดูแลสิ่งมีชีวิตและต้องตัดสินใจจากสภาพจริงในแต่ละวัน',
+    subjects: ['10901101 การปฏิบัติงานฟาร์ม 1','10901102 การปฏิบัติงานฟาร์ม 2','10901103 การปฏิบัติงานฟาร์ม 3','10901104 หลักการเพาะเลี้ยงสัตว์น้ำ','10901108 คุณภาพน้ำสำหรับการเพาะเลี้ยงสัตว์น้ำและการจัดการ','10901105 การเพาะเลี้ยงสัตว์น้ำชายฝั่ง','10901109 โรคและปรสิตสัตว์น้ำ','10901112 การประกอบการฟาร์มเพาะเลี้ยงสัตว์น้ำ','10901504 นวัตกรรมการผลิตสัตว์น้ำระบบปิด'],
+    activities: ['ทดลองเลี้ยงปลาหรือสัตว์น้ำขนาดเล็กและบันทึกข้อมูลการเจริญเติบโต','ทำโปรเจกต์เปรียบเทียบการจัดการน้ำในบ่อเลี้ยง','สำรวจปัญหาในฟาร์มจริงแล้วเสนอแนวทางแก้ไข','ทดลองออกแบบระบบฟาร์มขนาดเล็กที่ดูแลง่ายและลดต้นทุน','ฝึกงานในฟาร์มหรือศูนย์เพาะเลี้ยงสัตว์น้ำ'],
+    careers: ['เจ้าของฟาร์มสัตว์น้ำ','ผู้จัดการฟาร์มปลา','ผู้จัดการฟาร์มกุ้ง','เจ้าหน้าที่ส่งเสริมการเลี้ยงสัตว์น้ำ','นักวิชาการประมงภาคสนาม','เจ้าหน้าที่ดูแลโรงเพาะฟัก','ผู้ประกอบการเพาะเลี้ยงสัตว์น้ำ'],
+    advice: 'ให้ใช้ช่วงปีแรกในการสะสมประสบการณ์จริงให้มากที่สุด ลองถามตัวเองบ่อยๆ ว่า ทำไมวันนี้ปลากินอาหารดี หรือ ทำไมวันนี้น้ำเปลี่ยนไป แล้วฝึกจดบันทึกสิ่งที่เห็น เพราะคนทำฟาร์มที่เก่งไม่ใช่แค่คนที่ขยัน แต่คือคนที่สังเกตเก่ง จัดการข้อมูลได้ และตัดสินใจได้เหมาะสมกับสถานการณ์จริง',
+    tagline: 'ยินดีด้วย คุณคือ CULT ตัวจริง ถ้าเรื่องปลา เรื่องบ่อ เรื่องน้ำ คุณพร้อมลุยแน่นอน',
+    tease: 'เรื่องปลาคุณไม่เป็นสองรองใครแน่ เห็นน้ำขุ่นนิดเดียวก็เริ่มคิดแผนแก้แล้ว',
+  },
+  TECH: {
+    persona: 'คุณเป็นคนที่สนใจเครื่องมือ ระบบ และข้อมูล คุณอาจชอบทดลองใช้เทคโนโลยีใหม่ๆ เช่น Sensor, IoT, AI, Dashboard, ระบบแจ้งเตือนคุณภาพน้ำ หรือระบบฟาร์มอัตโนมัติ คุณเหมาะกับบทบาทที่เชื่อมความรู้ประมงเข้ากับเทคโนโลยีเพื่อช่วยให้การเลี้ยงสัตว์น้ำแม่นยำและทันสมัยมากขึ้น',
+    strengths: 'คุณมีแนวโน้มเป็นคนชอบระบบ ชอบข้อมูล และมองเห็นโอกาสในการใช้เทคโนโลยีแก้ปัญหา จุดแข็งของคุณคือการมองปัญหาฟาร์มในเชิงระบบ เช่น ถ้า DO ต่ำควรแจ้งเตือนอย่างไร หรือถ้าต้องลดความเสี่ยงในฟาร์มจะใช้เครื่องมือใดช่วยตัดสินใจ',
+    subjects: ['10901106 วิศวกรรมการประมง','10901401 นวัตกรรมพื้นฐาน','10901114 วิทยาศาสตร์และเทคโนโลยีการประมงที่นำสมัย','10901108 คุณภาพน้ำสำหรับการเพาะเลี้ยงสัตว์น้ำและการจัดการ','10901504 นวัตกรรมการผลิตสัตว์น้ำระบบปิด','10901503 เทคโนโลยีและนวัตกรรมการผลิตสาหร่ายสไปรูลิน่า','10901208 เทคโนโลยีชีวภาพเบื้องต้นทางการประมง'],
+    activities: ['ทำ Dashboard แสดงค่า DO, pH, อุณหภูมิ หรือความขุ่น','ทดลองใช้ Sensor วัดคุณภาพน้ำ','ทำระบบแจ้งเตือนค่า DO ต่ำผ่าน LINE หรือมือถือ','ออกแบบต้นแบบ Smart Aquaculture ขนาดเล็ก','ทดลองใช้ Google Sheets หรือ Apps Script เก็บข้อมูลฟาร์ม'],
+    careers: ['นักพัฒนาระบบ Smart Aquaculture','เจ้าหน้าที่เทคโนโลยีประมง','ผู้ดูแลระบบ Sensor และ IoT ฟาร์มสัตว์น้ำ','นักวิเคราะห์ข้อมูลด้านประมง','เจ้าหน้าที่ระบบฟาร์มอัจฉริยะ','ผู้ประกอบการ AquaTech','ผู้ช่วยวิจัยด้าน Digital Aquaculture'],
+    advice: 'อย่าเริ่มจากการคิดว่าต้องเขียนโค้ดเก่งก่อน แต่ให้เริ่มจากการเข้าใจปัญหาฟาร์มจริงก่อนว่าเกษตรกรต้องการรู้อะไร ต้องการเตือนเรื่องอะไร และข้อมูลแบบไหนช่วยตัดสินใจได้ เมื่อคุณเข้าใจปัญหาประมงแล้ว เทคโนโลยีจะกลายเป็นเครื่องมือที่มีความหมาย ไม่ใช่แค่ของทันสมัย',
+    tagline: 'ยินดีด้วย คุณคือ TECH ตัวจริง เห็นบ่อปลาแล้วคิดถึง Sensor ก่อนใครเพื่อน',
+    tease: 'นี่แหละเจ้าแม่เทคโนโลยีทางน้ำ หรือเจ้าพ่อระบบแจ้งเตือนประจำบ่อ ปลาอาจยังไม่รู้ตัว แต่คุณเตรียมติด Sensor ให้แล้ว',
+  },
+  PROD: {
+    persona: 'คุณเป็นคนที่มีความคิดสร้างสรรค์ ชอบการทำผลิตภัณฑ์ ชอบคิดเมนู ชอบออกแบบสินค้า หรือสนใจว่าทำอย่างไรให้ปลา กุ้ง หรือสัตว์น้ำชนิดต่างๆ กลายเป็นสินค้าที่น่าสนใจ มีคุณภาพ ปลอดภัย และขายได้จริง',
+    strengths: 'คุณมีแนวโน้มมองเห็นคุณค่าของสิ่งที่คนอื่นอาจมองข้าม เช่น ปลาธรรมดาจะทำให้เป็นผลิตภัณฑ์พรีเมียมได้อย่างไร จุดแข็งของคุณคือความคิดสร้างสรรค์และการมองเห็นโอกาสจากทรัพยากรประมง',
+    subjects: ['10901110 เทคโนโลยีการแปรรูปผลิตภัณฑ์ประมง','10901501 นวัตกรรมการเพิ่มมูลค่าทรัพยากรประมงเพื่อเศรษฐกิจ BCG','10901119 การแปรรูปผลิตภัณฑ์ประมงสมัยใหม่','10901505 การประกอบการผลิตภัณฑ์สัตว์น้ำ','10901107 โภชนศาสตร์และเทคโนโลยีการผลิตอาหารสัตว์น้ำ'],
+    activities: ['พัฒนาผลิตภัณฑ์จากปลา กุ้ง หรือสัตว์น้ำท้องถิ่น','ทดลองทำเมนูหรือสินค้าใหม่จากวัตถุดิบประมง','ออกแบบบรรจุภัณฑ์และฉลากสินค้า','ทดสอบความพึงพอใจของผู้บริโภค','ทำโครงการลดของเหลือทิ้งจากสัตว์น้ำโดยการเพิ่มมูลค่า'],
+    careers: ['นักพัฒนาผลิตภัณฑ์ประมง','เจ้าหน้าที่แปรรูปผลิตภัณฑ์สัตว์น้ำ','เจ้าหน้าที่ควบคุมคุณภาพอาหาร','ผู้ประกอบการผลิตภัณฑ์ประมง','เจ้าของแบรนด์อาหารจากสัตว์น้ำ','เจ้าหน้าที่วิจัยและพัฒนาผลิตภัณฑ์','เจ้าหน้าที่โรงงานแปรรูปอาหารทะเล'],
+    advice: 'ให้ลองมองสัตว์น้ำมากกว่าแค่ปลาในบ่อ แต่ให้มองว่าเป็นวัตถุดิบที่สามารถสร้างคุณค่าใหม่ได้ ฝึกตั้งคำถามว่า ทำอย่างไรให้สินค้านี้อร่อยขึ้น ปลอดภัยขึ้น เก็บได้นานขึ้น ดูน่าซื้อขึ้น และขายได้จริง ถ้าคุณฝึกทั้งด้านวิทยาศาสตร์อาหาร ความคิดสร้างสรรค์ และความเข้าใจผู้บริโภค คุณสามารถต่อยอดสายนี้ได้ไกลมาก',
+    tagline: 'ยินดีด้วย คุณคือ PROD ตัวจริง วัตถุดิบธรรมดาอยู่ในมือคุณเมื่อไหร่ มีโอกาสกลายเป็นสินค้าแน่นอน',
+    tease: 'คนอื่นเห็นปลาแล้วคิดถึงบ่อ แต่คุณเห็นปลาแล้วคิดถึงแพ็กเกจ ฉลาก และราคาขายเรียบร้อยแล้ว',
+  },
+  BIOS: {
+    persona: 'คุณเป็นคนช่างสังเกต สนใจสิ่งมีชีวิต ธรรมชาติ แหล่งน้ำ และระบบนิเวศ คุณอาจชอบดูปลา ดูแพลงก์ตอน สนใจว่าปลาชนิดนี้คืออะไร อาศัยอยู่ที่ไหน กินอะไร มีพฤติกรรมอย่างไร หรือแหล่งน้ำหนึ่งๆ มีความหลากหลายของสิ่งมีชีวิตอย่างไร',
+    strengths: 'คุณมีแนวโน้มเป็นคนละเอียด ชอบสังเกต และสนใจสิ่งที่ซ่อนอยู่ในธรรมชาติ จุดแข็งของคุณคือการมองเห็นความสัมพันธ์ระหว่างสัตว์น้ำกับสิ่งแวดล้อม คุณเหมาะกับงานที่ต้องสำรวจ จำแนก วิเคราะห์ และอธิบายความหลากหลายของทรัพยากรสัตว์น้ำ',
+    subjects: ['10302100 ชีววิทยาทั่วไป','10302230 จุลชีววิทยา','10901201 ชีววิทยาของปลาและนิเวศวิทยาทางน้ำ','10901202 สมุทรศาสตร์เบื้องต้นและการจัดการทรัพยากรชายฝั่ง','10901204 ทรัพยากรสัตว์น้ำและความหลากหลายทางชีวภาพ','10901207 อนุกรมวิธานปลา','10901209 ชีววิทยาประมง','10901206 สรีรวิทยาสัตว์น้ำ','10901205 สัตว์ไม่มีกระดูกสันหลังที่มีความสำคัญทางเศรษฐกิจ','10901301 การอนุรักษ์และจัดการทรัพยากรประมง'],
+    activities: ['สำรวจชนิดปลาในแหล่งน้ำท้องถิ่น','ศึกษาแพลงก์ตอนหรือสิ่งมีชีวิตขนาดเล็กในน้ำ','ทำฐานข้อมูลชนิดสัตว์น้ำ','สำรวจความหลากหลายของสัตว์น้ำในบ่อหรือแหล่งน้ำธรรมชาติ','ศึกษาความสัมพันธ์ระหว่างคุณภาพน้ำกับสิ่งมีชีวิต','ทำกิจกรรมอนุรักษ์ทรัพยากรสัตว์น้ำ'],
+    careers: ['นักมีนวิทยา','นักวิชาการทรัพยากรสัตว์น้ำ','เจ้าหน้าที่อนุรักษ์ทรัพยากรประมง','ผู้ช่วยวิจัยด้านชีววิทยาประมง','เจ้าหน้าที่สำรวจแหล่งน้ำ','เจ้าหน้าที่พิพิธภัณฑ์สัตว์น้ำหรือศูนย์เรียนรู้','นักวิชาการด้านความหลากหลายทางชีวภาพ'],
+    advice: 'ให้ฝึกตั้งคำถามกับสิ่งมีชีวิตรอบตัว เช่น ปลาชนิดนี้ต่างจากอีกชนิดอย่างไร ทำไมแพลงก์ตอนชนิดนี้พบมากในน้ำแบบนี้ หรือ สัตว์น้ำบอกอะไรเกี่ยวกับสุขภาพของแหล่งน้ำได้บ้าง ยิ่งคุณฝึกสังเกตและบันทึกอย่างเป็นระบบ คุณจะยิ่งเข้าใจโลกสัตว์น้ำลึกขึ้น และสามารถต่อยอดไปสู่งานอนุรักษ์ วิจัย หรือการจัดการทรัพยากรได้ดี',
+    tagline: 'ยินดีด้วย คุณคือ BIOS ตัวจริง เห็นสิ่งมีชีวิตในน้ำแล้วต่อมาความสงสัยทำงานทันที',
+    tease: 'คนอื่นเห็นปลาแล้วบอกว่าน่ารัก แต่คุณเริ่มถามแล้วว่า ชนิดอะไร วงศ์ไหน เจอที่ไหน นักสำรวจตัวจริงมาแล้ว',
+  },
+  BIZZ: {
+    persona: 'คุณเป็นคนที่สนใจการวางแผน การขาย การจัดการต้นทุน การสร้างรายได้ และการทำให้ความรู้ประมงกลายเป็นธุรกิจจริง คุณอาจชอบคิดว่าเลี้ยงอะไรถึงคุ้มค่า ขายให้ใคร ตั้งราคาอย่างไร ทำแบรนด์อย่างไร หรือจะพัฒนาฟาร์มและผลิตภัณฑ์ให้แข่งขันในตลาดได้อย่างไร',
+    strengths: 'คุณมีแนวโน้มเป็นคนมองภาพรวม มองเห็นโอกาส และสนใจผลลัพธ์ที่จับต้องได้ จุดแข็งของคุณคือการเชื่อมความรู้หลายด้านเข้าด้วยกัน ทั้งการผลิต คุณภาพ ต้นทุน การตลาด และความต้องการของลูกค้า',
+    subjects: ['10901112 การประกอบการฟาร์มเพาะเลี้ยงสัตว์น้ำ','10901501 นวัตกรรมการเพิ่มมูลค่าทรัพยากรประมงเพื่อเศรษฐกิจ BCG','10901505 การประกอบการผลิตภัณฑ์สัตว์น้ำ','10901308 การตลาดสินค้าประมงสำหรับเจ้าของธุรกิจ','10902232 กฎหมาย ข้อบังคับ และมาตรฐานสากลด้านการประมงและเพาะเลี้ยงสัตว์น้ำ','10200504 การเป็นผู้ประกอบการ','10200505 การตลาดบนสมาร์ทโฟน','10500501 เศรษฐศาสตร์เพื่อชีวิตประจำวันและการประกอบการ'],
+    activities: ['เขียนแผนธุรกิจฟาร์มสัตว์น้ำ','คำนวณต้นทุนการเลี้ยงและจุดคุ้มทุน','ทดลองขายผลิตภัณฑ์ประมงขนาดเล็ก','วิเคราะห์ลูกค้าและตลาดสินค้าประมง','ออกแบบแบรนด์ฟาร์มหรือแบรนด์ผลิตภัณฑ์','ทำโครงการประมงเชิงผู้ประกอบการร่วมกับชุมชน'],
+    careers: ['เจ้าของฟาร์มสัตว์น้ำ','ผู้ประกอบการธุรกิจประมง','นักการตลาดสินค้าประมง','เจ้าของแบรนด์ผลิตภัณฑ์ประมง','ที่ปรึกษาธุรกิจฟาร์มสัตว์น้ำ','เจ้าหน้าที่ส่งเสริมธุรกิจประมง','ผู้จัดการธุรกิจฟาร์ม'],
+    advice: 'ให้ฝึกคิดแบบผู้ประกอบการตั้งแต่ต้น เช่น ต้นทุนคืออะไร ลูกค้าคือใคร สินค้าของเราต่างจากคนอื่นอย่างไร และจะทำอย่างไรให้ธุรกิจประมงอยู่ได้อย่างยั่งยืน คุณไม่จำเป็นต้องเก่งทุกอย่างคนเดียว แต่ควรเข้าใจภาพรวมและรู้ว่าจะเชื่อมคนเก่งด้านต่างๆ เข้าด้วยกันเพื่อสร้างโอกาสใหม่ได้อย่างไร',
+    tagline: 'ยินดีด้วย คุณคือ BIZZ ตัวจริง มองปลาเป็นโอกาส มองตลาดเป็นสนามเล่น',
+    tease: 'เพื่อนยังดูปลาอยู่ แต่คุณคำนวณต้นทุน กำไร และช่องทางขายในหัวเรียบร้อยแล้ว',
+  },
+};
+
+const AT_MIXED = {
+  CULT_TECH: {
+    name: 'นักจัดการฟาร์มอัจฉริยะ',
+    persona: 'คุณเป็นคนที่สนใจทั้งการลงมือทำในฟาร์มจริงและการใช้เทคโนโลยีเข้ามาช่วยจัดการฟาร์ม คุณไม่ได้มองฟาร์มสัตว์น้ำแค่เป็นบ่อเลี้ยงปลา แต่เริ่มมองเห็นว่าข้อมูลจาก Sensor, ระบบแจ้งเตือน, Dashboard หรือ AI สามารถช่วยลดความเสี่ยงและเพิ่มประสิทธิภาพการผลิตได้',
+    strengths: 'คุณมีจุดแข็งตรงที่เข้าใจหน้างานจริงและสนใจเครื่องมือช่วยตัดสินใจไปพร้อมกัน เหมาะกับการเป็นคนกลางระหว่างเกษตรกรกับเทคโนโลยี',
+    subjects: ['10901104 หลักการเพาะเลี้ยงสัตว์น้ำ','10901108 คุณภาพน้ำสำหรับการเพาะเลี้ยงสัตว์น้ำและการจัดการ','10901106 วิศวกรรมการประมง','10901401 นวัตกรรมพื้นฐาน','10901114 วิทยาศาสตร์และเทคโนโลยีการประมงที่นำสมัย','10901504 นวัตกรรมการผลิตสัตว์น้ำระบบปิด'],
+    activities: ['ระบบแจ้งเตือน DO ต่ำในบ่อปลา','Dashboard แสดงคุณภาพน้ำแบบง่าย','ระบบบันทึกข้อมูลการให้อาหารและการเจริญเติบโต','ทดลองใช้ Sensor วัดน้ำแล้ววิเคราะห์แนวโน้ม','ออกแบบต้นแบบฟาร์มสัตว์น้ำอัจฉริยะขนาดเล็ก'],
+    careers: ['ผู้จัดการฟาร์มสัตว์น้ำอัจฉริยะ','เจ้าหน้าที่ระบบ Smart Aquaculture','นักพัฒนาระบบแจ้งเตือนคุณภาพน้ำ','ผู้ประกอบการฟาร์มยุคใหม่','ที่ปรึกษาด้านเทคโนโลยีฟาร์มสัตว์น้ำ'],
+    advice: 'ฝึกทั้งสองด้านไปพร้อมกัน คือ เข้าใจปลาและน้ำ กับ เข้าใจข้อมูลและระบบ อย่าเริ่มจากเทคโนโลยีอย่างเดียว แต่ให้เริ่มจากปัญหาจริง เช่น ปลาเครียด น้ำเสีย หรือให้อาหารไม่เหมาะสม แล้วค่อยคิดว่าเทคโนโลยีจะช่วยแก้ปัญหานั้นได้อย่างไร',
+    tagline: 'ยินดีด้วย คุณคือนักจัดการฟาร์มอัจฉริยะตัวจริง ลงฟาร์มก็ได้ จับเทคโนโลยีก็ดี',
+    tease: 'มือหนึ่งถือสวิง มือหนึ่งถือ Sensor พร้อมลุยทั้งบ่อและระบบ',
+  },
+  CULT_PROD: {
+    name: 'นักผลิตวัตถุดิบคุณภาพสู่ผลิตภัณฑ์ประมง',
+    persona: 'คุณสนใจทั้งการเลี้ยงสัตว์น้ำและการนำผลผลิตไปสร้างมูลค่าเพิ่ม คุณไม่ได้มองปลา กุ้ง หรือสัตว์น้ำเป็นแค่ผลผลิตจากฟาร์ม แต่ยังมองต่อว่าวัตถุดิบที่ดีสามารถกลายเป็นผลิตภัณฑ์ที่มีคุณภาพ ปลอดภัย และน่าสนใจได้',
+    strengths: 'คุณมีจุดแข็งในการเชื่อมต้นน้ำกับปลายน้ำ คุณเข้าใจว่าผลิตภัณฑ์ที่ดีต้องเริ่มจากการเลี้ยงที่ดีและวัตถุดิบที่มีคุณภาพ',
+    subjects: ['10901104 หลักการเพาะเลี้ยงสัตว์น้ำ','10901108 คุณภาพน้ำสำหรับการเพาะเลี้ยงสัตว์น้ำและการจัดการ','10901107 โภชนศาสตร์และเทคโนโลยีการผลิตอาหารสัตว์น้ำ','10901110 เทคโนโลยีการแปรรูปผลิตภัณฑ์ประมง','10901119 การแปรรูปผลิตภัณฑ์ประมงสมัยใหม่','10901501 นวัตกรรมการเพิ่มมูลค่าทรัพยากรประมงเพื่อเศรษฐกิจ BCG'],
+    activities: ['ทดลองเลี้ยงปลาแล้วนำมาพัฒนาผลิตภัณฑ์','เปรียบเทียบคุณภาพเนื้อปลาจากวิธีการเลี้ยงต่างกัน','พัฒนาผลิตภัณฑ์จากปลาท้องถิ่น','ออกแบบสินค้าจากฟาร์มสู่โต๊ะอาหาร','ทำผลิตภัณฑ์ที่ใช้วัตถุดิบจากฟาร์มของนักศึกษาเอง'],
+    careers: ['เจ้าของฟาร์มที่แปรรูปสินค้าเอง','ผู้ประกอบการผลิตภัณฑ์ประมง','นักพัฒนาผลิตภัณฑ์จากสัตว์น้ำ','เจ้าหน้าที่ควบคุมคุณภาพวัตถุดิบ','เจ้าของแบรนด์อาหารประมง'],
+    advice: 'ฝึกคิดแบบครบวงจร ตั้งแต่เลี้ยงอย่างไรให้ได้วัตถุดิบดี ไปจนถึงทำอย่างไรให้วัตถุดิบนั้นกลายเป็นสินค้าที่คนอยากซื้อ ถ้าคุณเข้าใจทั้งฟาร์มและผลิตภัณฑ์ คุณจะมีโอกาสสร้างมูลค่าได้มากกว่าการขายผลผลิตสดเพียงอย่างเดียว',
+    tagline: 'ยินดีด้วย คุณคือสายจากฟาร์มสู่ผลิตภัณฑ์ตัวจริง เลี้ยงให้ดี แล้วต่อยอดให้กลายเป็นสินค้าที่มีคุณค่าได้',
+    tease: 'เลี้ยงปลาไปด้วย คิดเมนูไปด้วย แบบนี้ปลายังไม่ทันโต คุณคิดแพ็กเกจรอแล้ว',
+  },
+  CULT_BIOS: {
+    name: 'นักเพาะเลี้ยงที่เข้าใจธรรมชาติสัตว์น้ำ',
+    persona: 'คุณเป็นคนที่สนใจทั้งการเลี้ยงสัตว์น้ำและชีววิทยาของสิ่งมีชีวิต คุณไม่ได้แค่สนใจว่าจะเลี้ยงอย่างไรให้โต แต่ยังอยากเข้าใจว่าปลาหรือสัตว์น้ำแต่ละชนิดมีพฤติกรรม ความต้องการ และการตอบสนองต่อสิ่งแวดล้อมอย่างไร',
+    strengths: 'คุณมีจุดแข็งด้านการสังเกตสัตว์น้ำในระบบเลี้ยงจริง สามารถเชื่อมโยงพฤติกรรมปลา คุณภาพน้ำ อาหาร สุขภาพ และระบบนิเวศได้ดี เหมาะกับงานเพาะพันธุ์ อนุบาล หรือจัดการสุขภาพสัตว์น้ำ',
+    subjects: ['10901104 หลักการเพาะเลี้ยงสัตว์น้ำ','10901108 คุณภาพน้ำสำหรับการเพาะเลี้ยงสัตว์น้ำและการจัดการ','10901109 โรคและปรสิตสัตว์น้ำ','10901201 ชีววิทยาของปลาและนิเวศวิทยาทางน้ำ','10901207 อนุกรมวิธานปลา','10901206 สรีรวิทยาสัตว์น้ำ','10901204 ทรัพยากรสัตว์น้ำและความหลากหลายทางชีวภาพ'],
+    activities: ['ศึกษาพฤติกรรมการกินอาหารของปลาแต่ละชนิด','ทดลองเปรียบเทียบการเจริญเติบโตในสภาพแวดล้อมต่างกัน','สำรวจสุขภาพปลาในระบบเลี้ยง','ศึกษาความสัมพันธ์ระหว่างคุณภาพน้ำกับพฤติกรรมสัตว์น้ำ','ทดลองอนุบาลลูกปลาโดยใช้ความเข้าใจด้านชีววิทยา'],
+    careers: ['นักวิชาการเพาะเลี้ยงสัตว์น้ำ','เจ้าหน้าที่โรงเพาะฟัก','นักเพาะพันธุ์สัตว์น้ำ','เจ้าหน้าที่สุขภาพสัตว์น้ำ','ผู้ช่วยวิจัยด้านชีววิทยาการเพาะเลี้ยง'],
+    advice: 'ฝึกดูสัตว์น้ำให้มากกว่าการมองว่าโตหรือไม่โต แต่ให้ถามว่าทำไมมันถึงโต ทำไมมันถึงไม่กินอาหาร หรือพฤติกรรมนี้บอกอะไรเรา หากคุณฝึกเชื่อมความรู้ด้านฟาร์มกับชีววิทยา คุณจะเข้าใจสัตว์น้ำในระดับที่ลึกและจัดการฟาร์มได้แม่นยำขึ้น',
+    tagline: 'ยินดีด้วย คุณคือนักเพาะเลี้ยงสายเข้าใจสัตว์น้ำตัวจริง ไม่ได้สนใจแค่ว่าปลาโตไหม แต่ยังอยากรู้ว่าทำไมมันถึงโต',
+    tease: 'คนอื่นดูปลาว่าว่ายน้ำ แต่คุณดูออกว่าอารมณ์ปลาเริ่มไม่ปกติแล้ว',
+  },
+  CULT_BIZZ: {
+    name: 'ผู้ประกอบการฟาร์มสัตว์น้ำ',
+    persona: 'คุณสนใจทั้งการเลี้ยงสัตว์น้ำจริงและการทำให้ฟาร์มกลายเป็นธุรกิจที่อยู่ได้ คุณไม่ได้มองฟาร์มเป็นเพียงสถานที่ผลิตสัตว์น้ำ แต่ยังมองเรื่องต้นทุน รายได้ ความเสี่ยง ลูกค้า และการวางแผนฟาร์มในระยะยาว',
+    strengths: 'คุณมีจุดแข็งในการมองฟาร์มทั้งในฐานะระบบการผลิตและระบบธุรกิจ เหมาะกับบทบาทผู้จัดการฟาร์ม เจ้าของฟาร์ม หรือผู้ประกอบการที่ต้องตัดสินใจทั้งเรื่องการเลี้ยงและเรื่องเงิน',
+    subjects: ['10901104 หลักการเพาะเลี้ยงสัตว์น้ำ','10901108 คุณภาพน้ำสำหรับการเพาะเลี้ยงสัตว์น้ำและการจัดการ','10901112 การประกอบการฟาร์มเพาะเลี้ยงสัตว์น้ำ','10901502 การเป็นผู้ประกอบการการผลิตปลานิลแปลงเพศ','10901308 การตลาดสินค้าประมงสำหรับเจ้าของธุรกิจ','10902232 กฎหมาย ข้อบังคับ และมาตรฐานสากลด้านการประมงและเพาะเลี้ยงสัตว์น้ำ'],
+    activities: ['เขียนแผนธุรกิจฟาร์มสัตว์น้ำ','คำนวณต้นทุนการเลี้ยงปลา 1 รุ่น','วิเคราะห์จุดคุ้มทุนของฟาร์ม','ออกแบบฟาร์มขนาดเล็กที่ขายได้จริง','ทดลองขายผลผลิตจากกิจกรรมเลี้ยงสัตว์น้ำ'],
+    careers: ['เจ้าของฟาร์มสัตว์น้ำ','ผู้จัดการฟาร์ม','ผู้ประกอบการเพาะเลี้ยงสัตว์น้ำ','ที่ปรึกษาธุรกิจฟาร์ม','เจ้าหน้าที่ส่งเสริมฟาร์มเชิงธุรกิจ'],
+    advice: 'ฝึกคิดเรื่องฟาร์มควบคู่กับตัวเลขเสมอ เช่น ต้นทุนอาหาร ค่าไฟ ค่าลูกพันธุ์ อัตรารอด และราคาขาย เพราะฟาร์มที่ดีไม่ใช่แค่เลี้ยงได้ แต่ต้องอยู่รอดทางธุรกิจด้วย ถ้าคุณฝึกคิดแบบนี้ตั้งแต่เรียน คุณจะเข้าใจฟาร์มในมุมที่ลึกกว่าการผลิตอย่างเดียว',
+    tagline: 'ยินดีด้วย คุณคือผู้ประกอบการฟาร์มสัตว์น้ำตัวจริง มองเห็นทั้งปลา บ่อ ต้นทุน และโอกาสในการขาย',
+    tease: 'ให้อาหารปลาไป คำนวณกำไรต่อรุ่นไป นี่แหละสายฟาร์มที่มีวิญญาณนักธุรกิจ',
+  },
+  TECH_PROD: {
+    name: 'นักพัฒนาผลิตภัณฑ์ประมงด้วยเทคโนโลยี',
+    persona: 'คุณสนใจทั้งเทคโนโลยีและการสร้างผลิตภัณฑ์ คุณอาจชอบคิดว่าระบบข้อมูล เครื่องมือ หรือเทคโนโลยีสามารถช่วยให้ผลิตภัณฑ์ประมงมีคุณภาพ ปลอดภัย ตรวจสอบย้อนกลับได้ หรือขายได้ดีขึ้นอย่างไร',
+    strengths: 'คุณมีจุดแข็งในการเชื่อมระบบเทคโนโลยีกับการพัฒนาสินค้า เช่น การควบคุมคุณภาพ การเก็บข้อมูลการผลิต การออกแบบฉลากดิจิทัล หรือการตรวจสอบย้อนกลับจากฟาร์มถึงผู้บริโภค',
+    subjects: ['10901110 เทคโนโลยีการแปรรูปผลิตภัณฑ์ประมง','10901501 นวัตกรรมการเพิ่มมูลค่าทรัพยากรประมงเพื่อเศรษฐกิจ BCG','10901114 วิทยาศาสตร์และเทคโนโลยีการประมงที่นำสมัย','10901401 นวัตกรรมพื้นฐาน','10901106 วิศวกรรมการประมง','10901119 การแปรรูปผลิตภัณฑ์ประมงสมัยใหม่'],
+    activities: ['ระบบ QR Code ตรวจสอบย้อนกลับผลิตภัณฑ์ปลา','Dashboard ควบคุมคุณภาพวัตถุดิบก่อนแปรรูป','ออกแบบฉลากผลิตภัณฑ์พร้อมข้อมูลแหล่งที่มา','ทดลองพัฒนาสินค้าประมงพร้อมข้อมูลคุณภาพ','ใช้ Google Sheets เก็บข้อมูลการผลิตและต้นทุนสินค้า'],
+    careers: ['นักพัฒนาผลิตภัณฑ์ที่ใช้ข้อมูลสนับสนุน','เจ้าหน้าที่ควบคุมคุณภาพผลิตภัณฑ์','ผู้พัฒนาระบบตรวจสอบย้อนกลับ','เจ้าหน้าที่ R&D ผลิตภัณฑ์อาหาร','ผู้ประกอบการผลิตภัณฑ์ประมงยุคดิจิทัล'],
+    advice: 'ฝึกคิดว่าสินค้าประมงในอนาคตไม่ได้ขายแค่รสชาติหรือราคา แต่ขายความมั่นใจด้วย เช่น แหล่งที่มา ความปลอดภัย คุณภาพ และข้อมูลการผลิต หากคุณใช้เทคโนโลยีมาช่วยสร้างความน่าเชื่อถือให้ผลิตภัณฑ์ได้ คุณจะมีจุดเด่นมากในตลาดอาหารยุคใหม่',
+    tagline: 'ยินดีด้วย คุณคือนักพัฒนาผลิตภัณฑ์ประมงยุคดิจิทัลตัวจริง สนใจทั้งการสร้างสินค้าและการใช้เทคโนโลยีเพิ่มคุณภาพ',
+    tease: 'คนอื่นทำฉลากธรรมดา แต่คุณคิด QR Code ตรวจสอบย้อนกลับไว้แล้ว',
+  },
+  TECH_BIOS: {
+    name: 'นักสำรวจข้อมูลโลกสัตว์น้ำ',
+    persona: 'คุณสนใจทั้งเทคโนโลยีและชีววิทยาประมง คุณอาจชอบใช้เครื่องมือ ข้อมูล หรือระบบดิจิทัลเพื่อศึกษาสิ่งมีชีวิต แหล่งน้ำ คุณภาพน้ำ และระบบนิเวศ',
+    strengths: 'คุณมีจุดแข็งในการใช้เทคโนโลยีช่วยมองเห็นสิ่งที่ซ่อนอยู่ในธรรมชาติ เช่น การเก็บข้อมูลคุณภาพน้ำ การสำรวจความหลากหลายทางชีวภาพ หรือการวิเคราะห์ข้อมูลจากแหล่งน้ำ',
+    subjects: ['10901201 ชีววิทยาของปลาและนิเวศวิทยาทางน้ำ','10901204 ทรัพยากรสัตว์น้ำและความหลากหลายทางชีวภาพ','10901207 อนุกรมวิธานปลา','10901301 การอนุรักษ์และจัดการทรัพยากรประมง','10901108 คุณภาพน้ำสำหรับการเพาะเลี้ยงสัตว์น้ำและการจัดการ','10901114 วิทยาศาสตร์และเทคโนโลยีการประมงที่นำสมัย','10901401 นวัตกรรมพื้นฐาน'],
+    activities: ['ทำฐานข้อมูลชนิดปลาในแหล่งน้ำ','ใช้ Google Forms หรือ Sheets เก็บข้อมูลสำรวจสัตว์น้ำ','วิเคราะห์ความสัมพันธ์ระหว่างคุณภาพน้ำกับชนิดสิ่งมีชีวิต','ทำแผนที่จุดพบสัตว์น้ำหรือแพลงก์ตอน','ใช้ Sensor เก็บข้อมูลแหล่งน้ำร่วมกับการสำรวจสิ่งมีชีวิต'],
+    careers: ['นักสำรวจทรัพยากรสัตว์น้ำ','นักวิเคราะห์ข้อมูลสิ่งแวดล้อมทางน้ำ','ผู้ช่วยวิจัยด้านชีววิทยาและเทคโนโลยีประมง','เจ้าหน้าที่ฐานข้อมูลทรัพยากรประมง','เจ้าหน้าที่ติดตามคุณภาพแหล่งน้ำ'],
+    advice: 'ฝึกทั้งการสังเกตธรรมชาติและการจัดการข้อมูล เพราะข้อมูลที่ดีช่วยให้การสำรวจมีน้ำหนักมากขึ้น ลองเริ่มจากการสำรวจสิ่งมีชีวิตง่ายๆ แล้วเก็บข้อมูลให้เป็นระบบ เมื่อคุณรวมทักษะชีววิทยากับเทคโนโลยีได้ คุณจะเข้าใจแหล่งน้ำได้ลึกและแม่นยำขึ้น',
+    tagline: 'ยินดีด้วย คุณคือนักสำรวจข้อมูลโลกสัตว์น้ำตัวจริง ชอบทั้งสิ่งมีชีวิตและเทคโนโลยี',
+    tease: 'เห็นแพลงก์ตอนหนึ่งหยดน้ำ คุณก็พร้อมเปิดตารางข้อมูลแล้ว',
+  },
+  TECH_BIZZ: {
+    name: 'นักธุรกิจ AquaTech',
+    persona: 'คุณสนใจทั้งเทคโนโลยีและธุรกิจประมง คุณอาจมองเห็นว่า Sensor, Dashboard, AI หรือระบบแจ้งเตือน ไม่ได้เป็นแค่เครื่องมือในฟาร์ม แต่สามารถพัฒนาเป็นบริการหรือธุรกิจที่ช่วยเกษตรกรได้จริง',
+    strengths: 'คุณมีจุดแข็งด้านการมองเทคโนโลยีในเชิงธุรกิจ คุณไม่ได้ถามแค่ว่าระบบทำงานได้ไหม แต่ถามต่อว่าใครจะใช้ ช่วยลดต้นทุนได้อย่างไร ขายให้ใคร และทำให้เกษตรกรยอมใช้ได้อย่างไร',
+    subjects: ['10901106 วิศวกรรมการประมง','10901401 นวัตกรรมพื้นฐาน','10901114 วิทยาศาสตร์และเทคโนโลยีการประมงที่นำสมัย','10901504 นวัตกรรมการผลิตสัตว์น้ำระบบปิด','10901112 การประกอบการฟาร์มเพาะเลี้ยงสัตว์น้ำ','10901308 การตลาดสินค้าประมงสำหรับเจ้าของธุรกิจ','10200504 การเป็นผู้ประกอบการ'],
+    activities: ['เขียนแผนธุรกิจระบบแจ้งเตือนคุณภาพน้ำ','ทำต้นแบบบริการ Dashboard สำหรับฟาร์มปลา','วิเคราะห์ว่าระบบ Sensor ช่วยลดต้นทุนได้อย่างไร','ทดลองนำเสนอไอเดีย AquaTech ให้เกษตรกร','ทำแบบจำลองแพ็กเกจบริการเทคโนโลยีฟาร์ม'],
+    careers: ['ผู้ประกอบการ AquaTech','นักพัฒนาธุรกิจเทคโนโลยีประมง','เจ้าหน้าที่ขายระบบ Smart Farm','ที่ปรึกษาระบบฟาร์มอัจฉริยะ','Product Manager ด้านเทคโนโลยีเกษตร/ประมง'],
+    advice: 'ฝึกคิดให้ครบทั้งใช้ได้จริงและขายได้จริง เทคโนโลยีที่ดีต้องตอบโจทย์ผู้ใช้ ไม่ใช่แค่ดูทันสมัย ลองคุยกับเกษตรกรจริง ดูว่าปัญหาอะไรที่เขายอมจ่ายเพื่อแก้ แล้วค่อยพัฒนาระบบให้ตรงกับความต้องการนั้น',
+    tagline: 'ยินดีด้วย คุณคือนักธุรกิจ AquaTech ตัวจริง มองเทคโนโลยีประมงเป็นมากกว่าเครื่องมือ แต่เห็นโอกาสทางธุรกิจ',
+    tease: 'ยังไม่ทันติด Sensor คุณคิดแพ็กเกจรายเดือนให้ฟาร์มเรียบร้อยแล้ว',
+  },
+  PROD_BIOS: {
+    name: 'นักพัฒนาผลิตภัณฑ์จากความเข้าใจสัตว์น้ำ',
+    persona: 'คุณสนใจทั้งผลิตภัณฑ์ประมงและชีววิทยาของสัตว์น้ำ คุณอาจชอบคิดว่าสัตว์น้ำแต่ละชนิดมีลักษณะเฉพาะอย่างไร เนื้อสัมผัส รสชาติ คุณค่าทางอาหาร หรือแหล่งที่มา สามารถนำไปพัฒนาเป็นผลิตภัณฑ์ที่แตกต่างได้อย่างไร',
+    strengths: 'คุณมีจุดแข็งในการเข้าใจวัตถุดิบอย่างลึกซึ้ง ไม่ได้มองปลาเป็นแค่ปลา แต่เห็นความแตกต่างของชนิด แหล่งที่มา คุณภาพ และคุณสมบัติที่นำไปใช้สร้างผลิตภัณฑ์ได้',
+    subjects: ['10901110 เทคโนโลยีการแปรรูปผลิตภัณฑ์ประมง','10901119 การแปรรูปผลิตภัณฑ์ประมงสมัยใหม่','10901501 นวัตกรรมการเพิ่มมูลค่าทรัพยากรประมงเพื่อเศรษฐกิจ BCG','10901201 ชีววิทยาของปลาและนิเวศวิทยาทางน้ำ','10901207 อนุกรมวิธานปลา','10901204 ทรัพยากรสัตว์น้ำและความหลากหลายทางชีวภาพ','10901205 สัตว์ไม่มีกระดูกสันหลังที่มีความสำคัญทางเศรษฐกิจ'],
+    activities: ['พัฒนาผลิตภัณฑ์จากสัตว์น้ำท้องถิ่น','เปรียบเทียบคุณภาพเนื้อสัตว์น้ำต่างชนิด','ทำผลิตภัณฑ์จากสัตว์น้ำเศรษฐกิจหรือสัตว์น้ำพื้นถิ่น','ศึกษาความสัมพันธ์ระหว่างชนิดสัตว์น้ำกับรูปแบบผลิตภัณฑ์','พัฒนาสินค้าที่เล่าเรื่องแหล่งที่มาของวัตถุดิบ'],
+    careers: ['นักพัฒนาผลิตภัณฑ์จากวัตถุดิบสัตว์น้ำ','เจ้าหน้าที่ R&D อาหารประมง','ผู้ประกอบการผลิตภัณฑ์สัตว์น้ำท้องถิ่น','เจ้าหน้าที่ควบคุมคุณภาพวัตถุดิบ','นักพัฒนาสินค้าจากทรัพยากรชีวภาพ'],
+    advice: 'ฝึกมองวัตถุดิบให้ลึกกว่าหน้าตา เช่น ชนิด แหล่งที่มา คุณภาพ เนื้อสัมผัส และเรื่องราวของสัตว์น้ำ เพราะผลิตภัณฑ์ที่ดีไม่ใช่แค่อร่อย แต่ต้องมีเอกลักษณ์ หากคุณเข้าใจชีววิทยาของวัตถุดิบ คุณจะสร้างผลิตภัณฑ์ที่มีความแตกต่างได้มากขึ้น',
+    tagline: 'ยินดีด้วย คุณคือนักพัฒนาผลิตภัณฑ์สายเข้าใจวัตถุดิบตัวจริง ไม่ได้มองสัตว์น้ำเป็นแค่วัตถุดิบ แต่สนใจชนิดและคุณสมบัติเพื่อสร้างผลิตภัณฑ์ที่มีเอกลักษณ์',
+    tease: 'คนอื่นถามว่าอร่อยไหม แต่คุณถามต่อว่าเนื้อสัมผัสมาจากชนิดปลาและแหล่งที่มาแบบไหน',
+  },
+  PROD_BIZZ: {
+    name: 'นักสร้างแบรนด์ผลิตภัณฑ์ประมง',
+    persona: 'คุณสนใจทั้งการสร้างผลิตภัณฑ์และการทำธุรกิจ คุณไม่ได้หยุดแค่การทำสินค้าให้อร่อยหรือดูดี แต่สนใจต่อว่าสินค้านั้นจะขายให้ใคร ตั้งราคาอย่างไร ทำแบรนด์อย่างไร และสร้างรายได้อย่างยั่งยืนได้อย่างไร',
+    strengths: 'คุณมีจุดแข็งด้านความคิดสร้างสรรค์และการมองตลาด เหมาะกับการพัฒนาสินค้าที่มีทั้งคุณภาพ ความน่าสนใจ และแผนการขายที่ชัดเจน',
+    subjects: ['10901110 เทคโนโลยีการแปรรูปผลิตภัณฑ์ประมง','10901501 นวัตกรรมการเพิ่มมูลค่าทรัพยากรประมงเพื่อเศรษฐกิจ BCG','10901119 การแปรรูปผลิตภัณฑ์ประมงสมัยใหม่','10901505 การประกอบการผลิตภัณฑ์สัตว์น้ำ','10901308 การตลาดสินค้าประมงสำหรับเจ้าของธุรกิจ','10200504 การเป็นผู้ประกอบการ','10200505 การตลาดบนสมาร์ทโฟน'],
+    activities: ['สร้างแบรนด์ผลิตภัณฑ์จากปลา','ทดลองขายสินค้าประมงในกิจกรรมคณะ','ออกแบบบรรจุภัณฑ์และแผนการตลาด','วิเคราะห์กลุ่มลูกค้าและช่องทางขาย','ทำแผนธุรกิจผลิตภัณฑ์ประมงขนาดเล็ก','คำนวณต้นทุน กำไร และราคาขาย'],
+    careers: ['เจ้าของแบรนด์ผลิตภัณฑ์ประมง','ผู้ประกอบการอาหารประมง','นักพัฒนาผลิตภัณฑ์เชิงธุรกิจ','นักการตลาดสินค้าประมง','ผู้จัดการผลิตภัณฑ์อาหารประมง'],
+    advice: 'ฝึกคิดตั้งแต่สินค้าไปจนถึงลูกค้า สินค้าที่ดีต้องตอบทั้งเรื่องคุณภาพ ความปลอดภัย ราคา และความน่าสนใจ ลองเริ่มจากผลิตภัณฑ์ง่ายๆ แล้วถามตัวเองว่าใครคือลูกค้า ทำไมเขาต้องซื้อ และอะไรทำให้สินค้าของเราแตกต่างจากคนอื่น',
+    tagline: 'ยินดีด้วย คุณคือนักสร้างแบรนด์ผลิตภัณฑ์ประมงตัวจริง มีทั้งความคิดสร้างสรรค์และมุมมองทางธุรกิจ',
+    tease: 'สินค้าเพิ่งเริ่มทดลอง แต่คุณคิดชื่อแบรนด์ สโลแกน และช่องทางขายไว้หมดแล้ว',
+  },
+  BIOS_BIZZ: {
+    name: 'นักจัดการทรัพยากรสัตว์น้ำเชิงคุณค่า',
+    persona: 'คุณสนใจทั้งชีววิทยาประมงและธุรกิจ คุณอาจมองเห็นว่าความรู้เรื่องสัตว์น้ำ ความหลากหลายทางชีวภาพ และแหล่งน้ำ สามารถนำไปต่อยอดเป็นกิจกรรม ศูนย์เรียนรู้ การท่องเที่ยวเชิงอนุรักษ์ หรือธุรกิจที่ใช้ทรัพยากรอย่างยั่งยืนได้',
+    strengths: 'คุณมีจุดแข็งในการเชื่อมความรู้ธรรมชาติกับการสร้างคุณค่า คุณไม่ได้มองทรัพยากรสัตว์น้ำแค่ในเชิงวิชาการ แต่ยังมองว่าความรู้เหล่านี้สามารถสร้างประโยชน์ให้ชุมชน เศรษฐกิจ และการอนุรักษ์ได้',
+    subjects: ['10901201 ชีววิทยาของปลาและนิเวศวิทยาทางน้ำ','10901204 ทรัพยากรสัตว์น้ำและความหลากหลายทางชีวภาพ','10901301 การอนุรักษ์และจัดการทรัพยากรประมง','10901202 สมุทรศาสตร์เบื้องต้นและการจัดการทรัพยากรชายฝั่ง','10901308 การตลาดสินค้าประมงสำหรับเจ้าของธุรกิจ','10902232 กฎหมาย ข้อบังคับ และมาตรฐานสากลด้านการประมงและเพาะเลี้ยงสัตว์น้ำ','10200504 การเป็นผู้ประกอบการ'],
+    activities: ['ออกแบบศูนย์เรียนรู้สัตว์น้ำท้องถิ่น','พัฒนาเส้นทางเรียนรู้แหล่งน้ำชุมชน','ทำฐานข้อมูลสัตว์น้ำเพื่อสนับสนุนการท่องเที่ยวเชิงอนุรักษ์','ออกแบบธุรกิจที่ใช้ทรัพยากรสัตว์น้ำอย่างยั่งยืน','ทำโครงการประมงชุมชนเชิงอนุรักษ์และสร้างรายได้'],
+    careers: ['นักวิชาการทรัพยากรสัตว์น้ำ','ผู้ประกอบการศูนย์เรียนรู้สัตว์น้ำ','เจ้าหน้าที่อนุรักษ์ทรัพยากรประมง','ผู้จัดกิจกรรมท่องเที่ยวเชิงอนุรักษ์ทางน้ำ','เจ้าหน้าที่พัฒนาธุรกิจชุมชนประมง','ที่ปรึกษาโครงการทรัพยากรน้ำและชุมชน'],
+    advice: 'ฝึกคิดเรื่องการใช้ประโยชน์อย่างรับผิดชอบ เพราะทรัพยากรสัตว์น้ำมีทั้งคุณค่าทางธรรมชาติและคุณค่าทางเศรษฐกิจ หากคุณเข้าใจชีววิทยาและคิดธุรกิจอย่างรอบคอบ คุณจะช่วยสร้างรูปแบบการใช้ทรัพยากรที่ไม่ทำลายธรรมชาติ และยังสร้างประโยชน์ให้คนในพื้นที่ได้',
+    tagline: 'ยินดีด้วย คุณคือนักจัดการทรัพยากรสัตว์น้ำเชิงคุณค่าตัวจริง เชื่อมความรู้ด้านชีววิทยา ชุมชน และธุรกิจเข้าด้วยกัน',
+    tease: 'คนอื่นเห็นแหล่งน้ำแล้วชมว่าสวย แต่คุณเริ่มคิดเป็นศูนย์เรียนรู้ เส้นทางท่องเที่ยว และโมเดลธุรกิจชุมชนแล้ว',
+  },
+};
+
+const ATS = {
+  step: 0,       // 0=profile 1-20=questions
+  answers: [],   // index 0-19, each = type index 0-4
+  profile: {},
+};
+
+function initAquaType() {
+  ATS.step = 0; ATS.answers = new Array(20).fill(-1); ATS.profile = {};
+  _atShowPanel('profile');
+  showScreen('aquatype');
+}
+
+function exitAquaType() { showScreen('landing'); }
+function atRetake()     { initAquaType(); }
+
+function atStartQuiz() {
+  const fn = document.getElementById('at-fullname').value.trim();
+  const nn = document.getElementById('at-nickname').value.trim();
+  const si = document.getElementById('at-studentid').value.trim();
+  if (!fn || !nn || !si) { notify('กรุณากรอกชื่อ ชื่อเล่น และรหัสนักศึกษา', 'error'); return; }
+  ATS.profile = {
+    fullName: fn, nickname: nn, studentId: si,
+    program: document.getElementById('at-program').value,
+    year: document.getElementById('at-year').value,
+    province: document.getElementById('at-province').value.trim(),
+  };
+  ATS.step = 1;
+  _atShowPanel('quiz');
+  _atRenderQuestion();
+}
+
+function atPrev() {
+  if (ATS.step <= 1) return;
+  ATS.step--;
+  _atRenderQuestion();
+}
+
+function atNext() {
+  if (ATS.answers[ATS.step - 1] === -1) { notify('กรุณาเลือกคำตอบก่อน', 'error'); return; }
+  if (ATS.step >= 20) { atSubmit(); return; }
+  ATS.step++;
+  _atRenderQuestion();
+}
+
+function atSelect(optIdx) {
+  ATS.answers[ATS.step - 1] = optIdx;
+  document.querySelectorAll('.at-opt-btn').forEach((b, i) => {
+    b.classList.toggle('at-selected', i === optIdx);
+  });
+}
+
+function _atRenderQuestion() {
+  const step = ATS.step;
+  const q    = AT_QUESTIONS[step - 1];
+  const LETTERS = ['A','B','C','D','E'];
+  document.getElementById('at-progress-fill').style.width = ((step - 1) / 20 * 100) + '%';
+  document.getElementById('at-q-num').textContent = 'ข้อ ' + step + ' / 20';
+  document.getElementById('at-q-text').textContent = q.q;
+  const saved = ATS.answers[step - 1];
+  document.getElementById('at-opts').innerHTML = q.opts.map((txt, i) => `
+    <button class="at-opt-btn${saved === i ? ' at-selected' : ''}" onclick="atSelect(${i})">
+      <span class="at-opt-letter">${LETTERS[i]}</span>${escHtml(txt)}
+    </button>`).join('');
+  document.getElementById('at-btn-prev').style.visibility = step > 1 ? 'visible' : 'hidden';
+  document.getElementById('at-btn-next').textContent = step < 20 ? 'ถัดไป' : 'ดูผลลัพธ์';
+  document.getElementById('at-step-label').textContent = step + '/20';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function _atMixedKey(a, b) {
+  var order = {CULT:0,TECH:1,PROD:2,BIOS:3,BIZZ:4};
+  return order[a] < order[b] ? a+'_'+b : b+'_'+a;
+}
+
+function atSubmit() {
+  const scores = {CULT:0, TECH:0, PROD:0, BIOS:0, BIZZ:0};
+  ATS.answers.forEach(idx => { if (idx >= 0) scores[AT_KEYS[idx]]++; });
+  const sorted = AT_KEYS.slice().sort((a,b) => scores[b] - scores[a]);
+  const top    = sorted[0];
+  const second = sorted[1];
+  const isMixed = (scores[top] - scores[second]) <= 2;
+  const mixedKey = isMixed ? _atMixedKey(top, second) : null;
+  _atShowPanel('result');
+  _atRenderResult(scores, top, second, isMixed, mixedKey);
+  const payload = {
+    action:          'submitAquaType',
+    ...ATS.profile,
+    topType:         top,
+    topTypeName:     AT_NAMES[top],
+    topTypeGroup:    AT_GROUPS[top],
+    secondType:      second,
+    secondTypeName:  AT_NAMES[second],
+    secondTypeGroup: AT_GROUPS[second],
+    cultScore:  scores.CULT,
+    techScore:  scores.TECH,
+    prodScore:  scores.PROD,
+    biosScore:  scores.BIOS,
+    bizzScore:  scores.BIZZ,
+    answers:    ATS.answers.join(','),
+  };
+  apiPost(payload).catch(() => {});
+}
+
+function _atRenderResult(scores, top, second, isMixed, mixedKey) {
+  const maxScore = 20;
+  const barsHTML = AT_KEYS.map(k => {
+    const pct = Math.round(scores[k] / maxScore * 100);
+    return `<div class="at-score-row">
+      <div class="at-score-label" style="font-size:.7rem">${k} — ${AT_NAMES[k]}</div>
+      <div class="at-score-bar-bg"><div class="at-score-bar-fill" style="width:${pct}%;background:${AT_COLORS[k]}"></div></div>
+      <div class="at-score-num">${scores[k]}</div>
+    </div>`;
+  }).join('');
+
+  var heroHTML, infoHTML;
+  var mixed = (isMixed && mixedKey) ? AT_MIXED[mixedKey] : null;
+
+  if (mixed) {
+    heroHTML = `
+      <div class="at-result-hero">
+        <div class="text-sm text-gray mb4">ผลลัพธ์ของคุณ — สายผสม</div>
+        <div style="display:flex;justify-content:center;gap:8px;margin-bottom:6px">
+          <span class="pixel-font" style="font-size:1.1rem;color:${AT_COLORS[top]}">${top}</span>
+          <span class="pixel-font" style="font-size:1.1rem;color:rgba(255,255,255,.4)">+</span>
+          <span class="pixel-font" style="font-size:1.1rem;color:${AT_COLORS[second]}">${second}</span>
+        </div>
+        <div class="at-result-type-name" style="color:${AT_COLORS[top]}">${mixed.name}</div>
+        <div class="text-sm" style="color:rgba(255,255,255,.5);margin-bottom:12px">${AT_GROUPS[top]} x ${AT_GROUPS[second]}</div>
+        <div class="at-tagline">${escHtml(mixed.tagline)}</div>
+        <div class="at-tease">${escHtml(mixed.tease)}</div>
+      </div>`;
+    infoHTML = `
+      <div class="at-info-block">
+        <div class="at-info-title">ความหมายของสายผสม</div>
+        <div class="at-info-content">${mixed.persona}</div>
+      </div>
+      <div class="at-info-block">
+        <div class="at-info-title">จุดเด่น</div>
+        <div class="at-info-content">${mixed.strengths}</div>
+      </div>
+      <div class="at-info-block">
+        <div class="at-info-title">กิจกรรมที่น่าลอง</div>
+        <div class="at-info-content">${mixed.activities.map(function(a){return '<div style="padding:2px 0">- '+escHtml(a)+'</div>';}).join('')}</div>
+      </div>
+      <div class="at-info-block">
+        <div class="at-info-title">รายวิชาที่เหมาะ</div>
+        <div class="at-info-content at-subjects-list">${mixed.subjects.map(function(s){return '<div style="padding:2px 0;font-size:.8rem">'+escHtml(s)+'</div>';}).join('')}</div>
+      </div>
+      <div class="at-info-block">
+        <div class="at-info-title">อาชีพในอนาคต</div>
+        <div class="at-info-content">${mixed.careers.map(function(c){return '<div style="padding:2px 0">- '+escHtml(c)+'</div>';}).join('')}</div>
+      </div>
+      <div class="at-info-block" style="border-left:3px solid ${AT_COLORS[top]}">
+        <div class="at-info-title">คำแนะนำถึงคุณ</div>
+        <div class="at-info-content">${escHtml(mixed.advice)}</div>
+      </div>`;
+  } else {
+    const p = AT_PROFILES[top];
+    heroHTML = `
+      <div class="at-result-hero">
+        <div class="text-sm text-gray mb4">ผลลัพธ์ของคุณ</div>
+        <div class="pixel-font" style="font-size:1.6rem;color:${AT_COLORS[top]};letter-spacing:.1em">${top}</div>
+        <div class="at-result-type-name" style="color:${AT_COLORS[top]}">${AT_NAMES[top]}</div>
+        <div class="text-sm" style="color:rgba(255,255,255,.5);margin-bottom:12px">${AT_GROUPS[top]}</div>
+        <div class="at-tagline">${escHtml(p.tagline)}</div>
+        <div class="at-tease">${escHtml(p.tease)}</div>
+        <div class="at-second-badge" style="margin-top:12px">รองลงมา: ${second} — ${AT_NAMES[second]}</div>
+      </div>`;
+    infoHTML = `
+      <div class="at-info-block">
+        <div class="at-info-title">บุคลิกของคุณ</div>
+        <div class="at-info-content">${escHtml(p.persona)}</div>
+      </div>
+      <div class="at-info-block">
+        <div class="at-info-title">จุดเด่น</div>
+        <div class="at-info-content">${escHtml(p.strengths)}</div>
+      </div>
+      <div class="at-info-block">
+        <div class="at-info-title">กิจกรรมที่น่าลอง</div>
+        <div class="at-info-content">${p.activities.map(function(a){return '<div style="padding:2px 0">- '+escHtml(a)+'</div>';}).join('')}</div>
+      </div>
+      <div class="at-info-block">
+        <div class="at-info-title">รายวิชาที่เหมาะ</div>
+        <div class="at-info-content at-subjects-list">${p.subjects.map(function(s){return '<div style="padding:2px 0;font-size:.8rem">'+escHtml(s)+'</div>';}).join('')}</div>
+      </div>
+      <div class="at-info-block">
+        <div class="at-info-title">อาชีพในอนาคต</div>
+        <div class="at-info-content">${p.careers.map(function(c){return '<div style="padding:2px 0">- '+escHtml(c)+'</div>';}).join('')}</div>
+      </div>
+      <div class="at-info-block" style="border-left:3px solid ${AT_COLORS[top]}">
+        <div class="at-info-title">คำแนะนำถึงคุณ</div>
+        <div class="at-info-content">${escHtml(p.advice)}</div>
+      </div>`;
+  }
+
+  const closingHTML = `
+    <div class="px-box mt12" style="text-align:center;padding:20px;font-size:.85rem;line-height:1.8;color:rgba(255,255,255,.7)">
+      ผลลัพธ์นี้ไม่ได้บอกว่าคุณเป็นได้เพียงสายเดียว แต่ช่วยให้คุณเห็นแนวโน้มความสนใจของตัวเองมากขึ้น<br>
+      โลกประมงจริงไม่ได้แยกเป็นเส้นตรง กลุ่มเพาะเลี้ยงต้องเข้าใจคุณภาพน้ำและธุรกิจ<br>
+      กลุ่มเทคโนโลยีต้องเข้าใจปัญหาฟาร์มจริง กลุ่มผลิตภัณฑ์ต้องเริ่มจากวัตถุดิบที่ดี<br>
+      กลุ่มชีววิทยาต้องช่วยให้เราเข้าใจสัตว์น้ำและแหล่งน้ำ กลุ่มธุรกิจต้องเชื่อมทุกความรู้ให้เกิดคุณค่าและรายได้
+    </div>`;
+
+  document.getElementById('at-result-content').innerHTML = heroHTML + infoHTML + `
+    <div class="px-box mt12">
+      <div class="text-sm bold mb10">คะแนนทุกสาย</div>
+      ${barsHTML}
+    </div>` + closingHTML;
+}
+
+function _atShowPanel(id) {
+  ['profile','quiz','result'].forEach(p => {
+    const el = document.getElementById('at-panel-' + p);
+    if (el) el.classList.toggle('hidden', p !== id);
+  });
+}
+
+// Display Mode: AquaType Stats
+async function dispShowAquaTypeStats() {
+  showDispPanel('aquatype');
+  document.getElementById('disp-at-total').textContent = 'กำลังโหลด...';
+  document.getElementById('disp-at-bars').innerHTML = '';
+  try {
+    const r = await apiGet({ action: 'getAquaTypeStats' });
+    if (!r.success) throw new Error();
+    const total = r.total || 0;
+    document.getElementById('disp-at-total').textContent = 'ทำแบบทดสอบแล้วทั้งหมด ' + total + ' คน';
+    const max = Math.max(...AT_KEYS.map(k => r.stats[k] || 0)) || 1;
+    document.getElementById('disp-at-bars').innerHTML = AT_KEYS.map(k => {
+      const cnt = r.stats[k] || 0;
+      const pct = Math.round(cnt / max * 100);
+      return `<div class="at-stat-row">
+        <div class="at-stat-name">
+          <span class="pixel-font" style="font-size:.65rem;color:${AT_COLORS[k]}">${k}</span>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.7)">${AT_NAMES[k]}</div>
+        </div>
+        <div class="at-stat-bar-bg"><div class="at-stat-bar-fill" style="width:${pct}%;background:${AT_COLORS[k]}"></div></div>
+        <div class="at-stat-count">${cnt} คน</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('disp-at-total').textContent = 'ไม่สามารถโหลดข้อมูลได้';
+  }
+}
+
+// ============================================================
+// DEMO MODE
+// ============================================================
+const DQ = [
+  {
+    type: 'multiple_choice',
+    question: 'ปลาน้ำจืดที่นิยมเพาะเลี้ยงมากที่สุดในประเทศไทย คือปลาชนิดใด?',
+    optionA:'ปลานิล', optionB:'ปลาสวาย', optionC:'ปลาดุก', optionD:'ปลาช่อน',
+    correctAnswer:'A',
+    explanation:'ปลานิล (Tilapia) เป็นปลาน้ำจืดที่เลี้ยงมากที่สุดในประเทศไทย เนื่องจากโตเร็ว ทนทาน และตลาดรองรับดี',
+    timeLimit:20
+  },
+  {
+    type: 'true_false',
+    question: 'ค่า pH ที่เหมาะสมสำหรับการเพาะเลี้ยงปลาน้ำจืดส่วนใหญ่ควรอยู่ระหว่าง 6.5 ถึง 8.5',
+    optionA:'ถูก', optionB:'ผิด', optionC:'', optionD:'',
+    correctAnswer:'A',
+    explanation:'ค่า pH 6.5–8.5 เป็นช่วงที่ปลาน้ำจืดส่วนใหญ่อยู่ได้ดี ค่าต่ำหรือสูงเกินไปทำให้ปลาเครียด',
+    timeLimit:15
+  },
+  {
+    type: 'poll',
+    question: 'คุณสนใจเรียนด้านประมงสาขาใดมากที่สุด?',
+    optionA:'การเพาะเลี้ยงสัตว์น้ำ', optionB:'การประมงทะเล',
+    optionC:'แปรรูปอาหารทะเล', optionD:'เทคโนโลยีประมง',
+    correctAnswer:'', explanation:'', timeLimit:20
+  },
+  {
+    type: 'brainstorm',
+    question: 'บอกสิ่งที่คาดหวังจากการเรียนวิชาประมงมา 1 สิ่ง',
+    optionA:'', optionB:'', optionC:'', optionD:'',
+    correctAnswer:'', explanation:'', timeLimit:30
+  },
+  {
+    type: 'word_cloud',
+    question: 'คิดถึงคำว่า "สัตว์น้ำ" แล้วนึกถึงคำใดบ้าง? พิมพ์มา 1–2 คำ',
+    optionA:'', optionB:'', optionC:'', optionD:'',
+    correctAnswer:'', explanation:'', timeLimit:25
+  }
+];
+
+const DEMO_BRAINSTORM_MOCK = [
+  {nick:'น้องมีน',  ans:'อยากเรียนรู้การเพาะเลี้ยงสัตว์น้ำแบบครบวงจร'},
+  {nick:'ปลาทอง',  ans:'ต้องการนำเทคโนโลยีสมัยใหม่มาพัฒนาการประมง'},
+  {nick:'ทะเล99',  ans:'อยากสร้างฟาร์มปลาของตัวเองในอนาคต'},
+  {nick:'กุ้งแม่น้ำ',ans:'ศึกษาระบบ RAS เพื่อเพาะเลี้ยงในพื้นที่จำกัด'},
+  {nick:'นิลไทย',  ans:'พัฒนาอาหารสัตว์น้ำให้มีคุณภาพดีขึ้น'},
+  {nick:'ปลาช่อน', ans:'อนุรักษ์พันธุ์ปลาน้ำจืดพื้นถิ่น'},
+];
+const DEMO_WORDCLOUD_MOCK = [
+  {nick:'น้องมีน',  ans:'ปลา กุ้ง'},
+  {nick:'ปลาทอง',  ans:'ทะเล ปลา'},
+  {nick:'ทะเล99',  ans:'น้ำ ปลา สัตว์'},
+  {nick:'กุ้งแม่น้ำ',ans:'กุ้ง ปู ปลาหมึก'},
+  {nick:'นิลไทย',  ans:'ปลา อาหาร'},
+  {nick:'ปลาช่อน', ans:'แม่น้ำ ทะเล ปลา'},
+];
+const DEMO_MC_VOTES  = {A:8, B:3, C:2, D:2};
+const DEMO_TF_VOTES  = {A:12, B:3, C:0, D:0};
+const DEMO_POLL_VOTES= {A:7, B:4, C:2, D:3};
+
+const DS = {
+  qIdx: 0,
+  status: 'idle',        // idle | playing | showing_answer
+  studentAnswered: false,
+  studentAnswer: null,
+  charNum: 1,
+  mockAnswers: [],
+  timerInterval: null,
+  mockInterval: null,
+  mockIdx: 0,
+  timerRemaining: 0,
+};
+
+function initDemo() {
+  DS.qIdx = 0; DS.status = 'idle'; DS.studentAnswered = false;
+  DS.studentAnswer = null; DS.mockAnswers = []; DS.mockIdx = 0;
+  clearInterval(DS.timerInterval); clearInterval(DS.mockInterval);
+  showScreen('demo');
+  _demoSyncTypeTabs();
+  _demoRenderDisplay();
+  _demoRenderStudent();
+}
+
+function exitDemo() {
+  clearInterval(DS.timerInterval); clearInterval(DS.mockInterval);
+  showScreen('landing');
+}
+
+function demoSelectType(idx) {
+  DS.qIdx = idx; DS.status = 'idle';
+  DS.studentAnswered = false; DS.studentAnswer = null;
+  DS.mockAnswers = []; DS.mockIdx = 0;
+  clearInterval(DS.timerInterval); clearInterval(DS.mockInterval);
+  _demoSyncTypeTabs();
+  _demoSetControls('idle');
+  _demoRenderDisplay();
+  _demoRenderStudent();
+}
+
+function demoReset() { demoSelectType(DS.qIdx); }
+
+function demoStart() {
+  if (DS.status !== 'idle') return;
+  DS.status = 'playing';
+  DS.charNum = Math.floor(Math.random() * 14) + 1;
+  DS.studentAnswered = false; DS.studentAnswer = null;
+  DS.mockAnswers = []; DS.mockIdx = 0;
+  _demoSetControls('playing');
+  _demoRenderDisplay();
+  _demoRenderStudent();
+  const q = DQ[DS.qIdx];
+  DS.timerRemaining = q.timeLimit;
+  _demoUpdateTimer();
+  DS.timerInterval = setInterval(() => {
+    DS.timerRemaining--;
+    _demoUpdateTimer();
+    if (DS.timerRemaining <= 0) {
+      clearInterval(DS.timerInterval);
+      if (DS.status === 'playing') { DS.status = 'time_up'; _demoSetControls('time_up'); _demoRenderStudent(); }
+    }
+  }, 1000);
+  // brainstorm / word_cloud — add mock answers
+  if (['brainstorm','word_cloud'].includes(q.type)) {
+    const pool = q.type === 'word_cloud' ? DEMO_WORDCLOUD_MOCK : DEMO_BRAINSTORM_MOCK;
+    DS.mockInterval = setInterval(() => {
+      if (DS.mockIdx < pool.length) {
+        DS.mockAnswers.push(pool[DS.mockIdx++]);
+        _demoRenderLiveAnswers();
+      } else { clearInterval(DS.mockInterval); }
+    }, 1800);
+  }
+}
+
+function demoShowAnswer() {
+  clearInterval(DS.timerInterval); clearInterval(DS.mockInterval);
+  DS.status = 'showing_answer';
+  _demoSetControls('showing_answer');
+  _demoRenderDisplay();
+  _demoRenderStudent();
+}
+
+function demoStudentAnswer(ans) {
+  if (DS.studentAnswered || DS.status !== 'playing') return;
+  DS.studentAnswered = true; DS.studentAnswer = ans;
+  _demoRenderStudent();
+}
+
+function _demoSetControls(status) {
+  const btnStart  = document.getElementById('demo-btn-start');
+  const btnAnswer = document.getElementById('demo-btn-answer');
+  if (!btnStart) return;
+  if (status === 'idle') {
+    btnStart.style.display = ''; btnStart.textContent = 'เริ่มนับเวลา';
+    btnAnswer.style.display = 'none';
+  } else if (status === 'playing') {
+    btnStart.style.display = 'none';
+    btnAnswer.style.display = '';
+  } else {
+    btnStart.style.display = ''; btnStart.textContent = 'รีเซ็ต';
+    btnAnswer.style.display = 'none';
+    btnStart.onclick = demoReset;
+  }
+}
+
+function _demoSyncTypeTabs() {
+  document.querySelectorAll('#demo-type-tabs .demo-type-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === DS.qIdx);
+  });
+}
+
+function _demoUpdateTimer() {
+  ['demo-d-timer-bar','demo-s-timer-bar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const q = DQ[DS.qIdx];
+    const pct = Math.max(0, DS.timerRemaining / q.timeLimit * 100);
+    el.style.width = pct + '%';
+    el.className = 'timer-bar' + (pct < 25 ? ' danger' : pct < 50 ? ' warning' : '');
+  });
+  ['demo-d-timer-num','demo-s-timer-num'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = Math.max(0, DS.timerRemaining);
+  });
+}
+
+function _demoRenderDisplay() {
+  const el = document.getElementById('demo-display');
+  if (!el) return;
+  const q = DQ[DS.qIdx];
+  if (DS.status === 'idle') {
+    el.innerHTML = `
+      <div style="text-align:center;padding:30px 0">
+        <div class="q-type-badge" style="margin-bottom:12px">${TYPE_LABELS[q.type]||q.type}</div>
+        <div class="q-text" style="font-size:1.1rem;max-width:520px;margin:0 auto 16px">${q.question}</div>
+        ${_demoOptionsHTML(q, false, true)}
+        <div class="text-gray text-sm mt16">กด "เริ่มนับเวลา" เพื่อเริ่ม</div>
+      </div>`;
+    return;
+  }
+  // playing or showing_answer
+  const showAns = DS.status === 'showing_answer';
+  el.innerHTML = `
+    <div class="q-layout" style="gap:14px">
+      <div class="q-char-wrap" style="width:160px">
+        <img src="${DS.charNum}.png" alt="" class="q-char-img" style="width:140px">
+      </div>
+      <div class="q-layout-right">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="q-number-badge">ข้อที่ ${DS.qIdx+1} / ${DQ.length}</span>
+          <span class="q-type-badge">${TYPE_LABELS[q.type]||q.type}</span>
+        </div>
+        <div class="q-card mb10">
+          <div class="q-text" style="font-size:1.05rem">${q.question}</div>
+        </div>
+        <div class="timer-wrap" style="margin-bottom:4px"><div id="demo-d-timer-bar" class="timer-bar" style="width:100%"></div></div>
+        <div id="demo-d-timer-num" class="timer-num" style="font-size:.8rem;margin-bottom:8px">${q.timeLimit}</div>
+        ${_demoOptionsHTML(q, showAns, true)}
+        ${showAns && q.correctAnswer ? `
+          <div class="demo-answer-result correct mt10">
+            <div style="font-weight:700;color:var(--green)">คำตอบที่ถูก: ${q.correctAnswer} — ${q['option'+q.correctAnswer]}</div>
+            ${q.explanation ? `<div class="text-sm text-gray mt4">${q.explanation}</div>` : ''}
+          </div>
+          ${_demoStatsHTML(q)}` : ''}
+        ${['brainstorm','word_cloud'].includes(q.type) ? `<div id="demo-live-box" class="live-answers-box" style="margin-top:10px">
+          <div class="live-answers-header">
+            <span class="bold text-cyan" style="font-size:.88rem">${q.type==='word_cloud'?'Word Cloud สด':'Brainstorm สด'}</span>
+            <span class="text-xs text-gray" id="demo-live-count">${DS.mockAnswers.length} คำตอบ</span>
+          </div>
+          <div id="demo-live-content">${DS.mockAnswers.length ? _demoLiveHTML(q.type) : '<p class="text-sm text-gray center">รอคำตอบ...</p>'}</div>
+        </div>` : ''}
+      </div>
+    </div>`;
+  _demoUpdateTimer();
+}
+
+function _demoOptionsHTML(q, showCorrect, fullText) {
+  if (q.type === 'multiple_choice' || q.type === 'poll') {
+    return `<div class="grid-2" style="gap:8px">
+      ${['A','B','C','D'].filter(l=>q['option'+l]).map(l=>{
+        const isCorr = showCorrect && q.correctAnswer === l;
+        const style = isCorr ? 'border-color:rgba(0,230,140,.7);background:rgba(0,180,100,.25);' : '';
+        return `<div class="ans-btn ${l}" style="cursor:default;${style}">
+          <span class="pixel-font" style="font-size:.7rem">${l}</span>  ${fullText ? q['option'+l] : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+  if (q.type === 'true_false') {
+    return `<div class="grid-2" style="gap:8px">
+      ${['A','B'].map(l=>{
+        const isCorr = showCorrect && q.correctAnswer === l;
+        const style = isCorr ? 'border-color:rgba(0,230,140,.7);background:rgba(0,180,100,.25);' : '';
+        const txt = l==='A'?'ถูก':'ผิด';
+        return `<div class="ans-btn ${l==='A'?'TF-T':'TF-F'}" style="cursor:default;${style}">${txt}</div>`;
+      }).join('')}
+    </div>`;
+  }
+  return `<div class="px-box center text-gray text-sm">นักศึกษาพิมพ์คำตอบในมือถือ</div>`;
+}
+
+function _demoStatsHTML(q) {
+  const votes = q.type==='poll' ? DEMO_POLL_VOTES : q.type==='true_false' ? DEMO_TF_VOTES : DEMO_MC_VOTES;
+  const total = Object.values(votes).reduce((a,b)=>a+b,0);
+  const colors = {A:'rgba(220,50,70,.8)',B:'rgba(22,180,104,.8)',C:'rgba(30,130,220,.8)',D:'rgba(220,150,20,.8)'};
+  const labels = ['A','B','C','D'].filter(l=>q['option'+l]);
+  return `<div class="px-box mt10" style="padding:12px">
+    <div class="text-sm bold mb8">สถิติคำตอบ (จำลอง)</div>
+    ${labels.map(l=>`
+      <div class="demo-stat-row">
+        <div class="demo-stat-label text-sm bold">${l}: ${q['option'+l]?q['option'+l].slice(0,8)+'…':l}</div>
+        <div class="demo-stat-bar-bg"><div class="demo-stat-bar-fill" style="width:${total?Math.round(votes[l]/total*100):0}%;background:${colors[l]}"></div></div>
+        <div class="demo-stat-count">${votes[l]} คน</div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function _demoLiveHTML(type) {
+  if (type === 'word_cloud') {
+    const freq = {};
+    DS.mockAnswers.forEach(a => {
+      a.ans.trim().split(/\s+/).forEach(w => {
+        if (!w) return;
+        freq[w] = (freq[w]||0) + 1;
+      });
+    });
+    const entries = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+    const max = entries[0]?.[1] || 1;
+    const pal = ['var(--cyan)','var(--teal)','var(--yellow)','var(--green)','var(--purple)','var(--pink)','#fff'];
+    return `<div class="wordcloud-wrap">${entries.map(([w,c],i)=>`
+      <span class="wc-word" style="font-size:${14+Math.round(c/max*34)}px;color:${pal[i%pal.length]}">${escHtml(w)}</span>`).join('')}</div>`;
+  }
+  return `<div class="brainstorm-grid">${DS.mockAnswers.map(a=>`
+    <div class="brainstorm-card">
+      <div class="brainstorm-nick">${escHtml(a.nick)}</div>
+      <div class="brainstorm-text">${escHtml(a.ans)}</div>
+    </div>`).join('')}</div>`;
+}
+
+function _demoRenderLiveAnswers() {
+  const box = document.getElementById('demo-live-content');
+  const cnt = document.getElementById('demo-live-count');
+  if (!box) return;
+  const q = DQ[DS.qIdx];
+  box.innerHTML = _demoLiveHTML(q.type);
+  if (cnt) cnt.textContent = DS.mockAnswers.length + ' คำตอบ';
+}
+
+function _demoRenderStudent() {
+  const el = document.getElementById('demo-student');
+  if (!el) return;
+  const q = DQ[DS.qIdx];
+  if (DS.status === 'idle') {
+    el.innerHTML = `<div class="demo-idle-msg">รอเริ่มเกม...<br><br><span style="font-size:.75rem">อาจารย์กด "เริ่มนับเวลา"</span></div>`;
+    return;
+  }
+  if (DS.studentAnswered) {
+    const isCorr = q.type==='true_false'||q.type==='multiple_choice' ? DS.studentAnswer===q.correctAnswer : true;
+    const showResult = DS.status==='showing_answer';
+    el.innerHTML = `<div class="demo-phone-answered">
+      ${showResult
+        ? `<div class="demo-answered-icon" style="color:${isCorr?'var(--green)':'var(--red)'}">${isCorr?'OK':'MISS'}</div>
+           <div style="font-weight:700;font-size:1rem;color:${isCorr?'var(--green)':'var(--red)'}">${isCorr?'ตอบถูก!':'ตอบผิด!'}</div>
+           ${isCorr?'<div class="text-yellow pixel-font" style="font-size:.9rem">+850 คะแนน</div>':''}`
+        : `<div style="font-size:2rem;font-weight:900;color:var(--cyan)">${DS.studentAnswer||'OK'}</div>
+           <div class="text-sm text-gray">ส่งคำตอบแล้ว รอเฉลย...</div>
+           <div class="spinner mt8"></div>`}
+    </div>`;
+    return;
+  }
+  if (DS.status === 'time_up') {
+    el.innerHTML = `<div class="demo-phone-answered"><div class="text-gray" style="font-size:.9rem">หมดเวลา!</div></div>`;
+    return;
+  }
+  // playing — show kahoot buttons
+  const timerHTML = `
+    <div style="margin-bottom:4px">
+      <div class="timer-wrap" style="height:8px"><div id="demo-s-timer-bar" class="timer-bar" style="width:100%"></div></div>
+      <div id="demo-s-timer-num" class="timer-num" style="font-size:.7rem;margin-top:2px">${DS.timerRemaining}</div>
+    </div>`;
+  let btnsHTML = '';
+  if (q.type === 'multiple_choice' || q.type === 'poll') {
+    btnsHTML = `<div class="kahoot-grid" style="gap:8px">${
+      ['A','B','C','D'].filter(l=>q['option'+l]).map(l=>`
+        <button class="kahoot-btn ${l}" style="min-height:80px;font-size:1.6rem"
+          onclick="demoStudentAnswer('${l}')">
+          ${l}
+        </button>`).join('')}</div>`;
+  } else if (q.type === 'true_false') {
+    btnsHTML = `<div class="kahoot-grid tf" style="gap:8px">
+      <button class="kahoot-btn TF-T" style="min-height:80px" onclick="demoStudentAnswer('A')">&#10003;<div class="kahoot-btn-label">ถูก</div></button>
+      <button class="kahoot-btn TF-F" style="min-height:80px" onclick="demoStudentAnswer('B')">&#10007;<div class="kahoot-btn-label">ผิด</div></button>
+    </div>`;
+  } else {
+    btnsHTML = `<div style="padding:8px 0">
+      <textarea class="px-textarea" placeholder="พิมพ์คำตอบ..." rows="3" id="demo-s-text" style="font-size:.9rem"></textarea>
+      <button class="px-btn px-btn-cyan px-btn-full mt8" onclick="demoStudentAnswer(document.getElementById('demo-s-text').value||'คำตอบตัวอย่าง')">ส่งคำตอบ</button>
+    </div>`;
+  }
+  el.innerHTML = `
+    ${timerHTML}
+    <div class="kahoot-hint" style="font-size:.72rem;padding:4px 0 8px">ดูคำถามจากหน้าจออาจารย์</div>
+    ${btnsHTML}`;
+  _demoUpdateTimer();
+}
+
+// ============================================================
+// Web Audio Sound Engine
+// ============================================================
+const Audio = {
+  ctx: null,
+  enabled: false,
+  volume: 0.6,
+  bgGain: null,
+  bgOscNodes: [],
+  bgNoteTimer: null,
+
+  init() {
+    if (this.ctx) return;
+    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    const saved = localStorage.getItem('pramong_sound');
+    if (saved !== null) this.enabled = saved === '1';
+    const vol = parseFloat(localStorage.getItem('pramong_vol') || '0.6');
+    this.volume = vol;
+    document.querySelectorAll('.volume-slider').forEach(s => {
+      s.value = Math.round(vol * 100);
+      s.style.setProperty('--val', Math.round(vol * 100) + '%');
+    });
+    this._updateBtns();
+    if (this.enabled) this.ctx.resume().then(() => this.startBgMusic());
+  },
+
+  _updateBtns() {
+    const on = this.enabled;
+    [
+      ['t-sound-btn','t-sound-icon','t-sound-label'],
+      ['disp-sound-btn','disp-sound-icon','disp-sound-label'],
+      ['s-sound-btn','s-sound-icon','s-sound-label'],
+    ].forEach(([btnId, iconId, labelId]) => {
+      const btn = document.getElementById(btnId);
+      const ico = document.getElementById(iconId);
+      const lbl = document.getElementById(labelId);
+      if (!btn) return;
+      btn.className = 'sound-btn ' + (on ? 'on' : 'off');
+      if (ico) ico.innerHTML = on ? '&#128266;' : '&#128263;';
+      if (lbl) lbl.textContent = on ? 'เสียงเปิด' : 'ปิดเสียง';
+    });
+    const hint = document.getElementById('disp-sound-hint');
+    if (hint) hint.style.display = on ? 'none' : 'inline';
+  },
+
+  toggle() {
+    if (!this.ctx) this.init();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    this.enabled = !this.enabled;
+    localStorage.setItem('pramong_sound', this.enabled ? '1' : '0');
+    this._updateBtns();
+    if (this.enabled) {
+      this._beep(880, 0.08, 'sine', 0.12, 0, 0.08);
+      this.startBgMusic();
+    } else {
+      this.stopBgMusic();
+    }
+  },
+
+  setVolume(v) {
+    this.volume = Math.max(0, Math.min(1, v));
+    localStorage.setItem('pramong_vol', this.volume);
+    document.querySelectorAll('.volume-slider').forEach(s => {
+      s.value = Math.round(this.volume * 100);
+      s.style.setProperty('--val', Math.round(this.volume * 100) + '%');
+    });
+    if (this.bgGain) this.bgGain.gain.setTargetAtTime(this.volume * 0.06, this.ctx.currentTime, 0.1);
+  },
+
+  startBgMusic() {
+    if (!this.ctx || this.bgGain) return;
+    const ctx = this.ctx;
+
+    // Master gain for all bg music
+    this.bgGain = ctx.createGain();
+    this.bgGain.gain.setValueAtTime(0, ctx.currentTime);
+    this.bgGain.gain.linearRampToValueAtTime(this.volume * 0.06, ctx.currentTime + 2);
+    this.bgGain.connect(ctx.destination);
+
+    // Drone layer: deep underwater chord (C1, G1, C2)
+    [[55, 0.5], [82.5, 0.28], [110, 0.18]].forEach(([freq, rel]) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(freq, ctx.currentTime);
+      g.gain.setValueAtTime(rel, ctx.currentTime);
+      o.connect(g); g.connect(this.bgGain);
+      o.start();
+      this.bgOscNodes.push(o);
+    });
+
+    // Slow LFO for gentle underwater tremolo
+    const lfo = ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(0.12, ctx.currentTime);
+    const lfoG = ctx.createGain();
+    lfoG.gain.setValueAtTime(0.006, ctx.currentTime);
+    lfo.connect(lfoG); lfoG.connect(this.bgGain.gain);
+    lfo.start();
+    this.bgOscNodes.push(lfo);
+
+    // Melody layer: soft pentatonic notes (C4, D4, E4, G4, A4, C5)
+    const notes = [262, 294, 330, 392, 440, 523, 392, 330, 294];
+    const bg = this;
+    const scheduleNote = () => {
+      if (!bg.bgGain) return;
+      const freq = notes[Math.floor(Math.random() * notes.length)];
+      const dur = 2.5 + Math.random() * 2;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(freq, ctx.currentTime);
+      g.gain.setValueAtTime(0, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(bg.volume * 0.045, ctx.currentTime + 0.5);
+      g.gain.linearRampToValueAtTime(0, ctx.currentTime + dur);
+      o.connect(g); g.connect(bg.bgGain);
+      o.start(ctx.currentTime);
+      o.stop(ctx.currentTime + dur + 0.15);
+      bg.bgNoteTimer = setTimeout(scheduleNote, (2000 + Math.random() * 2000));
+    };
+    this.bgNoteTimer = setTimeout(scheduleNote, 1200);
+  },
+
+  stopBgMusic() {
+    if (!this.bgGain) return;
+    const gn = this.bgGain;
+    gn.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 1);
+    const nodes = [...this.bgOscNodes];
+    setTimeout(() => { nodes.forEach(o => { try { o.stop(); } catch(e) {} }); try { gn.disconnect(); } catch(e) {} }, 1100);
+    this.bgGain = null;
+    this.bgOscNodes = [];
+    clearTimeout(this.bgNoteTimer);
+    this.bgNoteTimer = null;
+  },
+
+  _beep(freq, vol, type, dur, startDelay, fadeOut) {
+    if (!this.enabled || !this.ctx) return;
+    const g = this.ctx.createGain();
+    const o = this.ctx.createOscillator();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, this.ctx.currentTime + startDelay);
+    const peak = this.volume * (vol || 0.3);
+    g.gain.setValueAtTime(0, this.ctx.currentTime + startDelay);
+    g.gain.linearRampToValueAtTime(peak, this.ctx.currentTime + startDelay + 0.01);
+    g.gain.linearRampToValueAtTime(0, this.ctx.currentTime + startDelay + dur - (fadeOut || 0.02));
+    o.connect(g);
+    g.connect(this.ctx.destination);
+    o.start(this.ctx.currentTime + startDelay);
+    o.stop(this.ctx.currentTime + startDelay + dur);
+  },
+};
+
+function initAudio() { Audio.init(); }
+
+function toggleSound() {
+  Audio.toggle();
+}
+
+function playClickSound() {
+  if (!Audio.ctx || !Audio.enabled) return;
+  const ctx = Audio.ctx;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(900, ctx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(500, ctx.currentTime + 0.05);
+  g.gain.setValueAtTime(Audio.volume * 0.14, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.08);
+}
+
+// Global click sound — fire on every button/interactive element click
+document.addEventListener('click', (e) => {
+  const t = e.target;
+  const interactive = t.closest('button, .ans-btn, .kahoot-btn, .demo-type-btn, .tab-btn, .nav-tab, .px-btn');
+  if (!interactive) return;
+  // Sound toggle already plays its own beep — skip to avoid double sound
+  if (t.closest('#t-sound-btn, #disp-sound-btn, #s-sound-btn')) return;
+  playClickSound();
+}, { capture: true });
+
+function setVolume(v) {
+  Audio.setVolume(v);
+  document.querySelectorAll('.volume-slider').forEach(s => {
+    s.style.setProperty('--val', Math.round(v * 100) + '%');
+  });
+}
+
+function playStartSound() {
+  if (!Audio.enabled || !Audio.ctx) return;
+  // สองโน้ตขึ้น สดใส
+  Audio._beep(523, 0.25, 'triangle', 0.1, 0,    0.04);
+  Audio._beep(784, 0.30, 'triangle', 0.15, 0.1, 0.06);
+}
+
+let _lastTickTime = 0;
+function playTickSound(timeLeft, isSub) {
+  if (!Audio.enabled || !Audio.ctx) return;
+  const now = Date.now();
+  const gap = isSub ? 220 : 900;
+  if (now - _lastTickTime < gap) return;
+  _lastTickTime = now;
+  Audio._beep(440, 0.09, 'triangle', 0.08, 0, 0.05);
+}
+
+function playTimeUpSound() {
+  if (!Audio.enabled || !Audio.ctx) return;
+  // โน้ตลง 3 ตัว — จบ
+  Audio._beep(523, 0.3, 'triangle', 0.18, 0,    0.06);
+  Audio._beep(392, 0.3, 'triangle', 0.18, 0.18, 0.06);
+  Audio._beep(261, 0.35,'triangle', 0.28, 0.36, 0.10);
+}
+
+function playCorrectSound() {
+  if (!Audio.enabled || !Audio.ctx) return;
+  // ขึ้น 3 โน้ต สดใส
+  Audio._beep(523, 0.25, 'sine', 0.10, 0,    0.04);
+  Audio._beep(659, 0.28, 'sine', 0.10, 0.10, 0.04);
+  Audio._beep(784, 0.32, 'sine', 0.18, 0.20, 0.06);
+}
+
+function playWrongSound() {
+  if (!Audio.enabled || !Audio.ctx) return;
+  // ลง 2 โน้ต หนัก
+  Audio._beep(330, 0.28, 'sawtooth', 0.12, 0,    0.06);
+  Audio._beep(220, 0.32, 'sawtooth', 0.18, 0.14, 0.08);
+}
+
+function playLeaderboardSound() {
+  if (!Audio.enabled || !Audio.ctx) return;
+  // fanfare สั้น original — 5 โน้ตขึ้น
+  const notes = [523, 659, 784, 1047, 1319];
+  notes.forEach((f, i) => {
+    Audio._beep(f, 0.22, 'triangle', 0.16, i * 0.12, 0.05);
+  });
+}
+
+function setSoundEnabled(v) { Audio.enabled = v; Audio._updateBtns(); }
+
+function init() {
+  initBg();
+  initAudio();
+  const p = new URLSearchParams(window.location.search);
+  const mode = p.get('mode');
+  if (mode==='student') App.initStudent();
+  else if (mode==='teacher') App.initTeacher();
+  else if (mode==='display') App.initDisplay();
+  else showScreen('landing');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+window.App = App;
+window.switchTab = switchTab;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.showScreen = showScreen;
+window.showStuPanel = showStuPanel;
+window.showDispPanel = showDispPanel;
+window.toggleSound = toggleSound;
+window.setVolume = setVolume;
+window.initAquaType = initAquaType;
+window.exitAquaType = exitAquaType;
+window.atStartQuiz  = atStartQuiz;
+window.atPrev       = atPrev;
+window.atNext       = atNext;
+window.atSelect     = atSelect;
+window.atRetake     = atRetake;
+window.dispShowAquaTypeStats = dispShowAquaTypeStats;
+window.initDemo = initDemo;
+window.exitDemo = exitDemo;
+window.demoSelectType = demoSelectType;
+window.demoStart = demoStart;
+window.demoShowAnswer = demoShowAnswer;
+window.demoReset = demoReset;
+window.demoStudentAnswer = demoStudentAnswer;
+</script>
+</body>
+</html>
