@@ -239,7 +239,7 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
 .q-card::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);pointer-events:none}
 .q-type-badge{display:inline-block;padding:4px 14px;font-size:.72rem;font-weight:700;background:rgba(160,80,255,.3);border:1px solid rgba(180,100,255,.5);border-radius:20px;margin-bottom:12px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .q-text{font-size:1.3rem;font-weight:700;line-height:1.55;margin-bottom:12px}
-.q-img{max-width:100%;border:1px solid rgba(0,200,255,.4);border-radius:16px;display:block;margin:0 auto 12px}
+.q-img{width:100%;max-width:82%;max-height:clamp(280px,40vw,520px);object-fit:contain;border:1px solid rgba(0,200,255,.4);border-radius:16px;display:block;margin:16px auto;}
 
 .result-overlay{display:none;position:fixed;inset:0;z-index:800;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,5,20,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .result-overlay.show{display:flex;animation:fadeIn .3s ease}
@@ -258,10 +258,14 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
   .title-pixel{font-size:1.3rem!important}.pin-display{font-size:1.8rem;letter-spacing:5px}
   .px-box{border-radius:20px;padding:16px}.q-card{border-radius:20px}.px-btn{border-radius:14px}
 }
+@media(max-width:600px){
+  .q-img{max-width:100%;max-height:220px;margin:10px auto}
+}
 @media(min-width:900px){
   #screen-display .q-text{font-size:1.8rem}
   #screen-display .ans-btn{font-size:1.25rem;padding:22px 22px}
   #screen-display .pin-display{font-size:3.5rem}
+  #screen-display .q-img{max-width:78%;max-height:clamp(340px,38vw,520px)}
 }
 .brainstorm-grid{display:flex;flex-wrap:wrap;gap:10px;padding:8px 0}
 .brainstorm-card{background:rgba(255,255,255,.1);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.22);border-radius:18px;padding:12px 16px;animation:cardPop .35s cubic-bezier(.34,1.56,.64,1);max-width:280px}
@@ -341,71 +345,6 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
 .at-stat-bar-bg{flex:1;height:18px;background:rgba(255,255,255,.08);border-radius:9px;overflow:hidden}
 .at-stat-bar-fill{height:100%;border-radius:9px;transition:width 1s ease}
 .at-stat-count{font-size:.8rem;color:var(--gray);width:40px;text-align:right}
-
-/* ===== DEMO MODE ===== */
-.demo-header{
-  display:flex;align-items:center;flex-wrap:wrap;gap:10px;
-  padding:12px 16px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,255,255,.1);
-  position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-}
-.demo-title{font-family:var(--font-pixel);font-size:.8rem;color:var(--yellow);white-space:nowrap}
-.demo-type-tabs{display:flex;gap:6px;flex-wrap:wrap;flex:1}
-.demo-type-btn{
-  padding:6px 12px;font-size:.78rem;font-weight:700;border-radius:12px;
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);
-  cursor:pointer;transition:all .18s;font-family:var(--font-thai);
-}
-.demo-type-btn:hover{background:rgba(255,255,255,.14);color:#fff}
-.demo-type-btn.active{background:rgba(0,180,255,.25);border-color:rgba(0,200,255,.6);color:var(--cyan)}
-.demo-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.demo-container{
-  display:grid;grid-template-columns:1fr 340px;gap:16px;
-  padding:16px;max-width:1200px;margin:0 auto;min-height:calc(100vh - 60px);
-  align-items:start;
-}
-.demo-panel-label{
-  font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  color:rgba(255,255,255,.4);margin-bottom:8px;text-align:center;
-}
-.demo-display-area{
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:24px;padding:20px;min-height:420px;
-}
-.demo-phone-wrap{display:flex;flex-direction:column;align-items:center}
-.demo-phone{
-  width:280px;background:rgba(8,18,50,.9);
-  border:2px solid rgba(255,255,255,.18);border-radius:38px;
-  padding:30px 14px 18px;position:relative;
-  box-shadow:0 24px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12);
-  min-height:520px;display:flex;flex-direction:column;
-}
-.demo-phone::before{
-  content:'';width:72px;height:5px;background:rgba(255,255,255,.2);border-radius:4px;
-  position:absolute;top:12px;left:50%;transform:translateX(-50%);
-}
-.demo-phone-inner{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.demo-idle-msg{text-align:center;padding:40px 16px;color:rgba(255,255,255,.3);font-size:.9rem;line-height:1.8}
-.demo-stat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.demo-stat-bar-bg{flex:1;height:16px;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden}
-.demo-stat-bar-fill{height:100%;border-radius:8px;transition:width .6s ease}
-.demo-stat-label{font-size:.8rem;width:80px;font-weight:700}
-.demo-stat-count{font-size:.75rem;color:var(--gray);width:40px;text-align:right}
-.demo-answer-result{
-  padding:14px;border-radius:16px;margin-top:12px;text-align:center;
-  border:1px solid;backdrop-filter:blur(10px);
-}
-.demo-answer-result.correct{background:rgba(0,150,80,.3);border-color:rgba(0,220,130,.5)}
-.demo-answer-result.wrong{background:rgba(150,20,40,.3);border-color:rgba(255,70,100,.5)}
-.demo-phone-answered{
-  text-align:center;padding:24px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;
-}
-.demo-answered-icon{font-size:2.5rem;font-weight:900;line-height:1}
-@media(max-width:900px){
-  .demo-container{grid-template-columns:1fr;grid-template-rows:auto auto}
-  .demo-phone{width:100%;border-radius:24px;min-height:320px}
-  .demo-phone::before{display:none}
-  .demo-phone-wrap{align-items:stretch}
-}
 ::-webkit-scrollbar-thumb:hover{background:rgba(0,180,255,.65)}
 .sound-btn{
   display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
@@ -453,8 +392,7 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
       <button class="px-btn px-btn-cyan px-btn-lg px-btn-full" onclick="App.initStudent()">นักศึกษาเข้าร่วมเกม</button>
       <button class="px-btn px-btn-yellow px-btn-lg px-btn-full" onclick="App.initTeacher()">อาจารย์เข้าสู่ระบบ</button>
       <button class="px-btn px-btn-purple px-btn-lg px-btn-full" onclick="App.initDisplay()">หน้าจอแสดงผล (โปรเจกเตอร์)</button>
-      <button class="px-btn px-btn-full" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);font-size:.95rem" onclick="initDemo()">ทดลองเล่น (Demo)</button>
-      <button class="px-btn px-btn-full" style="background:rgba(0,220,180,.08);border-color:rgba(0,220,180,.35);color:var(--teal);font-size:.95rem" onclick="initAquaType()">Aqua Type Test — ค้นหาสายประมงของฉัน</button>
+<button class="px-btn px-btn-full" style="background:rgba(0,220,180,.08);border-color:rgba(0,220,180,.35);color:var(--teal);font-size:.95rem" onclick="initAquaType()">Aqua Type Test — ค้นหาสายประมงของฉัน</button>
     </div>
     <p class="text-xs text-gray mt24">Pramong Taidin v1.0 | คณะเทคโนโลยีการประมงและทรัพยากรทางน้ำ มหาวิทยาลัยแม่โจ้</p>
   </div>
@@ -528,50 +466,6 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
       <div id="at-result-content"></div>
       <button class="px-btn px-btn-full mt12" style="background:rgba(0,220,180,.1);border-color:rgba(0,220,180,.4);color:var(--teal)" onclick="atRetake()">ทำใหม่อีกครั้ง</button>
       <button class="px-btn px-btn-gray px-btn-full mt8" onclick="exitAquaType()">กลับหน้าหลัก</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- DEMO MODE -->
-<div id="screen-demo" class="screen">
-
-  <div class="demo-header">
-    <button class="px-btn px-btn-gray px-btn-sm" onclick="exitDemo()">&#8592; กลับ</button>
-    <div class="demo-title">DEMO MODE</div>
-    <div class="demo-type-tabs" id="demo-type-tabs">
-      <button class="demo-type-btn active" onclick="demoSelectType(0)">Multiple Choice</button>
-      <button class="demo-type-btn" onclick="demoSelectType(1)">True / False</button>
-      <button class="demo-type-btn" onclick="demoSelectType(2)">Poll</button>
-      <button class="demo-type-btn" onclick="demoSelectType(3)">Brainstorm</button>
-      <button class="demo-type-btn" onclick="demoSelectType(4)">Word Cloud</button>
-    </div>
-    <div class="demo-controls">
-      <button class="px-btn px-btn-green px-btn-sm" id="demo-btn-start" onclick="demoStart()">เริ่มนับเวลา</button>
-      <button class="px-btn px-btn-yellow px-btn-sm" id="demo-btn-answer" onclick="demoShowAnswer()" style="display:none">แสดงเฉลย</button>
-      <button class="px-btn px-btn-gray px-btn-sm" onclick="demoReset()">รีเซ็ต</button>
-    </div>
-  </div>
-
-  <div class="demo-container">
-
-    <!-- LEFT: Display/Projector -->
-    <div>
-      <div class="demo-panel-label">จอโปรเจกเตอร์ (Display)</div>
-      <div class="demo-display-area" id="demo-display">
-        <div class="demo-idle-msg">เลือกประเภทคำถาม แล้วกด "เริ่มนับเวลา"</div>
-      </div>
-    </div>
-
-    <!-- RIGHT: Student Phone -->
-    <div class="demo-phone-wrap">
-      <div class="demo-panel-label">มือถือนักศึกษา</div>
-      <div class="demo-phone">
-        <div class="demo-phone-inner" id="demo-student">
-          <div class="demo-idle-msg">รอเริ่มเกม...</div>
-        </div>
-      </div>
-      <p class="text-xs text-gray mt8" style="text-align:center;max-width:280px">นักศึกษาไม่เห็นคำถาม ต้องดูจากหน้าจออาจารย์</p>
     </div>
 
   </div>
@@ -777,7 +671,7 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
         </div>
         <div class="flex" style="gap:12px">
           <span class="text-sm text-gray">ผู้เล่น: <b id="d-q-players" class="text-yellow">0</b></span>
-          <span class="text-sm text-gray">ตอบแล้ว: <b id="d-q-answered" class="text-green">0</b></span>
+          <span class="text-sm text-gray">ตอบแล้ว: <b id="d-q-answered" class="text-green">0</b> / <b id="d-q-total" class="text-yellow">0</b> คน</span>
         </div>
       </div>
       <div class="q-layout">
@@ -839,14 +733,32 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
           <p class="text-sm text-gray mb16">ถ้าเปิดจากเครื่องอาจารย์ ให้กด <b class="text-cyan">"เปิดหน้าจอแสดงผล (แท็บใหม่)"</b> ในหน้าอาจารย์แทน</p>
           <div class="form-group">
             <label class="label">Game PIN (6 หลัก)</label>
-            <input id="d-gameid-input" class="px-input" type="number" placeholder="000000" maxlength="6">
+            <input id="d-gameid-input" class="px-input" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="000000" maxlength="6" autocomplete="off">
           </div>
-          <button class="px-btn px-btn-cyan px-btn-full" onclick="App.displayConnect()">เชื่อมต่อ</button>
+          <div id="d-connect-error" class="text-red text-sm mb8 hidden"></div>
+          <button id="d-connect-btn" class="px-btn px-btn-cyan px-btn-full" onclick="App.displayConnect()">เข้าสู่เกม</button>
           <button class="px-btn px-btn-gray px-btn-full mt8" onclick="showScreen('landing')">กลับ</button>
         </div>
       </div>
     </div>
 
+  </div>
+
+  <!-- PROJECTOR CONTROL BAR -->
+  <div id="disp-ctrl-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;padding:10px 16px;background:rgba(0,5,20,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.1)">
+    <div id="disp-ctrl-btns" style="display:none;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;max-width:960px;margin:0 auto">
+      <button id="d-btn-start" class="px-btn px-btn-green px-btn-sm hidden" onclick="App.dispNextQuestion()">เริ่มคำถาม</button>
+      <button id="d-btn-next"  class="px-btn px-btn-green px-btn-sm hidden" onclick="App.dispNextQuestion()">ข้อถัดไป</button>
+      <button id="d-btn-ans"   class="px-btn px-btn-yellow px-btn-sm hidden" onclick="App.dispShowAnswer()">แสดงเฉลย</button>
+      <button id="d-btn-lb"    class="px-btn px-btn-purple px-btn-sm hidden" onclick="App.dispShowLeaderboard()">แสดงอันดับ</button>
+      <button id="d-btn-end"   class="px-btn px-btn-red px-btn-sm hidden" onclick="App.dispConfirmEnd()">จบเกม</button>
+      <span id="d-ctrl-status" class="text-xs text-gray" style="margin-left:8px"></span>
+    </div>
+    <div id="disp-ctrl-lock" style="display:flex;align-items:center;gap:8px;justify-content:center">
+      <span class="text-xs text-gray">ควบคุมเกม:</span>
+      <input id="d-ctrl-pw" class="px-input" type="password" placeholder="รหัสอาจารย์" style="width:160px;padding:6px 12px;font-size:.85rem" onkeydown="if(event.key==='Enter')App.dispUnlock()">
+      <button class="px-btn px-btn-cyan px-btn-sm" onclick="App.dispUnlock()">ปลดล็อก</button>
+    </div>
   </div>
 </div>
 
@@ -923,8 +835,8 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
 
     <div id="stu-waiting" class="hidden" style="text-align:center;padding:20px 0">
       <div class="px-box mb12">
-        <div class="title-pixel" style="font-size:.9rem;margin-bottom:8px">สวัสดี!</div>
-        <div id="s-welcome-nick" class="text-cyan bold" style="font-size:1.3rem;margin-bottom:4px"></div>
+        <div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,.55);margin-bottom:4px">สวัสดี,</div>
+        <div id="s-welcome-nick" class="text-cyan" style="font-size:clamp(26px,7vw,32px);font-weight:800;line-height:1.15;margin-bottom:12px;letter-spacing:.01em"></div>
         <div class="text-sm text-gray">เข้าร่วมเกมสำเร็จ</div>
       </div>
       <div class="px-box px-box-y">
@@ -1029,7 +941,7 @@ const REFRESH_INTERVAL = 4000;
 const S = {
   mode: 'landing',
   teacher: { password:'', gameId:null, pin:null, questionSetId:null, questionSetName:null, totalQ:0, currentQ:0, status:'waiting' },
-  display: { gameId:null, timerInterval:null, refreshInterval:null, lastStatus:null, lastQNum:0 },
+  display: { gameId:null, password:null, totalQ:0, timerInterval:null, refreshInterval:null, lastStatus:null, lastQNum:0, failCount:0 },
   student: { gameId:null, playerId:null, nickname:null, pin:null, currentQ:0, hasAnswered:false, answerStartTime:0, refreshInterval:null, lastStatus:null, lastQNum:0 },
   confirmCallback: null,
   questionRows: [],
@@ -1073,12 +985,53 @@ function showStuPanel(id) {
 }
 
 function showDispPanel(id) {
-  ['lobby','question','answer','leaderboard','ended','setup'].forEach(p => {
+  ['lobby','question','answer','leaderboard','ended','setup','aquatype'].forEach(p => {
     const el = document.getElementById('disp-' + p);
     if (el) el.classList.add('hidden');
   });
   const el = document.getElementById('disp-' + id);
   if (el) el.classList.remove('hidden');
+}
+
+function showDispCtrlBar(unlocked) {
+  const bar = document.getElementById('disp-ctrl-bar');
+  const btns = document.getElementById('disp-ctrl-btns');
+  const lock = document.getElementById('disp-ctrl-lock');
+  if (!bar) return;
+  bar.style.display = 'block';
+  if (unlocked) {
+    btns.style.display = 'flex';
+    lock.style.display = 'none';
+  } else {
+    btns.style.display = 'none';
+    lock.style.display = 'flex';
+  }
+}
+
+function updateDispCtrlBar(status, currentQ, totalQ) {
+  if (!S.display.password) return;
+  const ids = ['d-btn-start','d-btn-next','d-btn-ans','d-btn-lb','d-btn-end'];
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+  const isLast = totalQ > 0 && currentQ >= totalQ;
+  const statusEl = document.getElementById('d-ctrl-status');
+  if (status === 'waiting') {
+    document.getElementById('d-btn-start').classList.remove('hidden');
+    if (statusEl) statusEl.textContent = 'รอเริ่มเกม';
+  } else if (status === 'playing') {
+    document.getElementById('d-btn-ans').classList.remove('hidden');
+    if (statusEl) statusEl.textContent = `ข้อ ${currentQ} / ${totalQ}`;
+  } else if (status === 'showing_answer') {
+    document.getElementById('d-btn-lb').classList.remove('hidden');
+    if (!isLast) document.getElementById('d-btn-next').classList.remove('hidden');
+    else          document.getElementById('d-btn-end').classList.remove('hidden');
+    if (statusEl) statusEl.textContent = `เฉลยข้อ ${currentQ}`;
+  } else if (status === 'leaderboard') {
+    if (!isLast) document.getElementById('d-btn-next').classList.remove('hidden');
+    else          document.getElementById('d-btn-end').classList.remove('hidden');
+    if (statusEl) statusEl.textContent = 'อันดับ';
+  } else if (status === 'ended') {
+    if (statusEl) statusEl.textContent = 'เกมจบแล้ว';
+  }
 }
 
 function switchTab(tab) {
@@ -1120,19 +1073,22 @@ function getStudentURL(pin) {
 let timerInterval = null;
 
 // Visual-only timer — ไม่มีเสียง เพราะเสียงมาจาก Teacher Mode เท่านั้น
-function startTimer(seconds, barId, numId, onEnd) {
+// serverStartMs: Date.now()-compatible timestamp จาก server (sess.questionStartTime)
+//   ถ้าไม่ส่ง หรือเป็น 0 → fallback เป็น local countdown จาก seconds เต็ม
+function startTimer(timeLimit, barId, numId, onEnd, serverStartMs) {
   clearInterval(timerInterval);
-  let remaining = seconds;
   const bar = document.getElementById(barId);
   const num = document.getElementById(numId);
+  const refMs = (serverStartMs && serverStartMs > 0) ? serverStartMs : Date.now();
   function update() {
     if (!bar || !num) return;
-    const pct = (remaining / seconds) * 100;
+    const elapsed = Math.floor((Date.now() - refMs) / 1000);
+    const remaining = Math.max(0, timeLimit - elapsed);
+    const pct = (remaining / timeLimit) * 100;
     bar.style.width = pct + '%';
     bar.className = 'timer-bar' + (pct < 25 ? ' danger' : pct < 50 ? ' warning' : '');
     num.textContent = remaining;
     if (remaining <= 0) { clearInterval(timerInterval); if (onEnd) onEnd(); return; }
-    remaining--;
   }
   update();
   timerInterval = setInterval(update, 1000);
@@ -1197,9 +1153,16 @@ const App = {
   initDisplay() {
     const p = new URLSearchParams(window.location.search);
     const gid = p.get('gameId');
+    const pw  = p.get('pw');
+    if (pw) { S.display.password = pw; showDispCtrlBar(true); }
+    else     { showDispCtrlBar(false); }
     showScreen('display');
     if (gid) { S.display.gameId = gid; App.displayStartRefresh(); showDispPanel('lobby'); }
-    else showDispPanel('setup');
+    else {
+      const savedPin = localStorage.getItem('disp_last_pin');
+      if (savedPin) document.getElementById('d-gameid-input').value = savedPin;
+      showDispPanel('setup');
+    }
   },
   initStudent() {
     const p = new URLSearchParams(window.location.search);
@@ -1366,7 +1329,7 @@ const App = {
 
   openDisplayWindow() {
     if (!S.teacher.gameId) { notify('ยังไม่ได้สร้างเกม', 'error'); return; }
-    window.open(location.pathname + '?mode=display&gameId=' + encodeURIComponent(S.teacher.gameId), '_blank');
+    window.open(location.pathname + '?mode=display&gameId=' + encodeURIComponent(S.teacher.gameId) + '&pw=' + encodeURIComponent(S.teacher.password || ''), '_blank');
   },
   confirmReset() {
     S.confirmCallback = App.resetGame;
@@ -1575,14 +1538,29 @@ const App = {
 
   async displayConnect() {
     const pin = document.getElementById('d-gameid-input').value.trim();
-    if (!pin) { notify('กรุณาใส่ PIN','error'); return; }
+    const errEl = document.getElementById('d-connect-error');
+    const btn = document.getElementById('d-connect-btn');
+    errEl.classList.add('hidden'); errEl.textContent = '';
+    if (!pin || pin.length !== 6 || !/^\d+$/.test(pin)) {
+      errEl.textContent = 'กรุณาใส่ PIN 6 หลัก'; errEl.classList.remove('hidden'); return;
+    }
+    btn.disabled = true; btn.textContent = 'กำลังเชื่อมต่อ...';
     try {
       const r = await apiGet({ action:'getGameByPin', pin });
-      if (!r.success || !r.gameId) { notify('ไม่พบเกมที่มี PIN นี้','error'); return; }
+      if (!r.success || !r.gameId) {
+        errEl.textContent = 'ไม่พบห้องเกมนี้'; errEl.classList.remove('hidden');
+        btn.disabled = false; btn.textContent = 'เข้าสู่เกม'; return;
+      }
+      localStorage.setItem('disp_last_pin', pin);
       S.display.gameId = r.gameId;
+      S.display.failCount = 0;
       showDispPanel('lobby');
       App.displayStartRefresh();
-    } catch(e) { notify('เชื่อมต่อไม่ได้','error'); }
+    } catch(e) {
+      errEl.textContent = 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองใหม่';
+      errEl.classList.remove('hidden');
+      btn.disabled = false; btn.textContent = 'เข้าสู่เกม';
+    }
   },
 
   displayStartRefresh() {
@@ -1599,7 +1577,17 @@ const App = {
         apiGet({ action:'getGameState', gameId:S.display.gameId, _t }),
         apiGet({ action:'getPlayerCount', gameId:S.display.gameId, _t })
       ]);
-      if (!stateR.success) return;
+      if (!stateR.success) {
+        S.display.failCount++;
+        if (S.display.failCount >= 3) {
+          clearInterval(S.display.refreshInterval);
+          S.display.gameId = null; S.display.failCount = 0;
+          notify('โหลดข้อมูลเกมไม่สำเร็จ กรุณากรอก PIN ใหม่', 'error', 5000);
+          showDispPanel('setup');
+        }
+        return;
+      }
+      S.display.failCount = 0;
       const sess = stateR.session;
       const status = sess.status;
       const qNum = sess.currentQuestionNumber;
@@ -1620,7 +1608,7 @@ const App = {
           if (qR.success && qR.question) {
             App.displayShowQuestion(qR.question, sess);
             stopTimer();
-            startTimer(qR.question.timeLimit, 'd-timer-bar', 'd-timer-num', ()=>{});
+            startTimer(qR.question.timeLimit, 'd-timer-bar', 'd-timer-num', ()=>{}, sess.questionStartTime);
           }
         }
         document.getElementById('d-q-players').textContent = sess.totalPlayers;
@@ -1647,9 +1635,21 @@ const App = {
           }
         }
       }
+      S.display.totalQ = sess.totalQuestions || 0;
+      if (status !== S.display.lastStatus || qNum !== S.display.lastQNum)
+        updateDispCtrlBar(status, qNum, sess.totalQuestions || 0);
       S.display.lastStatus = status;
       S.display.lastQNum = qNum;
-    } catch(e) { console.error(e); }
+    } catch(e) {
+      console.error(e);
+      S.display.failCount++;
+      if (S.display.failCount >= 3) {
+        clearInterval(S.display.refreshInterval);
+        S.display.gameId = null; S.display.failCount = 0;
+        notify('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณากรอก PIN ใหม่', 'error', 5000);
+        showDispPanel('setup');
+      }
+    }
   },
 
   displayShowQuestion(q, sess) {
@@ -1671,26 +1671,37 @@ const App = {
     if (q.imageUrl) { img.src = q.imageUrl; img.classList.remove('hidden'); } else img.classList.add('hidden');
     document.getElementById('d-q-players').textContent = sess.totalPlayers;
     document.getElementById('d-q-answered').textContent = '0';
+    document.getElementById('d-q-total').textContent = sess.totalPlayers;
     const optContainer = document.getElementById('d-options');
-    if (q.type === 'multiple_choice') {
+    const cntStyle = 'float:right;font-size:.7rem;font-family:var(--font-pixel);opacity:.85;margin-left:8px';
+    if (q.type === 'multiple_choice' || q.type === 'poll') {
       optContainer.innerHTML = ['A','B','C','D'].map(l => `
         <div class="ans-btn ${l}" style="cursor:default">
-          <span class="pixel-font" style="font-size:.75rem">${l}</span>  ${q['option'+l]}
+          <span class="pixel-font" style="font-size:.75rem">${l}</span>  ${escHtml(q['option'+l]||'')}
+          <span id="d-cnt-${l}" style="${cntStyle}">0</span>
         </div>`).join('');
     } else if (q.type === 'true_false') {
-      optContainer.innerHTML = `<div class="ans-btn TF-T" style="cursor:default">ถูก</div><div class="ans-btn TF-F" style="cursor:default">ผิด</div>`;
+      optContainer.innerHTML = `
+        <div class="ans-btn TF-T" style="cursor:default">ถูก<span id="d-cnt-A" style="${cntStyle}">0</span></div>
+        <div class="ans-btn TF-F" style="cursor:default">ผิด<span id="d-cnt-B" style="${cntStyle}">0</span></div>`;
     } else {
       optContainer.innerHTML = `<div class="px-box center"><span class="text-gray">${TYPE_LABELS[q.type]||q.type} — นักศึกษาพิมพ์คำตอบ</span></div>`;
     }
     if (['brainstorm','word_cloud'].includes(q.type)) {
+      stopLiveChoiceStats();
       startLiveAnswers(S.display.gameId, q.number, q.type);
+    } else if (['multiple_choice','true_false','poll'].includes(q.type)) {
+      stopLiveAnswers();
+      startLiveChoiceStats(S.display.gameId, q.number);
     } else {
       stopLiveAnswers();
+      stopLiveChoiceStats();
     }
   },
 
   async displayShowAnswer(q, sess) {
     stopLiveAnswers();
+    stopLiveChoiceStats();
     showDispPanel('answer');
     document.getElementById('d-ans-question').textContent = q.question;
     const optLabels = { A:q.optionA, B:q.optionB, C:q.optionC, D:q.optionD };
@@ -1714,6 +1725,61 @@ const App = {
       </div>`;
     }).join('');
   },
+
+  // ── Projector control (requires S.display.password) ──────────
+  _dispPost(action) {
+    return apiPost({ action, password: S.display.password, gameId: S.display.gameId });
+  },
+  async dispNextQuestion() {
+    const btn = document.getElementById('d-btn-next') || document.getElementById('d-btn-start');
+    if (btn) btn.disabled = true;
+    try {
+      const r = await App._dispPost('nextQuestion');
+      if (!r.success) notify(r.error || 'ไม่สำเร็จ', 'error');
+    } catch(e) { notify('เชื่อมต่อไม่ได้', 'error'); }
+    finally { if (btn) btn.disabled = false; }
+  },
+  async dispShowAnswer() {
+    const btn = document.getElementById('d-btn-ans');
+    if (btn) btn.disabled = true;
+    try {
+      const r = await App._dispPost('showAnswer');
+      if (!r.success) notify(r.error || 'ไม่สำเร็จ', 'error');
+    } catch(e) { notify('เชื่อมต่อไม่ได้', 'error'); }
+    finally { if (btn) btn.disabled = false; }
+  },
+  async dispShowLeaderboard() {
+    const btn = document.getElementById('d-btn-lb');
+    if (btn) btn.disabled = true;
+    try {
+      const r = await App._dispPost('showLeaderboard');
+      if (!r.success) notify(r.error || 'ไม่สำเร็จ', 'error');
+    } catch(e) { notify('เชื่อมต่อไม่ได้', 'error'); }
+    finally { if (btn) btn.disabled = false; }
+  },
+  dispConfirmEnd() {
+    S.confirmCallback = App.dispEndGame;
+    document.getElementById('confirm-title').textContent = 'จบเกม?';
+    document.getElementById('confirm-msg').textContent = 'ยืนยันการจบเกมจากหน้าโปรเจคเตอร์';
+    document.getElementById('confirm-icon').textContent = '!';
+    openModal('modal-confirm');
+  },
+  async dispEndGame() {
+    try {
+      const r = await App._dispPost('endGame');
+      if (!r.success) notify(r.error || 'ไม่สำเร็จ', 'error');
+    } catch(e) { notify('เชื่อมต่อไม่ได้', 'error'); }
+  },
+  async dispUnlock() {
+    const pw = document.getElementById('d-ctrl-pw').value.trim();
+    if (!pw) { notify('กรุณาใส่รหัสผ่านอาจารย์', 'error'); return; }
+    S.display.password = pw;
+    document.getElementById('d-ctrl-pw').value = '';
+    showDispCtrlBar(true);
+    if (S.display.lastStatus)
+      updateDispCtrlBar(S.display.lastStatus, S.display.lastQNum, S.display.totalQ);
+  },
+  // ─────────────────────────────────────────────────────────────
 
   async submitPIN() {
     const pin = document.getElementById('s-pin-input').value.trim();
@@ -1762,8 +1828,12 @@ const App = {
       if (status === 'ended') { clearInterval(S.student.refreshInterval); App.studentShowEnded(); return; }
       if (status === 'waiting') { showStuPanel('waiting'); document.getElementById('s-waiting-status').textContent = 'รออาจารย์เริ่มคำถาม...'; return; }
       if (status === 'playing') {
-        if (qNum !== S.student.lastQNum) { S.student.hasAnswered=false; S.student.lastQNum=qNum; S.student.answerStartTime=Date.now(); }
-        if (!S.student.hasAnswered && r.question) App.studentShowQuestion(r.question, sess);
+        if (qNum !== S.student.lastQNum) {
+          S.student.hasAnswered = false;
+          S.student.lastQNum = qNum;
+          S.student.answerStartTime = Date.now();
+          if (r.question) App.studentShowQuestion(r.question, sess);
+        }
       }
       if ((status==='showing_answer'||status==='leaderboard') && S.student.hasAnswered) {
         showStuPanel('submitted');
@@ -1785,7 +1855,11 @@ const App = {
     showStuPanel('question');
     document.getElementById('s-q-num-badge').textContent = `ข้อที่ ${q.number} / ${sess.totalQuestions}`;
     stopTimer();
-    startTimer(q.timeLimit,'s-timer-bar','s-timer-num',()=>{ notify('หมดเวลา!','error'); });
+    startTimer(q.timeLimit, 's-timer-bar', 's-timer-num', () => {
+      document.querySelectorAll('#s-options .kahoot-btn').forEach(b => { b.disabled = true; });
+      document.getElementById('s-text-input-wrap').querySelectorAll('button,textarea').forEach(b => { b.disabled = true; });
+      notify('หมดเวลา!', 'error');
+    }, sess.questionStartTime);
     const opts = document.getElementById('s-options');
     const textWrap = document.getElementById('s-text-input-wrap');
     const dis = S.student.hasAnswered ? 'disabled' : '';
@@ -1907,6 +1981,41 @@ function stopLiveAnswers() {
   if (box) box.classList.add('hidden');
 }
 
+// ============================================================
+// Live Choice Stats — Multiple Choice / True-False / Poll
+// ============================================================
+let liveChoiceInterval = null;
+const choiceState = { gameId: null, qNum: null };
+
+function startLiveChoiceStats(gameId, qNum) {
+  stopLiveChoiceStats();
+  choiceState.gameId = gameId;
+  choiceState.qNum = qNum;
+  fetchLiveChoiceStats();
+  liveChoiceInterval = setInterval(fetchLiveChoiceStats, 2500);
+}
+
+function stopLiveChoiceStats() {
+  clearInterval(liveChoiceInterval);
+  liveChoiceInterval = null;
+  choiceState.gameId = null;
+}
+
+async function fetchLiveChoiceStats() {
+  if (!choiceState.gameId) return;
+  try {
+    const r = await apiGet({ action:'getDisplayAnswerStats', gameId:choiceState.gameId, qNum:choiceState.qNum, _t:Date.now() });
+    if (!r.success) return;
+    const s = r.stats;
+    const answeredEl = document.getElementById('d-q-answered');
+    if (answeredEl) answeredEl.textContent = s.total;
+    ['A','B','C','D'].forEach(l => {
+      const el = document.getElementById('d-cnt-' + l);
+      if (el) el.textContent = s[l] || 0;
+    });
+  } catch(e) { console.error('fetchLiveChoiceStats:', e); }
+}
+
 async function fetchLiveAnswers() {
   if (!liveState.gameId) return;
   try {
@@ -1916,6 +2025,11 @@ async function fetchLiveAnswers() {
     document.getElementById('d-live-count').textContent = count + ' คำตอบ';
     const answered = document.getElementById('d-q-answered');
     if (answered) answered.textContent = count;
+    const total = document.getElementById('d-q-total');
+    if (total && !total.textContent || total.textContent === '0') {
+      const pl = document.getElementById('d-q-players');
+      if (pl) total.textContent = pl.textContent;
+    }
     if (!count) return;
     if (liveState.qType === 'word_cloud') renderWordCloud(r.answers);
     else renderBrainstormCards(r.answers);
@@ -2517,372 +2631,6 @@ async function dispShowAquaTypeStats() {
 }
 
 // ============================================================
-// DEMO MODE
-// ============================================================
-const DQ = [
-  {
-    type: 'multiple_choice',
-    question: 'ปลาน้ำจืดที่นิยมเพาะเลี้ยงมากที่สุดในประเทศไทย คือปลาชนิดใด?',
-    optionA:'ปลานิล', optionB:'ปลาสวาย', optionC:'ปลาดุก', optionD:'ปลาช่อน',
-    correctAnswer:'A',
-    explanation:'ปลานิล (Tilapia) เป็นปลาน้ำจืดที่เลี้ยงมากที่สุดในประเทศไทย เนื่องจากโตเร็ว ทนทาน และตลาดรองรับดี',
-    timeLimit:20
-  },
-  {
-    type: 'true_false',
-    question: 'ค่า pH ที่เหมาะสมสำหรับการเพาะเลี้ยงปลาน้ำจืดส่วนใหญ่ควรอยู่ระหว่าง 6.5 ถึง 8.5',
-    optionA:'ถูก', optionB:'ผิด', optionC:'', optionD:'',
-    correctAnswer:'A',
-    explanation:'ค่า pH 6.5–8.5 เป็นช่วงที่ปลาน้ำจืดส่วนใหญ่อยู่ได้ดี ค่าต่ำหรือสูงเกินไปทำให้ปลาเครียด',
-    timeLimit:15
-  },
-  {
-    type: 'poll',
-    question: 'คุณสนใจเรียนด้านประมงสาขาใดมากที่สุด?',
-    optionA:'การเพาะเลี้ยงสัตว์น้ำ', optionB:'การประมงทะเล',
-    optionC:'แปรรูปอาหารทะเล', optionD:'เทคโนโลยีประมง',
-    correctAnswer:'', explanation:'', timeLimit:20
-  },
-  {
-    type: 'brainstorm',
-    question: 'บอกสิ่งที่คาดหวังจากการเรียนวิชาประมงมา 1 สิ่ง',
-    optionA:'', optionB:'', optionC:'', optionD:'',
-    correctAnswer:'', explanation:'', timeLimit:30
-  },
-  {
-    type: 'word_cloud',
-    question: 'คิดถึงคำว่า "สัตว์น้ำ" แล้วนึกถึงคำใดบ้าง? พิมพ์มา 1–2 คำ',
-    optionA:'', optionB:'', optionC:'', optionD:'',
-    correctAnswer:'', explanation:'', timeLimit:25
-  }
-];
-
-const DEMO_BRAINSTORM_MOCK = [
-  {nick:'น้องมีน',  ans:'อยากเรียนรู้การเพาะเลี้ยงสัตว์น้ำแบบครบวงจร'},
-  {nick:'ปลาทอง',  ans:'ต้องการนำเทคโนโลยีสมัยใหม่มาพัฒนาการประมง'},
-  {nick:'ทะเล99',  ans:'อยากสร้างฟาร์มปลาของตัวเองในอนาคต'},
-  {nick:'กุ้งแม่น้ำ',ans:'ศึกษาระบบ RAS เพื่อเพาะเลี้ยงในพื้นที่จำกัด'},
-  {nick:'นิลไทย',  ans:'พัฒนาอาหารสัตว์น้ำให้มีคุณภาพดีขึ้น'},
-  {nick:'ปลาช่อน', ans:'อนุรักษ์พันธุ์ปลาน้ำจืดพื้นถิ่น'},
-];
-const DEMO_WORDCLOUD_MOCK = [
-  {nick:'น้องมีน',  ans:'ปลา กุ้ง'},
-  {nick:'ปลาทอง',  ans:'ทะเล ปลา'},
-  {nick:'ทะเล99',  ans:'น้ำ ปลา สัตว์'},
-  {nick:'กุ้งแม่น้ำ',ans:'กุ้ง ปู ปลาหมึก'},
-  {nick:'นิลไทย',  ans:'ปลา อาหาร'},
-  {nick:'ปลาช่อน', ans:'แม่น้ำ ทะเล ปลา'},
-];
-const DEMO_MC_VOTES  = {A:8, B:3, C:2, D:2};
-const DEMO_TF_VOTES  = {A:12, B:3, C:0, D:0};
-const DEMO_POLL_VOTES= {A:7, B:4, C:2, D:3};
-
-const DS = {
-  qIdx: 0,
-  status: 'idle',        // idle | playing | showing_answer
-  studentAnswered: false,
-  studentAnswer: null,
-  charNum: 1,
-  mockAnswers: [],
-  timerInterval: null,
-  mockInterval: null,
-  mockIdx: 0,
-  timerRemaining: 0,
-};
-
-function initDemo() {
-  DS.qIdx = 0; DS.status = 'idle'; DS.studentAnswered = false;
-  DS.studentAnswer = null; DS.mockAnswers = []; DS.mockIdx = 0;
-  clearInterval(DS.timerInterval); clearInterval(DS.mockInterval);
-  showScreen('demo');
-  _demoSyncTypeTabs();
-  _demoRenderDisplay();
-  _demoRenderStudent();
-}
-
-function exitDemo() {
-  clearInterval(DS.timerInterval); clearInterval(DS.mockInterval);
-  showScreen('landing');
-}
-
-function demoSelectType(idx) {
-  DS.qIdx = idx; DS.status = 'idle';
-  DS.studentAnswered = false; DS.studentAnswer = null;
-  DS.mockAnswers = []; DS.mockIdx = 0;
-  clearInterval(DS.timerInterval); clearInterval(DS.mockInterval);
-  _demoSyncTypeTabs();
-  _demoSetControls('idle');
-  _demoRenderDisplay();
-  _demoRenderStudent();
-}
-
-function demoReset() { demoSelectType(DS.qIdx); }
-
-function demoStart() {
-  if (DS.status !== 'idle') return;
-  DS.status = 'playing';
-  DS.charNum = Math.floor(Math.random() * 14) + 1;
-  DS.studentAnswered = false; DS.studentAnswer = null;
-  DS.mockAnswers = []; DS.mockIdx = 0;
-  _demoSetControls('playing');
-  _demoRenderDisplay();
-  _demoRenderStudent();
-  const q = DQ[DS.qIdx];
-  DS.timerRemaining = q.timeLimit;
-  _demoUpdateTimer();
-  DS.timerInterval = setInterval(() => {
-    DS.timerRemaining--;
-    _demoUpdateTimer();
-    if (DS.timerRemaining <= 0) {
-      clearInterval(DS.timerInterval);
-      if (DS.status === 'playing') { DS.status = 'time_up'; _demoSetControls('time_up'); _demoRenderStudent(); }
-    }
-  }, 1000);
-  // brainstorm / word_cloud — add mock answers
-  if (['brainstorm','word_cloud'].includes(q.type)) {
-    const pool = q.type === 'word_cloud' ? DEMO_WORDCLOUD_MOCK : DEMO_BRAINSTORM_MOCK;
-    DS.mockInterval = setInterval(() => {
-      if (DS.mockIdx < pool.length) {
-        DS.mockAnswers.push(pool[DS.mockIdx++]);
-        _demoRenderLiveAnswers();
-      } else { clearInterval(DS.mockInterval); }
-    }, 1800);
-  }
-}
-
-function demoShowAnswer() {
-  clearInterval(DS.timerInterval); clearInterval(DS.mockInterval);
-  DS.status = 'showing_answer';
-  _demoSetControls('showing_answer');
-  _demoRenderDisplay();
-  _demoRenderStudent();
-}
-
-function demoStudentAnswer(ans) {
-  if (DS.studentAnswered || DS.status !== 'playing') return;
-  DS.studentAnswered = true; DS.studentAnswer = ans;
-  _demoRenderStudent();
-}
-
-function _demoSetControls(status) {
-  const btnStart  = document.getElementById('demo-btn-start');
-  const btnAnswer = document.getElementById('demo-btn-answer');
-  if (!btnStart) return;
-  if (status === 'idle') {
-    btnStart.style.display = ''; btnStart.textContent = 'เริ่มนับเวลา';
-    btnAnswer.style.display = 'none';
-  } else if (status === 'playing') {
-    btnStart.style.display = 'none';
-    btnAnswer.style.display = '';
-  } else {
-    btnStart.style.display = ''; btnStart.textContent = 'รีเซ็ต';
-    btnAnswer.style.display = 'none';
-    btnStart.onclick = demoReset;
-  }
-}
-
-function _demoSyncTypeTabs() {
-  document.querySelectorAll('#demo-type-tabs .demo-type-btn').forEach((b, i) => {
-    b.classList.toggle('active', i === DS.qIdx);
-  });
-}
-
-function _demoUpdateTimer() {
-  ['demo-d-timer-bar','demo-s-timer-bar'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const q = DQ[DS.qIdx];
-    const pct = Math.max(0, DS.timerRemaining / q.timeLimit * 100);
-    el.style.width = pct + '%';
-    el.className = 'timer-bar' + (pct < 25 ? ' danger' : pct < 50 ? ' warning' : '');
-  });
-  ['demo-d-timer-num','demo-s-timer-num'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = Math.max(0, DS.timerRemaining);
-  });
-}
-
-function _demoRenderDisplay() {
-  const el = document.getElementById('demo-display');
-  if (!el) return;
-  const q = DQ[DS.qIdx];
-  if (DS.status === 'idle') {
-    el.innerHTML = `
-      <div style="text-align:center;padding:30px 0">
-        <div class="q-type-badge" style="margin-bottom:12px">${TYPE_LABELS[q.type]||q.type}</div>
-        <div class="q-text" style="font-size:1.1rem;max-width:520px;margin:0 auto 16px">${q.question}</div>
-        ${_demoOptionsHTML(q, false, true)}
-        <div class="text-gray text-sm mt16">กด "เริ่มนับเวลา" เพื่อเริ่ม</div>
-      </div>`;
-    return;
-  }
-  // playing or showing_answer
-  const showAns = DS.status === 'showing_answer';
-  el.innerHTML = `
-    <div class="q-layout" style="gap:14px">
-      <div class="q-char-wrap" style="width:160px">
-        <img src="${DS.charNum}.png" alt="" class="q-char-img" style="width:140px">
-      </div>
-      <div class="q-layout-right">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span class="q-number-badge">ข้อที่ ${DS.qIdx+1} / ${DQ.length}</span>
-          <span class="q-type-badge">${TYPE_LABELS[q.type]||q.type}</span>
-        </div>
-        <div class="q-card mb10">
-          <div class="q-text" style="font-size:1.05rem">${q.question}</div>
-        </div>
-        <div class="timer-wrap" style="margin-bottom:4px"><div id="demo-d-timer-bar" class="timer-bar" style="width:100%"></div></div>
-        <div id="demo-d-timer-num" class="timer-num" style="font-size:.8rem;margin-bottom:8px">${q.timeLimit}</div>
-        ${_demoOptionsHTML(q, showAns, true)}
-        ${showAns && q.correctAnswer ? `
-          <div class="demo-answer-result correct mt10">
-            <div style="font-weight:700;color:var(--green)">คำตอบที่ถูก: ${q.correctAnswer} — ${q['option'+q.correctAnswer]}</div>
-            ${q.explanation ? `<div class="text-sm text-gray mt4">${q.explanation}</div>` : ''}
-          </div>
-          ${_demoStatsHTML(q)}` : ''}
-        ${['brainstorm','word_cloud'].includes(q.type) ? `<div id="demo-live-box" class="live-answers-box" style="margin-top:10px">
-          <div class="live-answers-header">
-            <span class="bold text-cyan" style="font-size:.88rem">${q.type==='word_cloud'?'Word Cloud สด':'Brainstorm สด'}</span>
-            <span class="text-xs text-gray" id="demo-live-count">${DS.mockAnswers.length} คำตอบ</span>
-          </div>
-          <div id="demo-live-content">${DS.mockAnswers.length ? _demoLiveHTML(q.type) : '<p class="text-sm text-gray center">รอคำตอบ...</p>'}</div>
-        </div>` : ''}
-      </div>
-    </div>`;
-  _demoUpdateTimer();
-}
-
-function _demoOptionsHTML(q, showCorrect, fullText) {
-  if (q.type === 'multiple_choice' || q.type === 'poll') {
-    return `<div class="grid-2" style="gap:8px">
-      ${['A','B','C','D'].filter(l=>q['option'+l]).map(l=>{
-        const isCorr = showCorrect && q.correctAnswer === l;
-        const style = isCorr ? 'border-color:rgba(0,230,140,.7);background:rgba(0,180,100,.25);' : '';
-        return `<div class="ans-btn ${l}" style="cursor:default;${style}">
-          <span class="pixel-font" style="font-size:.7rem">${l}</span>  ${fullText ? q['option'+l] : ''}
-        </div>`;
-      }).join('')}
-    </div>`;
-  }
-  if (q.type === 'true_false') {
-    return `<div class="grid-2" style="gap:8px">
-      ${['A','B'].map(l=>{
-        const isCorr = showCorrect && q.correctAnswer === l;
-        const style = isCorr ? 'border-color:rgba(0,230,140,.7);background:rgba(0,180,100,.25);' : '';
-        const txt = l==='A'?'ถูก':'ผิด';
-        return `<div class="ans-btn ${l==='A'?'TF-T':'TF-F'}" style="cursor:default;${style}">${txt}</div>`;
-      }).join('')}
-    </div>`;
-  }
-  return `<div class="px-box center text-gray text-sm">นักศึกษาพิมพ์คำตอบในมือถือ</div>`;
-}
-
-function _demoStatsHTML(q) {
-  const votes = q.type==='poll' ? DEMO_POLL_VOTES : q.type==='true_false' ? DEMO_TF_VOTES : DEMO_MC_VOTES;
-  const total = Object.values(votes).reduce((a,b)=>a+b,0);
-  const colors = {A:'rgba(220,50,70,.8)',B:'rgba(22,180,104,.8)',C:'rgba(30,130,220,.8)',D:'rgba(220,150,20,.8)'};
-  const labels = ['A','B','C','D'].filter(l=>q['option'+l]);
-  return `<div class="px-box mt10" style="padding:12px">
-    <div class="text-sm bold mb8">สถิติคำตอบ (จำลอง)</div>
-    ${labels.map(l=>`
-      <div class="demo-stat-row">
-        <div class="demo-stat-label text-sm bold">${l}: ${q['option'+l]?q['option'+l].slice(0,8)+'…':l}</div>
-        <div class="demo-stat-bar-bg"><div class="demo-stat-bar-fill" style="width:${total?Math.round(votes[l]/total*100):0}%;background:${colors[l]}"></div></div>
-        <div class="demo-stat-count">${votes[l]} คน</div>
-      </div>`).join('')}
-  </div>`;
-}
-
-function _demoLiveHTML(type) {
-  if (type === 'word_cloud') {
-    const freq = {};
-    DS.mockAnswers.forEach(a => {
-      a.ans.trim().split(/\s+/).forEach(w => {
-        if (!w) return;
-        freq[w] = (freq[w]||0) + 1;
-      });
-    });
-    const entries = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
-    const max = entries[0]?.[1] || 1;
-    const pal = ['var(--cyan)','var(--teal)','var(--yellow)','var(--green)','var(--purple)','var(--pink)','#fff'];
-    return `<div class="wordcloud-wrap">${entries.map(([w,c],i)=>`
-      <span class="wc-word" style="font-size:${14+Math.round(c/max*34)}px;color:${pal[i%pal.length]}">${escHtml(w)}</span>`).join('')}</div>`;
-  }
-  return `<div class="brainstorm-grid">${DS.mockAnswers.map(a=>`
-    <div class="brainstorm-card">
-      <div class="brainstorm-nick">${escHtml(a.nick)}</div>
-      <div class="brainstorm-text">${escHtml(a.ans)}</div>
-    </div>`).join('')}</div>`;
-}
-
-function _demoRenderLiveAnswers() {
-  const box = document.getElementById('demo-live-content');
-  const cnt = document.getElementById('demo-live-count');
-  if (!box) return;
-  const q = DQ[DS.qIdx];
-  box.innerHTML = _demoLiveHTML(q.type);
-  if (cnt) cnt.textContent = DS.mockAnswers.length + ' คำตอบ';
-}
-
-function _demoRenderStudent() {
-  const el = document.getElementById('demo-student');
-  if (!el) return;
-  const q = DQ[DS.qIdx];
-  if (DS.status === 'idle') {
-    el.innerHTML = `<div class="demo-idle-msg">รอเริ่มเกม...<br><br><span style="font-size:.75rem">อาจารย์กด "เริ่มนับเวลา"</span></div>`;
-    return;
-  }
-  if (DS.studentAnswered) {
-    const isCorr = q.type==='true_false'||q.type==='multiple_choice' ? DS.studentAnswer===q.correctAnswer : true;
-    const showResult = DS.status==='showing_answer';
-    el.innerHTML = `<div class="demo-phone-answered">
-      ${showResult
-        ? `<div class="demo-answered-icon" style="color:${isCorr?'var(--green)':'var(--red)'}">${isCorr?'OK':'MISS'}</div>
-           <div style="font-weight:700;font-size:1rem;color:${isCorr?'var(--green)':'var(--red)'}">${isCorr?'ตอบถูก!':'ตอบผิด!'}</div>
-           ${isCorr?'<div class="text-yellow pixel-font" style="font-size:.9rem">+850 คะแนน</div>':''}`
-        : `<div style="font-size:2rem;font-weight:900;color:var(--cyan)">${DS.studentAnswer||'OK'}</div>
-           <div class="text-sm text-gray">ส่งคำตอบแล้ว รอเฉลย...</div>
-           <div class="spinner mt8"></div>`}
-    </div>`;
-    return;
-  }
-  if (DS.status === 'time_up') {
-    el.innerHTML = `<div class="demo-phone-answered"><div class="text-gray" style="font-size:.9rem">หมดเวลา!</div></div>`;
-    return;
-  }
-  // playing — show kahoot buttons
-  const timerHTML = `
-    <div style="margin-bottom:4px">
-      <div class="timer-wrap" style="height:8px"><div id="demo-s-timer-bar" class="timer-bar" style="width:100%"></div></div>
-      <div id="demo-s-timer-num" class="timer-num" style="font-size:.7rem;margin-top:2px">${DS.timerRemaining}</div>
-    </div>`;
-  let btnsHTML = '';
-  if (q.type === 'multiple_choice' || q.type === 'poll') {
-    btnsHTML = `<div class="kahoot-grid" style="gap:8px">${
-      ['A','B','C','D'].filter(l=>q['option'+l]).map(l=>`
-        <button class="kahoot-btn ${l}" style="min-height:80px;font-size:1.6rem"
-          onclick="demoStudentAnswer('${l}')">
-          ${l}
-        </button>`).join('')}</div>`;
-  } else if (q.type === 'true_false') {
-    btnsHTML = `<div class="kahoot-grid tf" style="gap:8px">
-      <button class="kahoot-btn TF-T" style="min-height:80px" onclick="demoStudentAnswer('A')">&#10003;<div class="kahoot-btn-label">ถูก</div></button>
-      <button class="kahoot-btn TF-F" style="min-height:80px" onclick="demoStudentAnswer('B')">&#10007;<div class="kahoot-btn-label">ผิด</div></button>
-    </div>`;
-  } else {
-    btnsHTML = `<div style="padding:8px 0">
-      <textarea class="px-textarea" placeholder="พิมพ์คำตอบ..." rows="3" id="demo-s-text" style="font-size:.9rem"></textarea>
-      <button class="px-btn px-btn-cyan px-btn-full mt8" onclick="demoStudentAnswer(document.getElementById('demo-s-text').value||'คำตอบตัวอย่าง')">ส่งคำตอบ</button>
-    </div>`;
-  }
-  el.innerHTML = `
-    ${timerHTML}
-    <div class="kahoot-hint" style="font-size:.72rem;padding:4px 0 8px">ดูคำถามจากหน้าจออาจารย์</div>
-    ${btnsHTML}`;
-  _demoUpdateTimer();
-}
-
-// ============================================================
 // Web Audio Sound Engine
 // ============================================================
 const Audio = {
@@ -3141,6 +2889,8 @@ window.closeModal = closeModal;
 window.showScreen = showScreen;
 window.showStuPanel = showStuPanel;
 window.showDispPanel = showDispPanel;
+window.showDispCtrlBar = showDispCtrlBar;
+window.updateDispCtrlBar = updateDispCtrlBar;
 window.toggleSound = toggleSound;
 window.setVolume = setVolume;
 window.initAquaType = initAquaType;
@@ -3151,13 +2901,6 @@ window.atNext       = atNext;
 window.atSelect     = atSelect;
 window.atRetake     = atRetake;
 window.dispShowAquaTypeStats = dispShowAquaTypeStats;
-window.initDemo = initDemo;
-window.exitDemo = exitDemo;
-window.demoSelectType = demoSelectType;
-window.demoStart = demoStart;
-window.demoShowAnswer = demoShowAnswer;
-window.demoReset = demoReset;
-window.demoStudentAnswer = demoStudentAnswer;
 </script>
 </body>
 </html>
