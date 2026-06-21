@@ -1594,9 +1594,10 @@ const App = {
   async displayRefresh() {
     if (!S.display.gameId) return;
     try {
+      const _t = Date.now();
       const [stateR, countR] = await Promise.all([
-        apiGet({ action:'getGameState', gameId:S.display.gameId }),
-        apiGet({ action:'getPlayerCount', gameId:S.display.gameId })
+        apiGet({ action:'getGameState', gameId:S.display.gameId, _t }),
+        apiGet({ action:'getPlayerCount', gameId:S.display.gameId, _t })
       ]);
       if (!stateR.success) return;
       const sess = stateR.session;
@@ -1753,7 +1754,7 @@ const App = {
   async studentRefresh() {
     if (!S.student.gameId) return;
     try {
-      const r = await apiGet({ action:'getCurrentQuestion', gameId:S.student.gameId });
+      const r = await apiGet({ action:'getCurrentQuestion', gameId:S.student.gameId, _t:Date.now() });
       if (!r.success) return;
       const sess = r.session;
       const status = sess.status;
@@ -1909,14 +1910,16 @@ function stopLiveAnswers() {
 async function fetchLiveAnswers() {
   if (!liveState.gameId) return;
   try {
-    const r = await apiGet({ action:'getTextAnswers', gameId:liveState.gameId, qNum:liveState.qNum });
+    const r = await apiGet({ action:'getTextAnswers', gameId:liveState.gameId, qNum:liveState.qNum, _t:Date.now() });
     if (!r.success || !r.answers) return;
     const count = r.answers.length;
     document.getElementById('d-live-count').textContent = count + ' คำตอบ';
+    const answered = document.getElementById('d-q-answered');
+    if (answered) answered.textContent = count;
     if (!count) return;
     if (liveState.qType === 'word_cloud') renderWordCloud(r.answers);
     else renderBrainstormCards(r.answers);
-  } catch(e) {}
+  } catch(e) { console.error('fetchLiveAnswers:', e); }
 }
 
 function renderBrainstormCards(answers) {
