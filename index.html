@@ -683,6 +683,7 @@ h3{font-size:1.15rem;font-weight:700;color:rgba(255,255,255,.9)}
             <button class="px-btn px-btn-gray px-btn-full" onclick="App.exportCSV()">Export CSV</button>
             <button class="px-btn px-btn-red px-btn-full" onclick="App.confirmEndGame()">จบเกม</button>
           </div>
+          <button class="px-btn px-btn-purple px-btn-full mt8" onclick="App.openDisplayWindow()">เปิดหน้าจอแสดงผล (แท็บใหม่)</button>
           <button class="px-btn px-btn-gray px-btn-full mt8" onclick="App.confirmReset()">รีเซ็ต (ล้างผู้เล่น)</button>
         </div>
 
@@ -1362,6 +1363,10 @@ const App = {
     }
   },
 
+  openDisplayWindow() {
+    if (!S.teacher.gameId) { notify('ยังไม่ได้สร้างเกม', 'error'); return; }
+    window.open(location.pathname + '?mode=display&gameId=' + encodeURIComponent(S.teacher.gameId), '_blank');
+  },
   confirmReset() {
     S.confirmCallback = App.resetGame;
     document.getElementById('confirm-title').textContent = 'รีเซ็ตเกม?';
