@@ -1908,6 +1908,7 @@ const App = {
     } else {
       // brainstorm / word_cloud
       textWrap.classList.remove('hidden');
+      textWrap.querySelectorAll('button,textarea').forEach(b => { b.disabled = false; });
       document.getElementById('s-text-answer').value = '';
       textWrap.dataset.qnum = q.number;
     }
@@ -1930,6 +1931,9 @@ const App = {
         App.showResultOverlay(r.isCorrect, r.score);
         document.getElementById('s-submitted-msg').textContent = r.message||'ส่งคำตอบแล้ว!';
         document.getElementById('s-my-score-display').textContent = r.score||0;
+      } else {
+        S.student.hasAnswered = false;
+        notify(r.error || 'ส่งคำตอบไม่ได้ กรุณาลองใหม่', 'error');
       }
     } catch(e) {
       localStorage.setItem('pendingAnswer', JSON.stringify({ gameId:S.student.gameId, playerId:S.student.playerId, questionNumber, answer, responseTime }));
@@ -1941,6 +1945,8 @@ const App = {
     const text = document.getElementById('s-text-answer').value.trim();
     if (!text) { notify('กรุณาพิมพ์คำตอบ','error'); return; }
     const qnum = parseInt(document.getElementById('s-text-input-wrap').dataset.qnum);
+    stopTimer();
+    document.getElementById('s-text-input-wrap').querySelectorAll('button,textarea').forEach(b => { b.disabled = true; });
     await App.submitAnswer(text, qnum);
   },
 
