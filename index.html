@@ -942,7 +942,7 @@ const S = {
   mode: 'landing',
   teacher: { password:'', gameId:null, pin:null, questionSetId:null, questionSetName:null, totalQ:0, currentQ:0, status:'waiting' },
   display: { gameId:null, password:null, totalQ:0, timerInterval:null, refreshInterval:null, lastStatus:null, lastQNum:0, failCount:0 },
-  student: { gameId:null, playerId:null, nickname:null, pin:null, currentQ:0, hasAnswered:false, answerStartTime:0, refreshInterval:null, lastStatus:null, lastQNum:0 },
+  student: { gameId:null, playerId:null, nickname:null, pin:null, currentQ:0, hasAnswered:false, answerStartTime:0, refreshInterval:null, lastStatus:null, lastQNum:0, resultTimeout:null, refreshing:false },
   confirmCallback: null,
   questionRows: [],
   editingSetId: null
@@ -1080,6 +1080,12 @@ function startTimer(timeLimit, barId, numId, onEnd, serverStartMs) {
   const bar = document.getElementById(barId);
   const num = document.getElementById(numId);
   const refMs = (serverStartMs && serverStartMs > 0) ? serverStartMs : Date.now();
+  const initElapsed = Math.floor((Date.now() - refMs) / 1000);
+  if (initElapsed >= timeLimit) {
+    if (bar) { bar.style.width = '0%'; bar.className = 'timer-bar danger'; }
+    if (num) num.textContent = '0';
+    return;
+  }
   function update() {
     if (!bar || !num) return;
     const elapsed = Math.floor((Date.now() - refMs) / 1000);
@@ -1161,6 +1167,8 @@ const App = {
     else {
       const savedPin = localStorage.getItem('disp_last_pin');
       if (savedPin) document.getElementById('d-gameid-input').value = savedPin;
+      const btn = document.getElementById('d-connect-btn');
+      if (btn) { btn.disabled = false; btn.textContent = 'เข้าสู่เกม'; }
       showDispPanel('setup');
     }
   },
@@ -1579,9 +1587,11 @@ const App = {
       ]);
       if (!stateR.success) {
         S.display.failCount++;
-        if (S.display.failCount >= 3) {
+        if (S.display.failCount >= 5) {
           clearInterval(S.display.refreshInterval);
           S.display.gameId = null; S.display.failCount = 0;
+          const btn = document.getElementById('d-connect-btn');
+          if (btn) { btn.disabled = false; btn.textContent = 'เข้าสู่เกม'; }
           notify('โหลดข้อมูลเกมไม่สำเร็จ กรุณากรอก PIN ใหม่', 'error', 5000);
           showDispPanel('setup');
         }
@@ -1643,9 +1653,11 @@ const App = {
     } catch(e) {
       console.error(e);
       S.display.failCount++;
-      if (S.display.failCount >= 3) {
+      if (S.display.failCount >= 5) {
         clearInterval(S.display.refreshInterval);
         S.display.gameId = null; S.display.failCount = 0;
+        const btn = document.getElementById('d-connect-btn');
+        if (btn) { btn.disabled = false; btn.textContent = 'เข้าสู่เกม'; }
         notify('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณากรอก PIN ใหม่', 'error', 5000);
         showDispPanel('setup');
       }
@@ -1803,6 +1815,9 @@ const App = {
       const r = await apiPost({ action:'joinGame', pin:S.student.pin, player:{fullName,nickname,studentId,program,year,province,expectation} });
       if (!r.success) { notify(r.error,'error'); return; }
       S.student.gameId = r.gameId; S.student.playerId = r.playerId; S.student.nickname = r.nickname||nickname;
+      S.student.hasAnswered = false; S.student.lastQNum = 0; S.student.lastStatus = null; S.student.refreshing = false;
+      if (S.student.resultTimeout) { clearTimeout(S.student.resultTimeout); S.student.resultTimeout = null; }
+      document.getElementById('result-overlay').classList.remove('show');
       document.getElementById('s-welcome-nick').textContent = S.student.nickname;
       document.getElementById('s-my-pin').textContent = S.student.pin;
       showStuPanel('waiting');
@@ -1818,7 +1833,8 @@ const App = {
   },
 
   async studentRefresh() {
-    if (!S.student.gameId) return;
+    if (!S.student.gameId || S.student.refreshing) return;
+    S.student.refreshing = true;
     try {
       const r = await apiGet({ action:'getCurrentQuestion', gameId:S.student.gameId, _t:Date.now() });
       if (!r.success) return;
@@ -1849,9 +1865,15 @@ const App = {
       }
       S.student.lastStatus = status;
     } catch(e) { console.error(e); }
+    finally { S.student.refreshing = false; }
   },
 
   studentShowQuestion(q, sess) {
+    if (S.student.resultTimeout) {
+      clearTimeout(S.student.resultTimeout);
+      S.student.resultTimeout = null;
+      document.getElementById('result-overlay').classList.remove('show');
+    }
     showStuPanel('question');
     document.getElementById('s-q-num-badge').textContent = `ข้อที่ ${q.number} / ${sess.totalQuestions}`;
     stopTimer();
@@ -1901,6 +1923,7 @@ const App = {
     try {
       const r = await apiPost({ action:'submitAnswer', gameId:S.student.gameId, playerId:S.student.playerId, questionNumber, answer, responseTime });
       localStorage.removeItem('pendingAnswer');
+      if (S.student.lastQNum !== questionNumber) return;
       if (r.alreadyAnswered) { showStuPanel('submitted'); document.getElementById('s-submitted-msg').textContent='ส่งคำตอบแล้ว (ซ้ำ)'; return; }
       if (r.success) {
         App.showResultOverlay(r.isCorrect, r.score);
@@ -1929,7 +1952,11 @@ const App = {
     document.getElementById('result-text').textContent = isCorrect ? 'ตอบถูก!' : 'ตอบผิด!';
     document.getElementById('result-score').textContent = isCorrect ? `+${score} คะแนน` : '';
     overlay.classList.add('show');
-    setTimeout(() => { overlay.classList.remove('show'); showStuPanel('submitted'); }, 2000);
+    S.student.resultTimeout = setTimeout(() => {
+      overlay.classList.remove('show');
+      showStuPanel('submitted');
+      S.student.resultTimeout = null;
+    }, 2000);
   },
 
   async retryPending() {
