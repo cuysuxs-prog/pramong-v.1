@@ -940,7 +940,7 @@ const REFRESH_INTERVAL = 4000;
 
 const S = {
   mode: 'landing',
-  teacher: { password:'', gameId:null, pin:null, questionSetId:null, questionSetName:null, totalQ:0, currentQ:0, status:'waiting' },
+  teacher: { password:'', gameId:null, pin:null, questionSetId:null, questionSetName:null, totalQ:0, currentQ:0, status:'waiting', refreshInterval:null },
   display: { gameId:null, password:null, totalQ:0, timerInterval:null, refreshInterval:null, lastStatus:null, lastQNum:0, failCount:0 },
   student: { gameId:null, playerId:null, nickname:null, pin:null, currentQ:0, hasAnswered:false, answerStartTime:0, refreshInterval:null, lastStatus:null, lastQNum:0, resultTimeout:null, refreshing:false },
   confirmCallback: null,
@@ -1183,6 +1183,7 @@ const App = {
   doTeacherLogin() {
     const pw = document.getElementById('t-login-pw').value.trim();
     if (!pw) { notify('กรุณาใส่รหัสผ่าน', 'error'); return; }
+    if (pw !== TEACHER_PW_LOCAL) { notify('รหัสผ่านไม่ถูกต้อง', 'error'); return; }
     S.teacher.password = pw;
     showScreen('teacher');
     App.loadQuestionSets();
@@ -1190,8 +1191,8 @@ const App = {
     document.getElementById('t-login-pw').value = '';
   },
   teacherLogout() {
-    clearInterval(S.display.refreshInterval);
-    S.teacher = { password:'', gameId:null, pin:null, questionSetId:null, questionSetName:null, totalQ:0, currentQ:0, status:'waiting' };
+    clearInterval(S.teacher.refreshInterval);
+    S.teacher = { password:'', gameId:null, pin:null, questionSetId:null, questionSetName:null, totalQ:0, currentQ:0, status:'waiting', refreshInterval:null };
     showScreen('teacher-login');
   },
 
@@ -1201,7 +1202,7 @@ const App = {
       if (!r.success) { notify('โหลดชุดคำถามไม่ได้: ' + r.error, 'error'); return; }
       const sel = document.getElementById('t-set-select');
       sel.innerHTML = '<option value="">-- เลือกชุดคำถาม --</option>';
-      r.sets.forEach(s => { sel.innerHTML += `<option value="${s.id}">${s.name} (${s.count} ข้อ)</option>`; });
+      r.sets.forEach(s => { sel.innerHTML += `<option value="${s.id}">${escHtml(s.name)} (${s.count} ข้อ)</option>`; });
     } catch(e) { notify('เชื่อมต่อ API ไม่ได้', 'error'); }
   },
 
@@ -1220,9 +1221,9 @@ const App = {
           <div class="flex space-between" style="flex-wrap:wrap;gap:8px">
             <div><span class="bold">${s.name}</span><span class="text-sm text-gray ml8">${s.count} ข้อ</span></div>
             <div class="flex" style="gap:6px;flex-wrap:wrap">
-              <button class="px-btn px-btn-cyan px-btn-sm" onclick="App.editSet('${s.id}')">แก้ไข</button>
-              <button class="px-btn px-btn-yellow px-btn-sm" onclick="App.copySet('${s.id}','${s.name}')">คัดลอก</button>
-              <button class="px-btn px-btn-red px-btn-sm" onclick="App.deleteSet('${s.id}','${s.name}')">ลบ</button>
+              <button class="px-btn px-btn-cyan px-btn-sm" data-id="${escHtml(s.id)}" onclick="App.editSet(this.dataset.id)">แก้ไข</button>
+              <button class="px-btn px-btn-yellow px-btn-sm" data-id="${escHtml(s.id)}" data-name="${escHtml(s.name)}" onclick="App.copySet(this.dataset.id,this.dataset.name)">คัดลอก</button>
+              <button class="px-btn px-btn-red px-btn-sm" data-id="${escHtml(s.id)}" data-name="${escHtml(s.name)}" onclick="App.deleteSet(this.dataset.id,this.dataset.name)">ลบ</button>
             </div>
           </div>
           <div class="text-xs text-gray mt4">ID: ${s.id}</div>
@@ -1258,7 +1259,7 @@ const App = {
   async refreshPlayerCount() {
     if (!S.teacher.gameId) return;
     try {
-      const r = await apiGet({ action:'getPlayerCount', gameId:S.teacher.gameId });
+      const r = await apiGet({ action:'getPlayerCount', gameId:S.teacher.gameId, _t:Date.now() });
       if (r.success) {
         document.getElementById('t-player-count').textContent = r.count;
         document.getElementById('t-player-list').textContent = r.players.join(' • ') || 'ยังไม่มีผู้เล่น';
@@ -1267,8 +1268,8 @@ const App = {
   },
 
   startTeacherRefresh() {
-    clearInterval(S.display.refreshInterval);
-    S.display.refreshInterval = setInterval(App.refreshPlayerCount, REFRESH_INTERVAL);
+    clearInterval(S.teacher.refreshInterval);
+    S.teacher.refreshInterval = setInterval(App.refreshPlayerCount, REFRESH_INTERVAL);
     App.refreshPlayerCount();
   },
 
@@ -1328,7 +1329,7 @@ const App = {
     const r = await apiPost({ action:'endGame', password:S.teacher.password, gameId:S.teacher.gameId });
     if (r.success) {
       notify('จบเกมแล้ว', 'info');
-      clearInterval(S.display.refreshInterval);
+      clearInterval(S.teacher.refreshInterval);
       document.getElementById('t-no-game').classList.remove('hidden');
       document.getElementById('t-game-panel').classList.add('hidden');
       S.teacher.gameId = null;
@@ -1383,7 +1384,7 @@ const App = {
       document.getElementById('t-answered-count').textContent = stats.total;
       const content = document.getElementById('t-stats-content');
       if (stats.text && stats.text.length) {
-        content.innerHTML = `<div class="text-sm">${stats.text.map(t=>`<span class="badge badge-playing mr4">${t}</span>`).join('')}</div>`;
+        content.innerHTML = `<div class="text-sm">${stats.text.map(t=>`<span class="badge badge-playing mr4">${escHtml(t)}</span>`).join('')}</div>`;
       } else {
         const opts = [['A',stats.A,'rgba(200,40,60,.8)'],['B',stats.B,'rgba(20,160,90,.8)'],['C',stats.C,'rgba(30,110,200,.8)'],['D',stats.D,'rgba(200,130,20,.8)']];
         content.innerHTML = opts.filter(o=>o[1]>0||stats.total>0).map(([l,n,c]) => `
@@ -1470,18 +1471,18 @@ const App = {
         </div>
         <div class="form-group">
           <label class="label">คำถาม *</label>
-          <textarea class="px-textarea" rows="2" onchange="App.updateQRow(${i},'question',this.value)">${q.question||''}</textarea>
+          <textarea class="px-textarea" rows="2" onchange="App.updateQRow(${i},'question',this.value)">${escHtml(q.question||'')}</textarea>
         </div>
         <div class="form-group">
           <label class="label">URL รูปภาพ (ถ้ามี)</label>
-          <input class="px-input" value="${q.imageUrl||''}" placeholder="https://..." onchange="App.updateQRow(${i},'imageUrl',this.value)">
+          <input class="px-input" value="${escHtml(q.imageUrl||'')}" placeholder="https://..." onchange="App.updateQRow(${i},'imageUrl',this.value)">
         </div>
         ${['multiple_choice','poll'].includes(q.type) ? `
         <div class="grid-2">
           ${['A','B','C','D'].map(opt=>`
           <div class="form-group">
             <label class="label">ตัวเลือก ${opt}</label>
-            <input class="px-input" value="${q['option'+opt]||''}" onchange="App.updateQRow(${i},'option${opt}',this.value)">
+            <input class="px-input" value="${escHtml(q['option'+opt]||'')}" onchange="App.updateQRow(${i},'option${opt}',this.value)">
           </div>`).join('')}
         </div>` : ''}
         ${q.type==='true_false' ? `
@@ -1500,7 +1501,7 @@ const App = {
         </div>` : ''}
         <div class="form-group">
           <label class="label">คำอธิบายเฉลย</label>
-          <input class="px-input" value="${q.explanation||''}" placeholder="อธิบายเพิ่มเติม..." onchange="App.updateQRow(${i},'explanation',this.value)">
+          <input class="px-input" value="${escHtml(q.explanation||'')}" placeholder="อธิบายเพิ่มเติม..." onchange="App.updateQRow(${i},'explanation',this.value)">
         </div>
       </div>`).join('');
   },
@@ -1614,7 +1615,7 @@ const App = {
         if (S.display.lastStatus !== 'waiting') showDispPanel('lobby');
       } else if (status === 'playing') {
         if (S.display.lastQNum !== qNum || S.display.lastStatus !== 'playing') {
-          const qR = await apiGet({ action:'getCurrentQuestion', gameId:S.display.gameId });
+          const qR = await apiGet({ action:'getCurrentQuestion', gameId:S.display.gameId, _t:Date.now() });
           if (qR.success && qR.question) {
             App.displayShowQuestion(qR.question, sess);
             stopTimer();
@@ -1624,7 +1625,7 @@ const App = {
         document.getElementById('d-q-players').textContent = sess.totalPlayers;
       } else if (status === 'showing_answer') {
         if (S.display.lastStatus !== 'showing_answer' || S.display.lastQNum !== qNum) {
-          const qR = await apiGet({ action:'getCurrentQuestion', gameId:S.display.gameId });
+          const qR = await apiGet({ action:'getCurrentQuestion', gameId:S.display.gameId, _t:Date.now() });
           if (qR.success && qR.question) App.displayShowAnswer(qR.question, sess);
         }
       } else if (status === 'leaderboard') {
@@ -1732,7 +1733,7 @@ const App = {
       const p = top3[i];
       return `<div class="podium-slot">
         <div class="podium-bar p${i+1}"><div class="podium-num">${i+1}</div></div>
-        <div class="podium-nick">${p.nickname}</div>
+        <div class="podium-nick">${escHtml(p.nickname)}</div>
         <div class="podium-score">${p.totalScore} คะแนน</div>
       </div>`;
     }).join('');
@@ -2053,7 +2054,7 @@ async function fetchLiveAnswers() {
     const answered = document.getElementById('d-q-answered');
     if (answered) answered.textContent = count;
     const total = document.getElementById('d-q-total');
-    if (total && !total.textContent || total.textContent === '0') {
+    if (total && (!total.textContent || total.textContent === '0')) {
       const pl = document.getElementById('d-q-players');
       if (pl) total.textContent = pl.textContent;
     }
@@ -2173,7 +2174,7 @@ function renderLeaderboard(containerId, lb, total) {
   el.innerHTML = lb.map(p => `
     <div class="lb-row">
       <div class="lb-rank ${['r1','r2','r3'][p.rank-1]||''}">#${p.rank}</div>
-      <div class="lb-nick">${p.nickname}</div>
+      <div class="lb-nick">${escHtml(p.nickname)}</div>
       <div class="lb-score">${p.totalScore}</div>
     </div>`).join('');
   if (total) el.innerHTML += `<p class="text-xs text-gray mt8 center">จาก ${total} คน</p>`;
